@@ -1,67 +1,152 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>The Overnight Shift Nobody Talks About</title>
-  <meta name="date" content="2026-05-19">
-  <meta name="description" content="Millions of Americans work while the rest of the country sleeps. What does that do to a person — and why does policy keep ignoring them?">
-  <link rel="stylesheet" href="../style.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For the Love of Art</title>
+<meta name="date" content="2026-06-09">
+<meta name="description" content="This is the description">
+<link rel="stylesheet" href="../style.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 </head>
 <body class="article-body">
 
-  <div class="article-header-bar">
-    <a href="../index.html">← Home</a>
-    <span class="site-name">THE FEED</span>
-    <a href="../all.html">All Articles</a>
-  </div>
+<div class="article-header-bar">
+<a href="../index.html">← Home</a>
+<span class="site-name">THE FEED</span>
+<a href="../all.html">All Articles</a>
+</div>
 
-  <div class="article-wrap">
+<div class="article-wrap">
 
-    <div class="article-kicker">Labor · May 19, 2026</div>
+<div class="article-kicker">Community · June 09, 2026</div>
 
-    <h1>The Overnight Shift Nobody Talks About</h1>
+<h1>For the Love of Art</h1>
 
-    <div class="article-meta">
-      <span>By Staff Reporter</span>
-      <span>6 min read</span>
-      <span>Filed under: Work & Economy</span>
-    </div>
+<div class="article-meta">
+<span>By Frankie Mohammed</span>
+<span>2.3 min read</span>
+<span>Filed under: Community</span>
+</div>
 
-    <div class="article-body">
+<div class="article-body">
 
-      <p>At 3 a.m. in a distribution center outside Columbus, Ohio, the lights are as bright as noon. The conveyor belts do not slow down. The scan guns beep in a rhythm that sounds, after the first few hours, almost like music. Somewhere on the floor, a worker named Darnell is on his seventeenth consecutive overnight shift. He has not seen his kids awake in eleven days.</p>
+<!-- ═══════════════════════════════════════════
+AUTO SLIDESHOW — paste this block once per article
+Change the content of article-id to match the folder number
+═══════════════════════════════════════════ -->
+<meta name="article-id" content="0005">
 
-      <p>He is not unusual. The Bureau of Labor Statistics estimates that roughly 15 million Americans — about 16 percent of full-time workers — hold shift jobs that fall outside the standard 7 a.m. to 6 p.m. window. They staff the hospitals, run the warehouses, keep the data centers humming, stock the shelves before you arrive to empty them. They are the circulatory system of a 24-hour economy. They are almost entirely invisible in public conversation about work.</p>
+<style>
+.slideshow-wrap {
+width: 100%;
+margin: 32px 0 40px;
+position: relative;
+background: #111;
+overflow: hidden;
+}
+.slideshow-wrap img {
+width: 100%;
+height: 520px;
+object-fit: cover;
+display: block;
+opacity: 0;
+position: absolute;
+top: 0; left: 0;
+transition: opacity 0.9s ease;
+}
+.slideshow-wrap img.active {
+opacity: 1;
+position: relative;
+}
+.slideshow-dots {
+position: absolute;
+bottom: 14px;
+left: 50%;
+transform: translateX(-50%);
+display: flex;
+gap: 7px;
+z-index: 10;
+}
+.slideshow-dots span {
+width: 7px; height: 7px;
+border-radius: 50%;
+background: rgba(255,255,255,0.4);
+cursor: pointer;
+transition: background 0.3s;
+}
+.slideshow-dots span.active {
+background: rgba(255,255,255,0.95);
+}
+.slideshow-count {
+position: absolute;
+top: 14px; right: 16px;
+font-family: 'IBM Plex Mono', monospace;
+font-size: 11px;
+color: rgba(255,255,255,0.6);
+letter-spacing: 0.1em;
+z-index: 10;
+}
+</style>
 
-      <h2>The Biology of the Backwards Clock</h2>
+<script>
+(function() {
+const GITHUB_USER = 'fmohod';
+const GITHUB_REPO = 'CadenzaFeed';
+const id = document.querySelector('meta[name="article-id"]')?.content;
+if (!id) return;
 
-      <p>The human body runs on a circadian rhythm calibrated, over millions of years of evolution, to the rising and setting of the sun. Cortisol spikes in the morning. Melatonin rises at night. Body temperature, blood pressure, immune response — all of it follows a predictable daily curve that overnight work systematically disrupts.</p>
+fetch(`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${id}/images`)
+.then(r => r.ok ? r.json() : null)
+.then(files => {
+if (!files) return;
 
-      <p>The research on what this disruption costs is extensive and consistently grim. Shift workers face elevated rates of cardiovascular disease, metabolic disorders, depression, and certain cancers. A major meta-analysis published in <em>The Lancet</em> found that rotating shift workers were significantly more likely to develop type 2 diabetes than day workers, independent of diet and exercise. The mechanism is biological: chronic circadian misalignment impairs insulin sensitivity at a cellular level.</p>
+const imgs = files
+.filter(f => /\.(jpg|jpeg|png|webp|gif)$/i.test(f.name))
+.map(f => f.download_url);
 
-      <blockquote>
-        "We talk about minimum wage, about benefits, about the forty-hour week. We almost never talk about when those hours happen — and that's a significant gap."
-        <br>— Occupational health researcher
-      </blockquote>
+if (!imgs.length) return;
 
-      <p>Darnell knows his body is paying a price, though he doesn't describe it in those terms. He says he feels foggy in the afternoons when he's trying to sleep, and wired at 6 a.m. when he gets home. His appetite is wrong. He gets sick more than he used to. He's thirty-four and feels, some mornings, like he's fifty.</p>
+// Build slideshow HTML
+const wrap = document.createElement('div');
+wrap.className = 'slideshow-wrap';
+wrap.innerHTML = `
+<div class="slideshow-count">1 / ${imgs.length}</div>
+${imgs.map((src, i) => `<img src="${src}" class="${i === 0 ? 'active' : ''}" loading="lazy">`).join('')}
+<div class="slideshow-dots">
+${imgs.map((_, i) => `<span class="${i === 0 ? 'active' : ''}"></span>`).join('')}
+</div>
+`;
 
-      <h2>What Policy Looks Like — and Doesn't</h2>
+// Insert after .article-meta
+const meta = document.querySelector('.article-meta');
+if (meta) meta.after(wrap);
 
-      <p>A handful of countries have moved to address this through labor law. The European Union's Working Time Directive limits night work and mandates health assessments for shift workers. Japan offers modest tax incentives for employers who reduce mandatory overnight rotations. These are imperfect policies, but they represent an acknowledgment that the timing of work matters, not just its duration or compensation.</p>
+// Cycle logic
+const imgEls  = wrap.querySelectorAll('img');
+const dots    = wrap.querySelectorAll('.slideshow-dots span');
+const counter = wrap.querySelector('.slideshow-count');
+let current   = 0;
 
-      <p>In the United States, the regulatory framework governing shift work is largely unchanged from the mid-twentieth century. A night differential — a small wage bump for working overnight — is common in union contracts and some industries, but it is not federally mandated. There is no national requirement for predictive scheduling, no health monitoring obligation, no legal floor on how frequently a worker can be asked to rotate between shifts.</p>
+function goTo(n) {
+imgEls[current].classList.remove('active');
+dots[current].classList.remove('active');
+current = (n + imgs.length) % imgs.length;
+imgEls[current].classList.add('active');
+dots[current].classList.add('active');
+counter.textContent = `${current + 1} / ${imgs.length}`;
+}
 
-      <p>The political will to change this tends to run into the same wall: shift work is concentrated among workers with the least political leverage. They are disproportionately non-white, disproportionately without college degrees, disproportionately employed in sectors — logistics, healthcare support, food processing — that are rarely the focus of sympathetic legislative attention.</p>
+// Click dots to jump
+dots.forEach((dot, i) => dot.addEventListener('click', () => goTo(i)));
 
-      <p>The conveyor belt keeps moving at 3 a.m. The scan guns keep beeping. And Darnell, who needs to sleep before his next shift starts at ten tonight, is trying to figure out how to be tired and a good father at the same time. It is a math problem with no clean solution.</p>
+// Auto-advance every 10 seconds
+setInterval(() => goTo(current + 1), 10000);
+})
+.catch(() => {}); // silently do nothing if no images folder
+})();
+</script>
+<!-- ═══════════════════════════════════════════ -->
 
-    </div>
-
-  </div>
-
-</body>
-</html>
+<p>SUGARLAND, Texas (CA) &mdash; Attending the "For the Love of Art" event felt like stepping into a living tapestry of creativity and warmth, a vibrant celebration hosted by the dynamic&nbsp;<a title="Sad Renee" href="https://www.instagram.com/authorreneeblackwell/">Renee Blackwell</a>. The air was charged with anticipation as artists and spectators alike gathered, eager to dive into an evening that promised to be a feast for the senses and the soul.<br /><br />As I meandered through the crowd, the eclectic mix of attendees was immediately striking&mdash;families, young professionals, and art aficionados, all drawn together by a shared love of art and community. The venue buzzed with energy, every corner alive with the spirit of creation. At the Cadenza Arthouse table, Allysen, with her infectious enthusiasm and radiant smile, was a beacon of light, engaging with children and adults alike, handing out stickers that quickly became treasured keepsakes.<br /><br />The culinary delights prepared by a local family added a layer of homeliness to the event, their delicious offerings ensuring that the evening was as much a treat for the palate as it was for the eyes and ears. It was a beautiful reminder of the power of food to bring people together, to create a sense of belonging and togetherness in the midst of art and expression.<br /><br />Highlight of the evening, however, was the soul-stirring poetry that filled the air, weaving a magic all its own.&nbsp;<a title="Duchess Pendragon" href="https://www.instagram.com/duchess.pendragon/">Duchess Pendragon</a>, with her commanding presence and evocative words, captivated the audience, her poetry resonating deep within, stirring hearts and minds. Equally memorable was Sad Renee herself, taking the stage to recite a poem that left an indelible mark on all who listened. In that moment, she was not just the organizer behind this magnificent gathering; she was a visionary, a poet, a soul speaking truth and beauty into existence.<br /><br />The Cadenza Arthouse chief was there, ever the dedicated artist, two cameras in hand, capturing every nuance, every smile, and every moment of raw emotion. His dedication to immortalizing the event was evident in the careful attention he paid to each subject, ensuring that the essence of the evening would live on long after the night had ended.<br /><br />Reflecting on the event now, it's clear that "For the Love of Art" was more than just an exhibition or a gathering. It was a profound expression of community, of the power of art to unite, to heal, and to inspire. It was a&nbsp;day that celebrated the individual talents of each artist&nbsp;and the collective spirit that animates and enriches our lives. As a spectator, I left feeling uplifted, reminded of the beauty that emerges when people come together in the name of art and heart.<br /><strong> <em>more to follow...</em></strong></p>
