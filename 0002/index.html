@@ -1,67 +1,156 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>The Overnight Shift Nobody Talks About</title>
-  <meta name="date" content="2026-05-19">
-  <meta name="description" content="Millions of Americans work while the rest of the country sleeps. What does that do to a person — and why does policy keep ignoring them?">
-  <link rel="stylesheet" href="../style.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chelita Lenice Fashion Show</title>
+<meta name="date" content="2021-04-11">
+<meta name="description" content="A brief photo journal check-in at the fashion show.  Our photographer picks up an appreciation for the city and leaves something to come back for.">
+<link rel="stylesheet" href="../style.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 </head>
 <body class="article-body">
 
-  <div class="article-header-bar">
-    <a href="../index.html">← Home</a>
-    <span class="site-name">THE FEED</span>
-    <a href="../all.html">All Articles</a>
-  </div>
+<div class="article-header-bar">
+<a href="../index.html">← Home</a>
+<span class="site-name">THE FEED</span>
+<a href="../all.html">All Articles</a>
+</div>
 
-  <div class="article-wrap">
+<div class="article-wrap">
 
-    <div class="article-kicker">Labor · May 19, 2026</div>
+<div class="article-kicker">Journals · April 11, 2021</div>
 
-    <h1>The Overnight Shift Nobody Talks About</h1>
+<h1>Chelita Lenice Fashion Show</h1>
 
-    <div class="article-meta">
-      <span>By Staff Reporter</span>
-      <span>6 min read</span>
-      <span>Filed under: Work & Economy</span>
-    </div>
+<div class="article-meta">
+<span>By Frankie Mohammed</span>
+<span>1.7 min read</span>
+<span>Filed under: Journals</span>
+</div>
 
-    <div class="article-body">
+<!-- ═══════════════════════════════════════════
+AUTO SLIDESHOW — paste this block once per article
+Change the content of article-id to match the folder number
+═══════════════════════════════════════════ -->
+<meta name="article-id" content="0002">
 
-      <p>At 3 a.m. in a distribution center outside Columbus, Ohio, the lights are as bright as noon. The conveyor belts do not slow down. The scan guns beep in a rhythm that sounds, after the first few hours, almost like music. Somewhere on the floor, a worker named Darnell is on his seventeenth consecutive overnight shift. He has not seen his kids awake in eleven days.</p>
+<style>
+.slideshow-wrap {
+width: 100%;
+margin: 32px 0 40px;
+position: relative;
+background: #111;
+overflow: hidden;
+}
+.slideshow-wrap img {
+width: 100%;
+height: 520px;
+object-fit: cover;
+display: block;
+opacity: 0;
+position: absolute;
+top: 0; left: 0;
+transition: opacity 0.9s ease;
+}
+.slideshow-wrap img.active {
+opacity: 1;
+position: relative;
+}
+.slideshow-dots {
+position: absolute;
+bottom: 14px;
+left: 50%;
+transform: translateX(-50%);
+display: flex;
+gap: 7px;
+z-index: 10;
+}
+.slideshow-dots span {
+width: 7px; height: 7px;
+border-radius: 50%;
+background: rgba(255,255,255,0.4);
+cursor: pointer;
+transition: background 0.3s;
+}
+.slideshow-dots span.active {
+background: rgba(255,255,255,0.95);
+}
+.slideshow-count {
+position: absolute;
+top: 14px; right: 16px;
+font-family: 'IBM Plex Mono', monospace;
+font-size: 11px;
+color: rgba(255,255,255,0.6);
+letter-spacing: 0.1em;
+z-index: 10;
+}
+</style>
 
-      <p>He is not unusual. The Bureau of Labor Statistics estimates that roughly 15 million Americans — about 16 percent of full-time workers — hold shift jobs that fall outside the standard 7 a.m. to 6 p.m. window. They staff the hospitals, run the warehouses, keep the data centers humming, stock the shelves before you arrive to empty them. They are the circulatory system of a 24-hour economy. They are almost entirely invisible in public conversation about work.</p>
+<script>
+(function() {
+const GITHUB_USER = 'fmohod';
+const GITHUB_REPO = 'CadenzaFeed';
+const id = document.querySelector('meta[name="article-id"]')?.content;
+if (!id) return;
 
-      <h2>The Biology of the Backwards Clock</h2>
+fetch(`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${id}/images`)
+.then(r => r.ok ? r.json() : null)
+.then(files => {
+if (!files) return;
 
-      <p>The human body runs on a circadian rhythm calibrated, over millions of years of evolution, to the rising and setting of the sun. Cortisol spikes in the morning. Melatonin rises at night. Body temperature, blood pressure, immune response — all of it follows a predictable daily curve that overnight work systematically disrupts.</p>
+const imgs = files
+.filter(f => /\.(jpg|jpeg|png|webp|gif)$/i.test(f.name))
+.map(f => f.download_url);
 
-      <p>The research on what this disruption costs is extensive and consistently grim. Shift workers face elevated rates of cardiovascular disease, metabolic disorders, depression, and certain cancers. A major meta-analysis published in <em>The Lancet</em> found that rotating shift workers were significantly more likely to develop type 2 diabetes than day workers, independent of diet and exercise. The mechanism is biological: chronic circadian misalignment impairs insulin sensitivity at a cellular level.</p>
+if (!imgs.length) return;
 
-      <blockquote>
-        "We talk about minimum wage, about benefits, about the forty-hour week. We almost never talk about when those hours happen — and that's a significant gap."
-        <br>— Occupational health researcher
-      </blockquote>
+// Build slideshow HTML
+const wrap = document.createElement('div');
+wrap.className = 'slideshow-wrap';
+wrap.innerHTML = `
+<div class="slideshow-count">1 / ${imgs.length}</div>
+${imgs.map((src, i) => `<img src="${src}" class="${i === 0 ? 'active' : ''}" loading="lazy">`).join('')}
+<div class="slideshow-dots">
+${imgs.map((_, i) => `<span class="${i === 0 ? 'active' : ''}"></span>`).join('')}
+</div>
+`;
 
-      <p>Darnell knows his body is paying a price, though he doesn't describe it in those terms. He says he feels foggy in the afternoons when he's trying to sleep, and wired at 6 a.m. when he gets home. His appetite is wrong. He gets sick more than he used to. He's thirty-four and feels, some mornings, like he's fifty.</p>
+// Insert after .article-meta
+const meta = document.querySelector('.article-meta');
+if (meta) meta.after(wrap);
 
-      <h2>What Policy Looks Like — and Doesn't</h2>
+// Cycle logic
+const imgEls  = wrap.querySelectorAll('img');
+const dots    = wrap.querySelectorAll('.slideshow-dots span');
+const counter = wrap.querySelector('.slideshow-count');
+let current   = 0;
 
-      <p>A handful of countries have moved to address this through labor law. The European Union's Working Time Directive limits night work and mandates health assessments for shift workers. Japan offers modest tax incentives for employers who reduce mandatory overnight rotations. These are imperfect policies, but they represent an acknowledgment that the timing of work matters, not just its duration or compensation.</p>
+function goTo(n) {
+imgEls[current].classList.remove('active');
+dots[current].classList.remove('active');
+current = (n + imgs.length) % imgs.length;
+imgEls[current].classList.add('active');
+dots[current].classList.add('active');
+counter.textContent = `${current + 1} / ${imgs.length}`;
+}
 
-      <p>In the United States, the regulatory framework governing shift work is largely unchanged from the mid-twentieth century. A night differential — a small wage bump for working overnight — is common in union contracts and some industries, but it is not federally mandated. There is no national requirement for predictive scheduling, no health monitoring obligation, no legal floor on how frequently a worker can be asked to rotate between shifts.</p>
+// Click dots to jump
+dots.forEach((dot, i) => dot.addEventListener('click', () => goTo(i)));
 
-      <p>The political will to change this tends to run into the same wall: shift work is concentrated among workers with the least political leverage. They are disproportionately non-white, disproportionately without college degrees, disproportionately employed in sectors — logistics, healthcare support, food processing — that are rarely the focus of sympathetic legislative attention.</p>
+// Auto-advance every 10 seconds
+setInterval(() => goTo(current + 1), 10000);
+})
+.catch(() => {}); // silently do nothing if no images folder
+})();
+</script>
+<!-- ═══════════════════════════════════════════ -->
 
-      <p>The conveyor belt keeps moving at 3 a.m. The scan guns keep beeping. And Darnell, who needs to sleep before his next shift starts at ten tonight, is trying to figure out how to be tired and a good father at the same time. It is a math problem with no clean solution.</p>
+<div class="article-body">
 
-    </div>
-
-  </div>
-
-</body>
-</html>
+"<p>Dallas, Texas (CA) &mdash;&nbsp;I remember i got these Betelgeuse looking pants here; i think it was this time.&nbsp;</p>
+<p>and you know how it is when you're at a show and you need something right now, so you hit that Map and find the nearest. I was right in the neighborhood of these very fashionable shops in Dallas. I needed to get some ladies clothes and as I recall, not having very specific instructions, i found a pair of boots of some kind with an great sturdy heal and pointed toe. Now, would it have worked for this show? The world may never know as an alternative saved the day. Lots of wardrobe and styling happening this&nbsp;<a title=""Chelita Lenice - 2021 Spring Fashion Show"" href=""https://youtu.be/Xm31e5Gwd0Y"">day</a>.</p>
+<p>I was far away from the venue on a clothing mission. My camera was good and I had everything I needed. Now let me tell you, I would end up leaving my camera bag there and I never got it back. Luckily I had my camera with me the whole time so all i lost was a bag and some extra chargers and accessories. When you lose something it's a lesson you must have needed to learn. I don't use camera bags anymore! 😹 Now let me tell you about how my cameras looking like it's been through all my life with me :)</p>
+<p>The salesman at the shop was really into me as a customer. I really felt like this dude was going above and beyond trying to satisfy me as a customer because there were certainly other ppl in there and he wasn't paying them attention like he did on me. Lookin me over reeaaal good. But ultimately he did great and sold me this audacious black and white stitched vertical stripe suit thing. Later the suit would make an appearance in some creative fashion remixes in a true testament to what it means to be about that fashion life. S/O to the designer seamstresses that do the thing and make our fashion dreams real.</p>
+<p>More to follow...</p>"
