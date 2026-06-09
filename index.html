@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>THE FEED</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <header>
+    <div class="header-inner">
+      <div class="header-meta">
+        <span id="live-date"></span>
+        <span class="dot">·</span>
+        <span id="article-count">Loading...</span>
+      </div>
+      <h1 class="site-title">THE FEED</h1>
+      <nav>
+        <a href="#latest">Latest</a>
+        <a href="all.html">All Articles</a>
+      </nav>
+    </div>
+    <div class="header-rule"></div>
+  </header>
+
+  <main>
+    <section id="latest" class="top-stories">
+      <div class="section-label">— Top Stories</div>
+      <div class="cards-grid" id="cards-grid">
+        <!-- Skeleton loaders -->
+        <div class="card skeleton"></div>
+        <div class="card skeleton"></div>
+        <div class="card skeleton"></div>
+      </div>
+    </section>
+
+    <div class="all-articles-cta">
+      <a href="all.html" class="cta-button">
+        <span>Browse All Articles</span>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12,5 19,12 12,19"/></svg>
+      </a>
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <span class="site-title-small">THE FEED</span>
+      <span>Self-hosted. No trackers. Just words.</span>
+    </div>
+  </footer>
+
+  <script>
+    // ============================================================
+    // CONFIGURATION — change these two lines to match your repo
+    // ============================================================
+    const GITHUB_USER = 'YOUR_GITHUB_USERNAME';
+    const GITHUB_REPO = 'YOUR_REPO_NAME';
+    // ============================================================
+
+    const BASE_URL    = `https://${GITHUB_USER}.github.io/${GITHUB_REPO}`;
+    const API_BASE    = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/`;
+
+    // Live date in header
+    document.getElementById('live-date').textContent =
+      new Date().toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+
+    async function getArticleFolders() {
+      const res = await fetch(API_BASE);
+      if (!res.ok) throw new Error('GitHub API fetch failed');
+      const contents = await res.json();
+      return contents
+        .filter(f => f.type === 'dir' && /^\d{4}$/.test(f.name))
+        .sort((a, b) => b.name.localeCompare(a.name)); // newest first
+    }
+
+    async function getArticleMeta(folder) {
+      const url = `${BASE_URL}/${folder}/`;
+      try {
+        const res  = await fetch(url);
+        const html = await res.text();
+        const doc  = new DOMParser().parseFromString(html, 'text/html');
+
+        const title = doc.querySelector('title')?.textContent?.trim()
+          || doc.querySelector('h1')?.textContent?.trim()
+          || `Article ${folder}`;
+
+        const desc = doc.querySelector('meta[name="description"]')?.content
+          || doc.querySelector('p')?.textContent?.trim().slice(0, 140) + '…'
+          || '';
+
+        const date = doc.querySelector('meta[name="date"]')?.content || '';
+
+        // Check for thumb.jpg or thumb.png
+        const thumbJpg = `${BASE_URL}/${folder}/thumb.jpg`;
+        const thumbPng = `${BASE_URL}/${folder}/thumb.png`;
+        let thumb = null;
+        try {
+          const t = await fetch(thumbJpg, { method: 'HEAD' });
+          if (t.ok) thumb = thumbJpg;
+        } catch {}
+        if (!thumb) {
+          try {
+            const t = await fetch(thumbPng, { method: 'HEAD' });
+            if (t.ok) thumb = thumbPng;
+          } catch {}
+        }
+
+        return { folder, title, desc, date, thumb, url };
+      } catch {
+        return { folder, title: `Article ${folder}`, desc: '', date: '', thumb: null, url: `${BASE_URL}/${folder}/` };
+      }
+    }
+
+    function formatDate(dateStr) {
+      if (!dateStr) return '';
+      try {
+        return new Date(dateStr + 'T00:00:00').toLocaleDateString('en-US',
+          { year: 'numeric', month: 'long', day: 'numeric' });
+      } catch { return dateStr; }
+    }
+
+    function renderCard(meta, index) {
+      const labelMap = ['LEAD STORY', 'DEVELOPING', 'IN DEPTH'];
+      const label = labelMap[index] || 'LATEST';
+      return `
+        <article class="card card-${index + 1}" style="animation-delay:${index * 0.12}s">
+          <a href="${meta.url}" class="card-image-link">
+            <div class="card-image">
+              ${meta.thumb
+                ? `<img src="${meta.thumb}" alt="${meta.title}" loading="lazy">`
+                : `<div class="no-image"><span>No Image</span></div>`}
+              <div class="card-label">${label}</div>
+            </div>
+          </a>
+          <div class="card-body">
+            ${meta.date ? `<time>${formatDate(meta.date)}</time>` : ''}
+            <h2><a href="${meta.url}">${meta.title}</a></h2>
+            ${meta.desc ? `<p>${meta.desc}</p>` : ''}
+            <a href="${meta.url}" class="read-link">Read Article →</a>
+          </div>
+        </article>`;
+    }
+
+    async function init() {
+      const grid = document.getElementById('cards-grid');
+      try {
+        const folders = await getArticleFolders();
+        document.getElementById('article-count').textContent =
+          `${folders.length} article${folders.length !== 1 ? 's' : ''} published`;
+
+        const top3 = folders.slice(0, 3);
+        const metas = await Promise.all(top3.map(f => getArticleMeta(f.name)));
+
+        grid.innerHTML = metas.map((m, i) => renderCard(m, i)).join('');
+
+        // Store all folders for all.html to use (via localStorage)
+        localStorage.setItem('thefeed_folders', JSON.stringify(folders.map(f => f.name)));
+      } catch (err) {
+        grid.innerHTML = `
+          <div class="error-state">
+            <p>⚠ Could not load articles.</p>
+            <p class="error-detail">Make sure GITHUB_USER and GITHUB_REPO are set correctly in index.html, and that GitHub Pages is enabled on your repo.</p>
+          </div>`;
+        document.getElementById('article-count').textContent = 'Config needed';
+        console.error(err);
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>
