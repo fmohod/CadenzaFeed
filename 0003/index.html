@@ -1,67 +1,190 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Libraries Are Doing Everything Now</title>
-  <meta name="date" content="2026-05-28">
-  <meta name="description" content="They started with books. Now they hand out narcan, notarize documents, store people's belongings, and run job training programs. The American public library is having an identity crisis it didn't ask for.">
-  <link rel="stylesheet" href="../style.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Womankind 2024 by Cultured Concepts</title>
+<meta name="date" content="2024-03-23">
+<meta name="description" content="A motorcycle parade, world champion martial artists, yoga queens, artists, healers, entrepreneurs, and one visionary organizer. Step inside Womankind 2024 and experience a powerful celebration of feminine energy, community, creativity, and empowerment in the heart of Houston.">
+<link rel="stylesheet" href="../style.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 </head>
 <body class="article-body">
 
-  <div class="article-header-bar">
-    <a href="../index.html">← Home</a>
-    <span class="site-name">THE FEED</span>
-    <a href="../all.html">All Articles</a>
-  </div>
+<div class="article-header-bar">
+<a href="../index.html">← Home</a>
+<span class="site-name">THE FEED</span>
+<a href="../all.html">All Articles</a>
+</div>
 
-  <div class="article-wrap">
+<div class="article-wrap">
 
-    <div class="article-kicker">Society · May 28, 2026</div>
+<div class="article-kicker">Events · March 23, 2024</div>
 
-    <h1>Libraries Are Doing Everything Now</h1>
+<h1>Womankind 2024 by Cultured Concepts</h1>
 
-    <div class="article-meta">
-      <span>By Staff Reporter</span>
-      <span>7 min read</span>
-      <span>Filed under: Infrastructure & Society</span>
-    </div>
+<div class="article-meta">
+<span>By Frankie Mohammed</span>
+<span>8.9 min read</span>
+<span>Filed under: Events</span>
+</div>
 
-    <div class="article-body">
+<!-- ═══════════════════════════════════════════
+AUTO SLIDESHOW — paste this block once per article
+Change the content of article-id to match the folder number
+═══════════════════════════════════════════ -->
+<meta name="article-id" content="0003">
 
-      <p>On a Tuesday morning at the Kenton County Public Library in northern Kentucky, the following things are happening simultaneously: a retired teacher is helping a man in his fifties fill out a Medicaid renewal form. A social worker is meeting with a mother about emergency housing vouchers. A librarian is running a workshop on how to spot scam phone calls, attended mostly by people in their seventies. Three teenagers are doing homework. And in the lobby, behind a small glass case, there are free doses of naloxone — no questions, no forms, just take one if you need it.</p>
+<style>
+.slideshow-wrap {
+width: 100%;
+margin: 32px 0 40px;
+position: relative;
+background: #111;
+overflow: hidden;
+}
+.slideshow-wrap img {
+width: 100%;
+height: 520px;
+object-fit: cover;
+display: block;
+opacity: 0;
+position: absolute;
+top: 0; left: 0;
+transition: opacity 0.9s ease;
+}
+.slideshow-wrap img.active {
+opacity: 1;
+position: relative;
+}
+.slideshow-dots {
+position: absolute;
+bottom: 14px;
+left: 50%;
+transform: translateX(-50%);
+display: flex;
+gap: 7px;
+z-index: 10;
+}
+.slideshow-dots span {
+width: 7px; height: 7px;
+border-radius: 50%;
+background: rgba(255,255,255,0.4);
+cursor: pointer;
+transition: background 0.3s;
+}
+.slideshow-dots span.active {
+background: rgba(255,255,255,0.95);
+}
+.slideshow-count {
+position: absolute;
+top: 14px; right: 16px;
+font-family: 'IBM Plex Mono', monospace;
+font-size: 11px;
+color: rgba(255,255,255,0.6);
+letter-spacing: 0.1em;
+z-index: 10;
+}
+</style>
 
-      <p>This is a library in 2026. It is also a social services hub, a digital equity center, a safe warm space, a de facto day shelter, a job training site, and the only place in a fifteen-mile radius where a person without a home address can receive mail. It is all of these things on a budget that, in real terms, has declined in most American cities over the past two decades.</p>
+<script>
+(function() {
+const GITHUB_USER = 'fmohod';
+const GITHUB_REPO = 'CadenzaFeed';
+const id = document.querySelector('meta[name="article-id"]')?.content;
+if (!id) return;
 
-      <h2>The Last Truly Public Space</h2>
+fetch(`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${id}/images`)
+.then(r => r.ok ? r.json() : null)
+.then(files => {
+if (!files) return;
 
-      <p>Sociologists have a term for places where people of different backgrounds can occupy the same space without a commercial transaction being required: third places. The pub, the town square, the park. Most American cities have spent the last fifty years systematically defunding or privatizing their third places. The library endured. It is, in many communities, the only institution left that will let you sit inside all day without buying anything.</p>
+const imgs = files
+.filter(f => /\.(jpg|jpeg|png|webp|gif)$/i.test(f.name))
+.map(f => f.download_url);
 
-      <p>That openness, once a philosophical commitment, has become a logistical challenge of significant proportions. Libraries in cities with severe homelessness crises have quietly become de facto shelters — not because anyone decided they should be, but because they are warm, open, and non-coercive. Staff who trained to help children find picture books now receive de-escalation training and carry naloxone on their lanyards.</p>
+if (!imgs.length) return;
 
-      <blockquote>
-        "I didn't get a master's in library science to do triage. But I also don't know who else was going to."
-        <br>— Public librarian, Cincinnati branch
-      </blockquote>
+// Build slideshow HTML
+const wrap = document.createElement('div');
+wrap.className = 'slideshow-wrap';
+wrap.innerHTML = `
+<div class="slideshow-count">1 / ${imgs.length}</div>
+${imgs.map((src, i) => `<img src="${src}" class="${i === 0 ? 'active' : ''}" loading="lazy">`).join('')}
+<div class="slideshow-dots">
+${imgs.map((_, i) => `<span class="${i === 0 ? 'active' : ''}"></span>`).join('')}
+</div>
+`;
 
-      <p>The librarians navigating this expanded role are, by almost any account, doing it thoughtfully and often heroically. They are also burning out at rates that administrators are only beginning to acknowledge. A survey by the American Library Association found that more than 60 percent of public-facing library staff reported significantly increased stress related to patron mental health crises in the past three years. A quarter said they were considering leaving the profession.</p>
+// Insert after .article-meta
+const meta = document.querySelector('.article-meta');
+if (meta) meta.after(wrap);
 
-      <h2>What Libraries Were Built For — and What That Means Now</h2>
+// Cycle logic
+const imgEls  = wrap.querySelectorAll('img');
+const dots    = wrap.querySelectorAll('.slideshow-dots span');
+const counter = wrap.querySelector('.slideshow-count');
+let current   = 0;
 
-      <p>The original public library ideal — democratic, free, universal access to information and knowledge — was radical when Andrew Carnegie funded hundreds of them at the turn of the twentieth century. It remains radical. A physical space, open to everyone, staffed by trained professionals, where the only requirement is treating the space and other patrons with basic respect. No fee. No membership. No loyalty card.</p>
+function goTo(n) {
+imgEls[current].classList.remove('active');
+dots[current].classList.remove('active');
+current = (n + imgs.length) % imgs.length;
+imgEls[current].classList.add('active');
+dots[current].classList.add('active');
+counter.textContent = `${current + 1} / ${imgs.length}`;
+}
 
-      <p>That ideal hasn't changed. What's changed is the depth of need surrounding it. When other public institutions contract — when social services are cut, when public spaces disappear, when the safety net develops holes large enough to fall through — people end up at the library. Because the library is still there. Because the library still says yes.</p>
+// Click dots to jump
+dots.forEach((dot, i) => dot.addEventListener('click', () => goTo(i)));
 
-      <p>The question that city councils and state legislatures are slowly, reluctantly beginning to confront is whether the library can keep saying yes without the resources to mean it. The books are still there. The librarians are still there. The mission is still there. Whether the funding follows is, as always, a political choice.</p>
+// Auto-advance every 10 seconds
+setInterval(() => goTo(current + 1), 10000);
+})
+.catch(() => {}); // silently do nothing if no images folder
+})();
+</script>
+<!-- ═══════════════════════════════════════════ -->
 
-      <p>In Kenton County, the Tuesday morning social worker is a contract position, funded by a one-time grant that expires next March. Nobody knows yet what happens after that.</p>
+<div class="article-body">
 
-    </div>
-
-  </div>
-
-</body>
-</html>
+"<header><time datetime=""2024-03-23T22:30:00Z"">March 23, 2024</time></header>
+<div>
+<h6>By&nbsp;<a title=""Frankie Mohammed, Cadenza Arthouse"" href=""https://web.archive.org/web/20241214135210/https://www.frankiemohammed.com/"">Frankie Mohammed</a><br />updated 12APR2024 11:05</h6>
+<p>HOUSTON, Texas (CA) &mdash;&nbsp;<span data-mce-fragment=""1"">Doesn&rsquo;t it feel so good to be on Emancipation Ave on a beautiful Houston day? On March 23rd Houston&rsquo;s finest entrepreneurs held a remarkable gathering at Tribeca HTX (<a href=""https://www.instagram.com/tribecahtx"">@tribecahtx</a>), known for its industrial charm and contemporary flair. The&nbsp;</span><strong data-mce-fragment=""1"">Womankind 2024</strong><span data-mce-fragment=""1"">&nbsp;Women's Conference, orchestrated by the art visionary&nbsp;</span><strong data-mce-fragment=""1"">Diamond Ashman</strong><span data-mce-fragment=""1"">&nbsp;(<a title=""Diamond Ashman, Art Boss of Texas"" href=""https://www.instagram.com/d.gemm"">@D.Gemm</a>) of&nbsp;</span><a title=""Cultured Concepts"" href=""https://www.cultured-concepts.com/"" target=""_blank"" rel=""noopener noreferrer""><strong data-mce-fragment=""1"">Cultured Concepts</strong></a><span data-mce-fragment=""1"">, brought together an eclectic mix of women leaders, entrepreneurs, and creatives from the wellness space as a celebration of the divine feminine, a deep dive into personal empowerment, and a showcase of artistic expression that resonated with every attendee.</span></p>
+<p data-mce-fragment=""1""><span data-mce-fragment=""1"">D. Gemm, a beacon of creativity and community spirit, orchestrated the Womankind Women's Conference with the meticulousness of a master curator and the compassion of a holistic guide. Her journey from freelance artist and body painter to the visionary founder of Cultured Concepts speaks to her deep commitment to empowering and uniting through art. D. Gemm&nbsp;has historically been great at&nbsp;creating spaces that foster meaningful connections, whether through her early ventures in coordinating showcase events for local talents or her recent endeavors in bridging corporate clients with creatives for impactful collaborations.</span></p>
+<p data-mce-fragment=""1""><span data-mce-fragment=""1"">For this event, she&nbsp;delved into her vast network of artists, speakers, and wellness practitioners, handpicking individuals whose stories and expertise would resonate most profoundly with attendees. Each panelist, artist, and workshop leader was chosen not just for their accomplishments but for their ability to inspire, challenge, and uplift. D. Gemm's approach transcended mere event organization, aiming instead to create a series of experiences designed to nurture the soul, provoke thought, and inspire action.</span></p>
+<p data-mce-fragment=""1""><span data-mce-fragment=""1"">Her foresight in recognizing the synergies between diverse forms of expression &ndash; from martial arts to journaling, from skin care to yoga &ndash; exemplified her belief in the interconnectedness of our physical, mental, and spiritual health. D. Gemm's role in the conference was akin to that of a conductor, ensuring each element harmonized to create an unforgettable symphony of empowerment, enlightenment, and community. Through her efforts, the conference became a mirror reflecting her own journey: an odyssey of transformation, healing, and unabashed celebration of the feminine divine.</span></p>
+<p data-mce-fragment=""1""><span data-mce-fragment=""1"">Speaking of divine femininity, my anticipation was high as I arrived at the venue, ready to delve into the day's events. My familiarity with D. Gemm gave me a premonition of the extraordinary gathering that lay ahead. Conveniently parked just across the street, a mere twenty steps from the front door, I felt a surge of excitement. Life was indeed good! Especially when you get a good parking spot under a tree oh my goodness.</span></p>
+<p data-mce-fragment=""1""><span data-mce-fragment=""1"">The conference, designed to celebrate the collective strength and uniqueness of women, delivered on its promise. It was a day replete with enlightening panels, transformative workshops, and a vibrant sense of community. From the celebrity panels, to the full contact martial arts demos and sound healing sessions, attendees found themselves in an environment ripe for growth, healing, and empowerment.</span></p>
+<p data-mce-fragment=""1""><span data-mce-fragment=""1"">Upon entering Tribeca, the energy was palpable. The recent rains had left the streets clean, enhancing the beauty of the day. Then, as if on cue, around 500 motorcyclists and trike riders provided an unexpected spectacle, cruising down Emancipation Avenue. Seizing the moment, I ventured out to capture their parade, managing to photograph nearly every participant. The traffic, surprisingly accommodating, allowed me to snap away unhindered.</span></p>
+<p data-mce-fragment=""1"">Let me tell you why I was outside on the street taking pictures not in the Women's Conference. Back in August I was at a celebration at Exchange to Change and I had to chance to take a few pictures there and address the audience. I was talking about how you don't have to wait to be excellent at something. Maybe it's taking a picture, or singing a song, or making things. Go try. See what happens. I met the most amazing people there let me tell you. After getting sidetracked and having a brief adventure, I returned on foot to Tribeca, already having secured the first batch of photos of motorcycle photographs for the Women's Conference. 😹</p>
+<p data-mce-fragment=""1""><span data-mce-fragment=""1"">The welcoming committee, comprised of familiar figures from the Houston art scene, set a sophisticated tone for the event. Yahzmen, Sydney, and Kanika, luminaries in Houston's holistic and arts community, greeted attendees with their customary elegance and grace.</span></p>
+<p data-mce-fragment=""1""><span data-mce-fragment=""1"">Yahzmen Jaylynn, known for her collaborative spirit and holistic approach to art and healing, gracefully managed the front door, welcoming guests with her radiant energy contributing significantly to the warm and inclusive atmosphere. Her recent collaborations, including an airport art showcase with artist Kanika Blair and ongoing art work with Cultured Concepts highlight her active grind in the Houston art community. Her subtle presence was a testament to the diverse contributions that help make such gatherings a success.</span></p>
+<p data-mce-fragment=""1""><span data-mce-fragment=""1"">The Breathe Lounge, under the vibrant leadership of Sydney Hayes, played a significant role as a sponsor at the event. With Sydney's belief in holistic wellness and empowerment deeply rooted in her business model, her presence at the conference brought an enriching layer of community and self-care. It was not just a showcase of her entrepreneurial spirit but also a testament to the values of women's empowerment and the nurturing of future generations.</span></p>
+<p data-mce-fragment=""1""><span data-mce-fragment=""1"">Sydney, accompanied by her two daughters, offered a live example of these principles in action, embodying the event's theme of nurturing and empowerment from a young age. They&nbsp;offered free classes with mats to attendees, symbolizing the foundation of physical wellness and the seeds of knowledge and empowerment being sown in the fertile minds of the young ones present. Among these young attendees was D. Gemm&rsquo;s daughter, who, with youthful curiosity, made several adorable stage appearances to be near her mother. These interactions highlighted D. Gemm's patient and loving approach to parenting, illustrating her belief in non-punitive discipline and the importance of nurturing a child's spirit in a supportive environment. The event, thus, became a microcosm of the broader goals of empowerment, education, and community support, championed by these remarkable women and their contributions.</span></p>
+<p data-mce-fragment=""1"">I noticed the kids had their own table for art activities&nbsp;and they were completely thrilled with it! Genius move. I focused my attention back to the stage and got to snapping pictures and video.</p>
+<p data-mce-fragment=""1""><span data-mce-fragment=""1"">The flow of the events were entrusted to the capable hands of Merc&eacute; Harrell (<a href=""https://www.instagram.com/merceharrell"">@merceharrell</a>), the moderator, who expertly navigated the varied themes and facilitated meaningful dialogues starting with the&nbsp;<strong>Motherhood panel</strong>. As we move forward, the conference would continue to unfold layers of enrichment, promising insights into workshops and activities that contributed to the profound experience of the Womankind Women's Conference.</span></p>
+<p data-mce-fragment=""1""><span data-mce-fragment=""1"">After lounging with the artists it was time to get the panels and workshops going. I followed Merc&eacute; and D. Gemm to the stage and took my seat enjoying the nice music and vibe. The bar was serving drinks and I'm feeling great there just a few seats away from the legendary Master Fundi Fe, just taking it all in. Later she would get real serious with everyone in the room.<br /></span></p>
+<h3 data-mce-fragment=""1""><strong><span data-mce-fragment=""1"">Can We Get Real for a Minute?</span></strong></h3>
+<h6 data-mce-fragment=""1""><strong>Self Defense video by Master Fundi Fe</strong></h6>
+<p data-mce-fragment=""1""><span data-mce-fragment=""1"">Now when I tell you the dynamic shifted. You know how it is, you're in a room full of this feminine energy where everything is just fresher, sweeter, nicer, simply resplendent. Where that part of the divine masculine is simply not needed at that moment right now. Looking back on it now, I see Master Funde's meticulous crafting and execution. It was like we're all getting ready to load up on the spaceship and everyone is just so happy and Boom she comes in with&nbsp;<em><strong>THIS is...!!</strong></em>- Ladies and gentlemen we have liftoff 🚀 - My words couldn't do it justice and nobody lived it better than the people who were there. Video below.</span></p>
+Master Fundi Fe Self Defense</div>
+<div>
+<p data-mce-fragment=""1""><strong data-mce-fragment=""1"">I have about 12 more weeks of updates on this one! with stories from...</strong></p>
+<p data-mce-fragment=""1""><strong data-mce-fragment=""1"">Alicia Dugar Stephenson</strong>&nbsp;<strong data-mce-fragment=""1"">(<a title=""Afro Yoga Queen on Instagram"" href=""https://www.instagram.com/AfroYogaQueen"">@AfroYogaQueen</a>)</strong><span data-mce-fragment=""1"">: Experienced registered yoga teacher (ERYT500), known for integrating yoga practice with personal growth and world peace initiatives.</span></p>
+<p data-mce-fragment=""1""><strong data-mce-fragment=""1"">Merc&eacute; Harrell</strong>&nbsp;<strong data-mce-fragment=""1"">(<a title=""Merce Harrell on Instagram"" href=""https://www.instagram.com/@merceharrell"">@merceharrell</a>)</strong><span data-mce-fragment=""1"">: Educator and wardrobe stylist with experience across various cities, focusing on uplifting community through fashion and styling.</span></p>
+<p data-mce-fragment=""1""><strong data-mce-fragment=""1"">Andrea Pitt&nbsp;</strong><strong data-mce-fragment=""1"">(<a title=""Who is Andrea on Instagram"" href=""https://www.instagram.com/whoisandrea"">@whoisandrea</a>)</strong><span data-mce-fragment=""1"">: The Artelebrity, artist, educator, curator, model, influencer, and mom who contributes to cultural refinement and artistic experiences. She led a sound bowl session.</span></p>
+<p data-mce-fragment=""1""><strong data-mce-fragment=""1"">Candyss Roberson</strong>&nbsp;<strong data-mce-fragment=""1"">(<a title=""Candyss Roberson on Instagram"" href=""https://www.instagram.com/candyss.love"">@candyss.love</a>)</strong>:<span data-mce-fragment=""1""> Intuitive emotional healing therapist, former police officer, skincare line entrepreneur, and author, who participates in panel discussions offering life and spiritual advice.</span></p>
+<p data-mce-fragment=""1""><strong data-mce-fragment=""1"">Diamond Ashman&nbsp;</strong><strong data-mce-fragment=""1""><a title=""D. Gemm on Instagram"" href=""https://www.instagram.com/d.gemm"">(@d.gemm</a>)</strong><span data-mce-fragment=""1"">: Organizer of the women's conference, known for bringing together influential figures for empowerment and divine feminine flow discussions.</span></p>
+<p data-mce-fragment=""1""><strong data-mce-fragment=""1"">Dr. Lindsay Sillas</strong>&nbsp;<strong data-mce-fragment=""1"">(<a title=""Dr. Lindsay Sillas on Instagram"" href=""https://www.instagram.com/joyandpainblog"">@joyandpainblog</a><a title=""Dr. Lindsay Sillas on Instagram"" href=""https://cadenzaarthouse.com/blogs/news/instagram.com/joyandpainblog"">)</a></strong><span data-mce-fragment=""1"">: Obstetrician-Gynecologist focused on reducing maternal mortality and improving women's mental health post-childbirth.</span></p>
+<p data-mce-fragment=""1""><strong data-mce-fragment=""1"">Master Fundi Fe (<a title=""Master Fundi Fe on Instagram"" href=""https://www.instagram.com/masterfundife"">@masterfundife</a>):</strong>&nbsp;Renowned martial artist, multiple times world champion, holistic health advocate, and entrepreneur. She led a compelling session on self-defense at the conference, demonstrating practical techniques and emphasizing the importance of women's physical safety and empowerment. Beyond martial arts, she also crafts homemade wines under her brand&nbsp;<a title=""Blitch's Brew Official"" href=""https://www.masterfundife.com/brews"">Blitch&rsquo;s Brew</a>, further showcasing her multifaceted contributions to the community.<strong data-mce-fragment=""1""><br /><br />Nicole Durham&nbsp;</strong><strong data-mce-fragment=""1"">(<a title=""Nicole Durham on Instagram"" href=""https://www.instagram.com/thecaulkartist"">@thecaulkartist</a>)</strong><span data-mce-fragment=""1"">: Houston-based visual textured artist, utilizing caulk in her artworks to express emotional and physical journeys.</span></p>
+<p data-mce-fragment=""1""><strong data-mce-fragment=""1"">Raveen Alexis&nbsp;</strong><strong data-mce-fragment=""1"">(<a title=""Raveen Alexis on Instagram"" href=""https://www.instagram.com/raveenalexis"">@raveenalexis</a>)</strong><span data-mce-fragment=""1"">: Wellness writer and yoga instructor, focusing on positive self-talk and mental health through journaling and honest expression.</span></p>
+<p data-mce-fragment=""1""><strong data-mce-fragment=""1"">Shawnti Refuge</strong>&nbsp;<strong data-mce-fragment=""1"">(<a title=""Shawnti Refuge on Instagram"" href=""https://www.instagram.com/ShawntiRefugeJournals"">@ShawntiRefugeJournals</a>)</strong><span data-mce-fragment=""1"">: Certified Mental Health Coach, advocate, keynote speaker, and author, known for empowering personal growth through guided journaling.</span></p>
+<p data-mce-fragment=""1""><strong data-mce-fragment=""1"">Sherrelle&nbsp;</strong><strong data-mce-fragment=""1"">(<a title=""Burst of Beauti Aesthetics on Instagram"" href=""https://www.instagram.com/burstofbeauti.aesthetics"">@burstofbeauti.aesthetics</a>)</strong><span data-mce-fragment=""1"">: Houston esthetician and entrepreneur, specializing in pigmentation, age management, and providing holistic skincare solutions.</span></p>
+<p data-mce-fragment=""1""><strong data-mce-fragment=""1"">Sydney Hayes</strong>&nbsp;<strong data-mce-fragment=""1"">(<a title=""The Breathe Lounge on Instagram"" href=""https://www.instagram.com/thebreathelounge"">@thebreathelounge</a>)</strong><span data-mce-fragment=""1"">: Owner/CEO of The Breathe Lounge, focusing on holistic therapy for mental, physical, and spiritual wellness.</span></p>
+<p data-mce-fragment=""1""><strong data-mce-fragment=""1"">Toni Dupree</strong>&nbsp;<strong data-mce-fragment=""1"">(<a title=""Toni Dupree on Instagram"" href=""https://www.instagram.com/etiquetteandstyle"">@etiquetteandstyle</a>)</strong><span data-mce-fragment=""1"">: </span><span data-mce-fragment=""1"">Etiquette expert, author, and</span><span data-mce-fragment=""1"">&nbsp;public speaker, offering guidance on social confidence and personal development through etiquette training.</span></p>
+<p data-mce-fragment=""1""><strong data-mce-fragment=""1"">Yahzmen Jaylynn</strong>&nbsp;<strong data-mce-fragment=""1"">(<a title=""Yahzmen Jaylynn on Instagram"" href=""https://www.instagram.com/yahzmen.jaylynn"">@yahzmen.jaylynn</a>)</strong><span data-mce-fragment=""1"">: Artist and healer, known for her work with Ocean House Healing and her participation in wellness and community events.</span></p>
+<p data-mce-fragment=""1""><strong data-mce-fragment=""1""><em data-mce-fragment=""1"">More to follow&hellip;</em></strong></p>
+</div>"
