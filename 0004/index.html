@@ -1,67 +1,178 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>What Happened to the Middle of the Song?</title>
-  <meta name="date" content="2026-06-04">
-  <meta name="description" content="Streaming data shows the average listener skips after 47 seconds. The music industry built itself around that number — and something important got lost.">
-  <link rel="stylesheet" href="../style.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Echoes of Unity at the Pan-African Connection - Dallas</title>
+<meta name="date" content="2024-03-23">
+<meta name="description" content="I came for the poetry and accidentally found an entire Black-owned marketplace, incredible food, elders dropping wisdom, poets dropping truth, and enough unexpected moments to blow my mind clean out of my head. Welcome to the Pan-African Connection—one of Dallas' hidden cultural treasures.
+">
+<link rel="stylesheet" href="../style.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 </head>
 <body class="article-body">
 
-  <div class="article-header-bar">
-    <a href="../index.html">← Home</a>
-    <span class="site-name">THE FEED</span>
-    <a href="../all.html">All Articles</a>
-  </div>
+<div class="article-header-bar">
+<a href="../index.html">← Home</a>
+<span class="site-name">THE FEED</span>
+<a href="../all.html">All Articles</a>
+</div>
 
-  <div class="article-wrap">
+<div class="article-wrap">
 
-    <div class="article-kicker">Culture · June 4, 2026</div>
+<div class="article-kicker">Live Poetry · March 23, 2024</div>
 
-    <h1>What Happened to the Middle of the Song?</h1>
+<h1>Echoes of Unity at the Pan-African Connection - Dallas</h1>
 
-    <div class="article-meta">
-      <span>By Staff Reporter</span>
-      <span>5 min read</span>
-      <span>Filed under: Music & Media</span>
-    </div>
+<div class="article-meta">
+<span>By Frankie Mohammed</span>
+<span>4.5 min read</span>
+<span>Filed under: Live Poetry</span>
+</div>
 
-    <div class="article-body">
+<!-- ═══════════════════════════════════════════
+AUTO SLIDESHOW — paste this block once per article
+Change the content of article-id to match the folder number
+═══════════════════════════════════════════ -->
+<meta name="article-id" content="0004">
 
-      <p>There is a moment in "A Day in the Life" — the last track on <em>Sgt. Pepper's</em> — where everything falls apart. An orchestra plays an ascending crescendo that sounds like the end of the world, held for nearly a minute, before crashing into a final piano chord that fades for forty-five seconds. It is one of the most celebrated moments in recorded music. It happens four minutes and thirty seconds into a five-minute-and-three-second song.</p>
+<style>
+.slideshow-wrap {
+width: 100%;
+margin: 32px 0 40px;
+position: relative;
+background: #111;
+overflow: hidden;
+}
+.slideshow-wrap img {
+width: 100%;
+height: 520px;
+object-fit: cover;
+display: block;
+opacity: 0;
+position: absolute;
+top: 0; left: 0;
+transition: opacity 0.9s ease;
+}
+.slideshow-wrap img.active {
+opacity: 1;
+position: relative;
+}
+.slideshow-dots {
+position: absolute;
+bottom: 14px;
+left: 50%;
+transform: translateX(-50%);
+display: flex;
+gap: 7px;
+z-index: 10;
+}
+.slideshow-dots span {
+width: 7px; height: 7px;
+border-radius: 50%;
+background: rgba(255,255,255,0.4);
+cursor: pointer;
+transition: background 0.3s;
+}
+.slideshow-dots span.active {
+background: rgba(255,255,255,0.95);
+}
+.slideshow-count {
+position: absolute;
+top: 14px; right: 16px;
+font-family: 'IBM Plex Mono', monospace;
+font-size: 11px;
+color: rgba(255,255,255,0.6);
+letter-spacing: 0.1em;
+z-index: 10;
+}
+</style>
 
-      <p>Under current streaming economics, almost no one would ever hear it.</p>
+<script>
+(function() {
+const GITHUB_USER = 'fmohod';
+const GITHUB_REPO = 'CadenzaFeed';
+const id = document.querySelector('meta[name="article-id"]')?.content;
+if (!id) return;
 
-      <p>Spotify counts a stream — and pays for it — once a listener reaches thirty seconds. The practical incentive this creates is stark: get to your hook before that threshold, or you're not making money. Beyond the thirty-second mark, every additional second is a gamble on listener patience. Internal industry data, reported by multiple trade publications, suggests the median skip on streamed music happens around the forty-seven-second mark. The bridge of a standard pop song tends to arrive around the two-and-a-half-minute mark. That is a long way to ask someone to travel.</p>
+fetch(`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${id}/images`)
+.then(r => r.ok ? r.json() : null)
+.then(files => {
+if (!files) return;
 
-      <h2>The Architecture of Impatience</h2>
+const imgs = files
+.filter(f => /\.(jpg|jpeg|png|webp|gif)$/i.test(f.name))
+.map(f => f.download_url);
 
-      <p>Song lengths have been declining measurably since streaming became the dominant format. The average length of a song in the Billboard Hot 100 has dropped from roughly four minutes in 2000 to under three minutes in the mid-2020s. Intros have nearly vanished — the average time before the first lyric in a charting song is now under five seconds, down from more than twenty a decade ago. Albums have gotten shorter. Arrangements have gotten simpler. The pressure is not imagined. It is structural.</p>
+if (!imgs.length) return;
 
-      <blockquote>
-        "We used to make something and then figure out how to sell it. Now the selling requirements are baked into the making. That's a different thing."
-        <br>— Record producer, speaking anonymously
-      </blockquote>
+// Build slideshow HTML
+const wrap = document.createElement('div');
+wrap.className = 'slideshow-wrap';
+wrap.innerHTML = `
+<div class="slideshow-count">1 / ${imgs.length}</div>
+${imgs.map((src, i) => `<img src="${src}" class="${i === 0 ? 'active' : ''}" loading="lazy">`).join('')}
+<div class="slideshow-dots">
+${imgs.map((_, i) => `<span class="${i === 0 ? 'active' : ''}"></span>`).join('')}
+</div>
+`;
 
-      <p>What gets lost in this compression is not always obvious. It is not always the elaborate orchestration of late-Beatles records, or the extended guitar solos of classic rock. Sometimes what gets lost is quieter: the moment where a song earns its emotional conclusion by making you wait for it. The verse that recontextualizes the chorus when you hear it the second time. The breath a song takes before the last line, which makes the last line land.</p>
+// Insert after .article-meta
+const meta = document.querySelector('.article-meta');
+if (meta) meta.after(wrap);
 
-      <p>These are not decorative elements. They are, for many listeners, the entire point. Music has always been partly a technology for moving people through time in a particular way — building tension, releasing it, building it again. That architecture requires duration. Compression doesn't just shorten songs; it removes one of the primary tools songwriters use to create meaning.</p>
+// Cycle logic
+const imgEls  = wrap.querySelectorAll('img');
+const dots    = wrap.querySelectorAll('.slideshow-dots span');
+const counter = wrap.querySelector('.slideshow-count');
+let current   = 0;
 
-      <h2>The Audience That Stayed</h2>
+function goTo(n) {
+imgEls[current].classList.remove('active');
+dots[current].classList.remove('active');
+current = (n + imgs.length) % imgs.length;
+imgEls[current].classList.add('active');
+dots[current].classList.add('active');
+counter.textContent = `${current + 1} / ${imgs.length}`;
+}
 
-      <p>Here is the complicating data point: vinyl sales have been growing for eighteen consecutive years. Long-form podcast listening has exploded. The musicians who are selling out stadiums — artists whose fanbases formed over decades — are doing so with catalogs built before the attention economy fully metastasized. The audience for unhurried music exists. It may even be expanding.</p>
+// Click dots to jump
+dots.forEach((dot, i) => dot.addEventListener('click', () => goTo(i)));
 
-      <p>What the streaming era has created is not a world without patient listeners, but a world where the economics of discovery systematically filter for impatience. Songs compete for algorithmic placement by being skippable — which means being brief, which means being front-loaded, which means being designed to grab rather than to unfold.</p>
+// Auto-advance every 10 seconds
+setInterval(() => goTo(current + 1), 10000);
+})
+.catch(() => {}); // silently do nothing if no images folder
+})();
+</script>
+<!-- ═══════════════════════════════════════════ -->
 
-      <p>The forty-five-second fade at the end of "A Day in the Life" would register, in a Spotify dashboard, as listener churn. The Beatles never knew what that number was. Lucky them.</p>
+<div class="article-body">
 
-    </div>
-
-  </div>
-
-</body>
-</html>
+"<h6>updated 06Apr2024 15:45</h6>
+<p>DALLAS, TX&nbsp;<span data-mce-fragment=""1"">(CA) &mdash;</span>&nbsp;Right there in southside of Dallas&nbsp;is this hidden oasis of good food and culture. - I had to lead with the food because let me tell you when I got there I was hungry and I was surrounded by artists.&nbsp; And If I'm hungry around artists, I know they're hungry too.&nbsp; That's why I said I had to mention the food because it was ALL RIGHT THERE.</p>
+<p>You came to the right place this is the poetry event article but what I came to find out about the Pan-African Connection is it's the central hub of an all day everyday&nbsp; Black-owned marketplace, except the Family Dollar which is run by CEO Rick Dreiling, a suit who is&nbsp;(Borat voice please) Naaht Blleeeack!! 😹</p>
+<h6>I know nobody knows who Borat is anymore so just... here.&nbsp; you're welcome.<br /><iframe title=""YouTube video player"" src=""https://www.youtube.com/embed/fhIdbRp6xeg?start=24&amp;autoplay=1&amp;mute=1"" width=""100%"" height=""auto"" frameborder=""0"" allowfullscreen=""allowfullscreen"" data-ruffle-polyfilled=""""></iframe><br />Sacha Baron Cohen as Borat for context</h6>
+<p>Before you make it to the doors of the Pan-African connection you'll see multiple restaurants all around you, barbershops, all kinds of holistic wellness shopping.&nbsp; Look, if you need to get spiritual supplies and take care of all your errands and get everything you need in Dallas, you have everything you need right here.&nbsp; They even had starter plants for sale (2 for $10 rosemary)!</p>
+<p>As the unique poetry night unfolds within the walls of the Pan-African Connection, bringing to life the spirit of community and cultural celebration. Spearheaded by Aisha Shahid, this monthly event stands as a beacon of empowerment and artistic expression.</p>
+<div>""Stepping into the Pan-African Connection, the ambiance immediately enveloped me,"" recalls Frankie Mohammed, his words painting a vivid picture of a venue alive with the essence of African heritage. From the rhythm of drums to the wisdom in books, each element told a story, setting the stage for a night of poignant performances.</div>
+<div><img src=""https://cdn.shopify.com/s/files/1/0587/0072/6346/files/1000010679_480x480.jpg?v=1712362105"" alt="""" width=""401"" height=""267"" /></div>
+<div>The event's inception was driven by a desire to provide a platform for voices often unheard, allowing poets to share narratives of struggle, triumph, and existence. ""The energy was palpable, a collective heartbeat,"" Mohammed notes, capturing the essence of unity that filled the room as each poet took the stage.</div>
+<div><img src=""https://cdn.shopify.com/s/files/1/0587/0072/6346/files/1000010695_480x480.jpg?v=1712362152"" alt="""" /></div>
+<div>Aisha Shahid, the night's orchestrator, infused the gathering with warmth through her culinary creations and masterful hosting, proving the power of art to unite and inspire.</div>
+<div>Back to the food, the first poet who took the stage was this young sir by the name of Berrytone Jones.&nbsp; And of course the first thing that came out of his mouth was every piece of vegan food poetry talking about every wrong that good food will make right.&nbsp; Let me tell you what I'm pro vegan food most of the time when it's right there in front of me...&nbsp; Please enjoy the&nbsp; performance from&nbsp;Berrytone and then take a break to grab something to eat before you come back for the rest of the videos.</div>
+<h6>Berrytone Jones performs&nbsp;<em>Healthy Habits</em></h6>
+<em><video autoplay=""autoplay"" muted="""" controls=""controls"" width=""100%"" height=""150""></video></em>
+<div>This event showcased the talent and resilience of its participants and also highlighted the community's hunger for spaces that celebrate cultural identity and provide avenues for expression. As Mohammed reflects on the night's impact, he sees it as more than an event. ""It was a statement &ndash; a declaration that in the midst of challenge and change, art remains an indomitable force for unity and empowerment.""</div>
+<div>Renee Blackwell, a voice for the LGBTQ+ community, brought her battle against&nbsp;<strong>censorship</strong>&nbsp;for all to the forefront, her poetry serving as both weapon and solace.</div>
+<div>
+<div>You can only hear it for the first time once and here I was on my knees in front of the renowned Sad Renee herself - with every elder of the Pan-African connection seated directly behind me as far as I knew - and when she said<strong>&nbsp;[CENSORED]</strong>&nbsp;I died.&nbsp; I still held the camera.&nbsp; but my head exploded and my spirit had left me.&nbsp; Let me remind you - in the video above not moments earlier we had Berrytone Jones spelled like the berry from the community garden - Wishing a happy birthday to sweet Sister Akwete (yes, owner of the whole place).&nbsp; And yet, yes, she did apologize in advance to the elders, why did it only take me until after my head&nbsp; was in pieces on the ground to connect the dots!?! 😹&nbsp; It was a rollercoaster ride ok and we ALL survived 😹😹&nbsp; But for real, I'm working on how many times I can have the FSDCLA&amp;P words on CadenzaArthouse.com and not get demonetized so give me a minute on the video 😹... Thank you Sad Renee for teaching us all about censorship and ""Respectability Politics""&nbsp;</div>
+</div>
+<div>
+<div>The narrative of the Texas&nbsp;Poetry community is being made at the Pan-African Connection. In the words of Mohammed, ""a regular stable event like this going on about a year now is a good way to have that artistic-economic lifeline for the artists and poets in Texas.&nbsp; Dallas is only a 4 hour drive from Houston if traffic is perfect both ways.&nbsp; And events like this make the real world bigger for everyone.""</div>
+<div><em>Stay tuned here for more images pictures and complete&nbsp;performances.</em></div>
+</div>
+<div><em><strong>Next week</strong>,</em>&nbsp;Expect tales of elders who guide with wisdom, artists who captivate with their words, and the collective effort to celebrate and elevate every voice (We went overtime). This sneak peek promises an exploration of the moments that brought everyone closer, from the poetic to the playful exchanges that defined the evening.</div>
+<div><strong>More to follow...</strong></div>
+</div>"
