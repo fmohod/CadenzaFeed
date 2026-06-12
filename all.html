@@ -3,65 +3,116 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>All Articles — THE FEED</title>
+  <title>The Feed | Cadenza Arthouse</title>
   <link rel="stylesheet" href="style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 </head>
 <body class="all-page">
 
-  <header>
-    <div class="header-inner">
-      <div class="header-meta">
-        <a href="index.html" class="back-link">← Back to Home</a>
+  <!-- ═══════════════════════════════════════════════════════
+       MASTHEAD
+  ═══════════════════════════════════════════════════════ -->
+  <header class="masthead">
+    <div class="masthead-inner">
+
+      <div class="masthead-top-rule"></div>
+
+      <div class="masthead-flag">
+        <div class="masthead-flag-left">
+          <span class="masthead-est">Established 2017</span>
+          <span class="masthead-dot">·</span>
+          <span class="masthead-loc">Houston, Texas</span>
+        </div>
+        <div class="masthead-flag-center">
+          <a href="index.html" class="masthead-logo-link">
+            <img src="assets/logo.png" alt="Cadenza Arthouse" class="masthead-logo">
+          </a>
+          <div class="masthead-wordmark">
+            <h1 class="masthead-title"><a href="index.html">Cadenza Arthouse</a></h1>
+            <p class="masthead-tagline">Independent Media&nbsp;&nbsp;·&nbsp;&nbsp;Photography&nbsp;&nbsp;·&nbsp;&nbsp;Cultural Archive</p>
+          </div>
+        </div>
+        <div class="masthead-flag-right">
+          <span id="live-date" class="masthead-date"></span>
+        </div>
       </div>
-      <h1 class="site-title"><a href="index.html">THE FEED</a></h1>
-      <nav>
-        <a href="index.html">Latest</a>
-        <a href="all.html" class="active">All Articles</a>
+
+      <div class="masthead-rule-double">
+        <div class="rule-thick"></div>
+        <div class="rule-thin"></div>
+      </div>
+
+      <nav class="masthead-nav">
+        <a href="index.html">Home</a>
+        <a href="all.html" class="active">The Feed</a>
+        <a href="#" class="nav-dim">Galleries</a>
+        <a href="#" class="nav-dim">About</a>
       </nav>
+
+      <div class="masthead-bottom-rule"></div>
+
     </div>
-    <div class="header-rule"></div>
   </header>
 
+  <!-- ═══════════════════════════════════════════════════════
+       MAIN CONTENT
+  ═══════════════════════════════════════════════════════ -->
   <main class="all-main">
+
     <div class="all-header">
-      <div class="section-label">— Archive</div>
-      <h2 class="all-title">All Articles</h2>
-      <p class="all-subtitle" id="all-subtitle">Loading archive...</p>
+      <div class="section-label-bar">
+        <span class="section-label">The Feed</span>
+        <span class="section-label-sub">Independent Reporting &amp; Features</span>
+      </div>
+      <p class="all-subtitle" id="all-subtitle">Loading archive…</p>
     </div>
 
     <div class="search-bar">
-      <input type="text" id="search-input" placeholder="Filter articles..." autocomplete="off">
+      <input type="text" id="search-input" placeholder="Filter articles…" autocomplete="off">
     </div>
 
     <div class="article-list" id="article-list">
-      <!-- populated by JS -->
       <div class="list-skeleton"></div>
       <div class="list-skeleton"></div>
       <div class="list-skeleton"></div>
       <div class="list-skeleton"></div>
       <div class="list-skeleton"></div>
     </div>
+
   </main>
 
-  <footer>
+  <!-- ═══════════════════════════════════════════════════════
+       FOOTER
+  ═══════════════════════════════════════════════════════ -->
+  <footer class="site-footer">
+    <div class="footer-rule"></div>
     <div class="footer-inner">
-      <span class="site-title-small">THE FEED</span>
-      <span>Self-hosted. No trackers. Just words.</span>
+      <div class="footer-brand">
+        <img src="assets/logo.png" alt="Cadenza Arthouse" class="footer-logo">
+        <span class="footer-wordmark">Cadenza Arthouse</span>
+      </div>
+      <p class="footer-mission">Independent media platform documenting culture, art, and community. Est. 2017, Houston, Texas.</p>
+      <p class="footer-legal">Self-hosted. No trackers. Just words.&nbsp;&nbsp;·&nbsp;&nbsp;© 2026 Cadenza Arthouse. All Rights Reserved.</p>
     </div>
   </footer>
 
+  <!-- ═══════════════════════════════════════════════════════
+       JAVASCRIPT
+  ═══════════════════════════════════════════════════════ -->
   <script>
     // ============================================================
     const GITHUB_USER = 'fmohod';
     const GITHUB_REPO = 'CadenzaFeed';
     // ============================================================
 
-    const BASE_URL = `https://cadenzaarthouse.com`;
+    const BASE_URL = 'https://cadenzaarthouse.com';
     const API_BASE = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/`;
 
     let allArticles = [];
+
+    document.getElementById('live-date').textContent =
+      new Date().toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
 
     async function getArticleFolders() {
       const res = await fetch(API_BASE);
@@ -78,21 +129,23 @@
         const res  = await fetch(url);
         const html = await res.text();
         const doc  = new DOMParser().parseFromString(html, 'text/html');
+
         const title = doc.querySelector('title')?.textContent?.trim()
-          || doc.querySelector('h1')?.textContent?.trim()
-          || `Article ${folder}`;
-        const desc = doc.querySelector('meta[name="description"]')?.content
-          || doc.querySelector('p')?.textContent?.trim().slice(0, 120) + '…'
-          || '';
-        const date = doc.querySelector('meta[name="date"]')?.content || '';
+                   || doc.querySelector('h1')?.textContent?.trim()
+                   || `Article ${folder}`;
+        const desc  = doc.querySelector('meta[name="description"]')?.content
+                   || doc.querySelector('p')?.textContent?.trim().slice(0, 120) + '…'
+                   || '';
+        const date  = doc.querySelector('meta[name="date"]')?.content || '';
+
         return { folder, title, desc, date, url };
       } catch {
-        return { folder, title: `Article ${folder}`, desc: '', date: '', url };
+        return { folder, title: `Article ${folder}`, desc: '', date: '', url: `${BASE_URL}/${folder}/` };
       }
     }
 
     function formatDate(dateStr) {
-      if (!dateStr) return `#${allArticles.findIndex(a => a.folder === dateStr)}`;
+      if (!dateStr) return '';
       try {
         return new Date(dateStr + 'T00:00:00').toLocaleDateString('en-US',
           { year: 'numeric', month: 'short', day: 'numeric' });
@@ -106,8 +159,8 @@
         return;
       }
       list.innerHTML = articles.map((a, i) => `
-        <a href="${a.url}" class="list-item" style="animation-delay:${Math.min(i,20) * 0.04}s">
-          <div class="list-num">${String(allArticles.indexOf(a) + 1).padStart(2,'0')}</div>
+        <a href="${a.url}" class="list-item" style="animation-delay:${Math.min(i, 20) * 0.04}s">
+          <div class="list-num">${String(allArticles.indexOf(a) + 1).padStart(2, '0')}</div>
           <div class="list-body">
             <h3>${a.title}</h3>
             ${a.desc ? `<p>${a.desc}</p>` : ''}
@@ -135,14 +188,13 @@
         document.getElementById('all-subtitle').textContent =
           `${folders.length} article${folders.length !== 1 ? 's' : ''} in the archive`;
 
-        // Fetch all metas (batched to avoid hammering)
         const metas = [];
         for (let i = 0; i < folders.length; i += 5) {
-          const batch = folders.slice(i, i + 5);
+          const batch   = folders.slice(i, i + 5);
           const results = await Promise.all(batch.map(f => getArticleMeta(f.name)));
           metas.push(...results);
           allArticles = metas;
-          renderList(metas); // render progressively
+          renderList(metas);
         }
       } catch (err) {
         list.innerHTML = `<div class="error-state"><p>⚠ Could not load articles. Check your GITHUB_USER and GITHUB_REPO config.</p></div>`;
@@ -152,5 +204,6 @@
 
     init();
   </script>
+
 </body>
 </html>
