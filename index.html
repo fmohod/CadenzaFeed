@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="/assets/favicon.ico" type="image/x-icon">
+<link rel="icon" href="/assets/favicon-32x32.png" type="image/png" sizes="32x32">
+<link rel="icon" href="/assets/favicon-192x192.png" type="image/png" sizes="192x192">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" sizes="180x180">
+  <title>Cadenza Arthouse | Independent Media & Photography</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════════════════
+       MASTHEAD — newspaper flag treatment
+  ═══════════════════════════════════════════════════════ -->
+  <header class="masthead">
+    <div class="masthead-inner">
+
+      <div class="masthead-top-rule"></div>
+
+      <div class="masthead-flag">
+        <div class="masthead-flag-left">
+          <span class="masthead-est">Established 2017</span>
+          <span class="masthead-dot">·</span>
+          <span class="masthead-loc">Houston, Texas</span>
+        </div>
+        <div class="masthead-flag-center">
+          <a href="index.html" class="masthead-logo-link">
+            <img src="assets/logo.png" alt="Cadenza Arthouse" class="masthead-logo">
+          </a>
+          <div class="masthead-wordmark">
+            <h1 class="masthead-title">Cadenza Arthouse</h1>
+            <p class="masthead-tagline">Independent Media&nbsp;&nbsp;·&nbsp;&nbsp;Photography&nbsp;&nbsp;·&nbsp;&nbsp;Cultural Archive</p>
+          </div>
+        </div>
+        <div class="masthead-flag-right">
+          <span id="live-date" class="masthead-date"></span>
+          <span id="article-count" class="masthead-count"></span>
+        </div>
+      </div>
+
+      <div class="masthead-rule-double">
+        <div class="rule-thick"></div>
+        <div class="rule-thin"></div>
+      </div>
+
+      <nav class="masthead-nav">
+        <a href="index.html" class="active">Home</a>
+        <a href="all.html">Press Archive</a>
+        <a href="#" class="nav-dim">Galleries</a>
+        <a href="#" class="nav-dim">About</a>
+      </nav>
+
+      <div class="masthead-bottom-rule"></div>
+
+    </div>
+  </header>
+
+  <!-- ═══════════════════════════════════════════════════════
+       MAIN CONTENT
+  ═══════════════════════════════════════════════════════ -->
+  <main>
+
+    <section id="latest" class="top-stories">
+      <div class="section-label-bar">
+        <span class="section-label">Cadenza Arthouse Press</span>
+        <span class="section-label-sub">Independent Reporting &amp; Features</span>
+      </div>
+
+      <div class="cards-grid" id="cards-grid">
+        <!-- Skeleton loaders -->
+        <div class="card skeleton"></div>
+        <div class="card skeleton"></div>
+        <div class="card skeleton"></div>
+      </div>
+    </section>
+
+    <div class="all-articles-cta">
+      <a href="all.html" class="cta-button">
+        <span>Browse the Press Archive</span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="5" y1="12" x2="19" y2="12"/>
+          <polyline points="12,5 19,12 12,19"/>
+        </svg>
+      </a>
+    </div>
+
+  </main>
+
+  <!-- ═══════════════════════════════════════════════════════
+       FOOTER
+  ═══════════════════════════════════════════════════════ -->
+  <footer class="site-footer">
+    <div class="footer-rule"></div>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <img src="assets/logo.png" alt="Cadenza Arthouse" class="footer-logo">
+        <span class="footer-wordmark">Cadenza Arthouse</span>
+      </div>
+      <p class="footer-mission">Independent media platform documenting culture, art, and community. Est. 2017, Houston, Texas.</p>
+      <p class="footer-legal">Self-hosted. No trackers. Just words.&nbsp;&nbsp;·&nbsp;&nbsp;© 2026 Cadenza Arthouse. All Rights Reserved.</p>
+    </div>
+  </footer>
+
+  <!-- ═══════════════════════════════════════════════════════
+       JAVASCRIPT
+  ═══════════════════════════════════════════════════════ -->
+  <script>
+    // ============================================================
+    // CONFIGURATION
+    // ============================================================
+    const GITHUB_USER = 'fmohod';
+    const GITHUB_REPO = 'CadenzaFeed';
+    // ============================================================
+
+    const BASE_URL   = 'https://cadenzaarthouse.com';
+    const API_BASE   = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/`;
+    const PLACEHOLDER = `${BASE_URL}/assets/placeholder.jpg`;
+
+    // Live date in masthead
+    document.getElementById('live-date').textContent =
+      new Date().toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+
+    async function getArticleFolders() {
+      const res = await fetch(API_BASE);
+      if (!res.ok) throw new Error('GitHub API fetch failed');
+      const contents = await res.json();
+      return contents
+        .filter(f => f.type === 'dir' && /^\d{4}$/.test(f.name))
+        .sort((a, b) => b.name.localeCompare(a.name));
+    }
+
+    async function getArticleMeta(folder) {
+      const url = `${BASE_URL}/${folder}/`;
+      try {
+        const res  = await fetch(url);
+        const html = await res.text();
+        const doc  = new DOMParser().parseFromString(html, 'text/html');
+
+        const title = doc.querySelector('title')?.textContent?.trim()
+                   || doc.querySelector('h1')?.textContent?.trim()
+                   || `Article ${folder}`;
+        const desc  = doc.querySelector('meta[name="description"]')?.content
+                   || doc.querySelector('p')?.textContent?.trim().slice(0, 140) + '…'
+                   || '';
+        const date  = doc.querySelector('meta[name="date"]')?.content || '';
+
+        // Thumb: check jpg → png → fall back to assets/placeholder.jpg
+        let thumb = PLACEHOLDER;
+        try {
+          const tj = await fetch(`${BASE_URL}/${folder}/thumb.jpg`, { method: 'HEAD' });
+          if (tj.ok) { thumb = `${BASE_URL}/${folder}/thumb.jpg`; }
+        } catch {}
+        if (thumb === PLACEHOLDER) {
+          try {
+            const tp = await fetch(`${BASE_URL}/${folder}/thumb.png`, { method: 'HEAD' });
+            if (tp.ok) { thumb = `${BASE_URL}/${folder}/thumb.png`; }
+          } catch {}
+        }
+
+        return { folder, title, desc, date, thumb, url };
+      } catch {
+        return { folder, title: `Article ${folder}`, desc: '', date: '', thumb: PLACEHOLDER, url: `${BASE_URL}/${folder}/` };
+      }
+    }
+
+    function formatDate(dateStr) {
+      if (!dateStr) return '';
+      try {
+        return new Date(dateStr + 'T00:00:00').toLocaleDateString('en-US',
+          { year: 'numeric', month: 'long', day: 'numeric' });
+      } catch { return dateStr; }
+    }
+
+    const CARD_LABELS = ['Featured', 'Recent Coverage', 'From the Archive'];
+
+    function renderCard(meta, index) {
+      return `
+        <article class="card card-${index + 1}" style="animation-delay:${index * 0.12}s">
+          <a href="${meta.url}" class="card-image-link">
+            <div class="card-image">
+              <img src="${meta.thumb}" alt="${meta.title}" loading="lazy">
+              <div class="card-label">${CARD_LABELS[index] || 'Latest'}</div>
+            </div>
+          </a>
+          <div class="card-body">
+            ${meta.date ? `<time>${formatDate(meta.date)}</time>` : ''}
+            <h2><a href="${meta.url}">${meta.title}</a></h2>
+            ${meta.desc ? `<p>${meta.desc}</p>` : ''}
+            <a href="${meta.url}" class="read-link">Read Article →</a>
+          </div>
+        </article>`;
+    }
+
+    async function init() {
+      const grid = document.getElementById('cards-grid');
+      try {
+        const folders = await getArticleFolders();
+        document.getElementById('article-count').textContent =
+          `${folders.length} article${folders.length !== 1 ? 's' : ''} published`;
+
+        const top3  = folders.slice(0, 3);
+        const metas = await Promise.all(top3.map(f => getArticleMeta(f.name)));
+        grid.innerHTML = metas.map((m, i) => renderCard(m, i)).join('');
+
+        localStorage.setItem('cadenzapress_folders', JSON.stringify(folders.map(f => f.name)));
+      } catch (err) {
+        grid.innerHTML = `
+          <div class="error-state">
+            <p>⚠ Could not load articles.</p>
+            <p class="error-detail">Make sure GITHUB_USER and GITHUB_REPO are set correctly in index.html, and that GitHub Pages is enabled on your repo.</p>
+          </div>`;
+        document.getElementById('article-count').textContent = 'Config needed';
+        console.error(err);
+      }
+    }
+
+    init();
+  </script>
+
+</body>
+</html>
