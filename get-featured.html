@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Get Featured | Cadenza Arthouse</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream:   #F6F2EB;
+      --ink:     #111111;
+      --bronze:  #A07840;
+      --bronze-light: #C49A5A;
+      --rule:    #D4CCBE;
+      --muted:   #6B6457;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--cream);
+      color: var(--ink);
+      font-family: 'Libre Baskerville', Georgia, serif;
+      font-size: 16px;
+      line-height: 1.7;
+    }
+
+    /* ─── NAV STUB ─── */
+    .site-nav {
+      border-bottom: 1px solid var(--rule);
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .site-nav .wordmark {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.4rem;
+      letter-spacing: 0.08em;
+      color: var(--ink);
+      text-decoration: none;
+    }
+    .site-nav .back-link {
+      font-family: 'Libre Baskerville', serif;
+      font-size: 0.78rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .site-nav .back-link:hover { color: var(--bronze); border-color: var(--bronze); }
+
+    /* ─── HERO ─── */
+    .hero {
+      padding: 5rem 2rem 4rem;
+      max-width: 860px;
+      margin: 0 auto;
+      border-bottom: 1px solid var(--rule);
+    }
+    .hero-eyebrow {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 0.85rem;
+      letter-spacing: 0.2em;
+      color: var(--bronze);
+      margin-bottom: 1.2rem;
+    }
+    .hero h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(3rem, 8vw, 6rem);
+      line-height: 0.95;
+      letter-spacing: 0.02em;
+      color: var(--ink);
+      margin-bottom: 1.8rem;
+    }
+    .hero h1 em {
+      font-style: normal;
+      color: var(--bronze);
+    }
+    .hero-sub {
+      font-size: 1.05rem;
+      color: var(--muted);
+      max-width: 580px;
+      margin-bottom: 2.5rem;
+      line-height: 1.8;
+    }
+    .btn-primary {
+      display: inline-block;
+      background: var(--ink);
+      color: var(--cream);
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1rem;
+      letter-spacing: 0.15em;
+      padding: 0.9rem 2.2rem;
+      text-decoration: none;
+      border: 2px solid var(--ink);
+      transition: background 0.2s, color 0.2s;
+      cursor: pointer;
+    }
+    .btn-primary:hover {
+      background: var(--bronze);
+      border-color: var(--bronze);
+      color: var(--cream);
+    }
+
+    /* ─── SECTIONS ─── */
+    .section {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 4rem 2rem;
+      border-bottom: 1px solid var(--rule);
+    }
+    .section:last-of-type { border-bottom: none; }
+
+    .section-label {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 0.8rem;
+      letter-spacing: 0.22em;
+      color: var(--bronze);
+      margin-bottom: 0.6rem;
+      text-transform: uppercase;
+    }
+    .section-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      letter-spacing: 0.04em;
+      color: var(--ink);
+      margin-bottom: 2rem;
+      line-height: 1.05;
+    }
+
+    /* ─── WHO SHOULD APPLY CARDS ─── */
+    .who-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 1px;
+      background: var(--rule);
+      border: 1px solid var(--rule);
+      margin-top: 2rem;
+    }
+    .who-card {
+      background: var(--cream);
+      padding: 1.6rem 1.4rem;
+      transition: background 0.18s;
+    }
+    .who-card:hover { background: #EDE8DF; }
+    .who-card .who-icon {
+      font-size: 1.5rem;
+      margin-bottom: 0.6rem;
+      display: block;
+    }
+    .who-card h3 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.1rem;
+      letter-spacing: 0.1em;
+      color: var(--ink);
+      margin-bottom: 0.35rem;
+    }
+    .who-card p {
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    /* ─── WHAT HAPPENS checklist ─── */
+    .outcome-intro {
+      font-size: 1rem;
+      color: var(--muted);
+      margin-bottom: 2rem;
+      max-width: 560px;
+    }
+    .checklist {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 0.75rem;
+      margin-bottom: 2.5rem;
+    }
+    .checklist-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 1rem 1.1rem;
+      border: 1px solid var(--rule);
+      background: var(--cream);
+    }
+    .checklist-item .check {
+      color: var(--bronze);
+      font-size: 1rem;
+      margin-top: 0.1rem;
+      flex-shrink: 0;
+    }
+    .checklist-item span {
+      font-size: 0.9rem;
+      color: var(--ink);
+      line-height: 1.4;
+    }
+    .outcome-pull {
+      border-left: 3px solid var(--bronze);
+      padding-left: 1.4rem;
+      font-style: italic;
+      color: var(--muted);
+      font-size: 0.97rem;
+      max-width: 560px;
+    }
+
+    /* ─── FEATURE OPTIONS ─── */
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+    .option-card {
+      border: 1px solid var(--rule);
+      padding: 2rem 1.6rem;
+      position: relative;
+      transition: border-color 0.2s;
+    }
+    .option-card:hover { border-color: var(--bronze); }
+    .option-card .option-level {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 0.75rem;
+      letter-spacing: 0.2em;
+      color: var(--bronze);
+      margin-bottom: 0.5rem;
+    }
+    .option-card h3 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.4rem;
+      letter-spacing: 0.06em;
+      color: var(--ink);
+      margin-bottom: 0.4rem;
+    }
+    .option-card .ideal {
+      font-size: 0.8rem;
+      color: var(--muted);
+      font-style: italic;
+      margin-bottom: 1.2rem;
+      padding-bottom: 1.2rem;
+      border-bottom: 1px solid var(--rule);
+    }
+    .option-card ul {
+      list-style: none;
+      margin-bottom: 1.5rem;
+    }
+    .option-card ul li {
+      font-size: 0.85rem;
+      color: var(--ink);
+      padding: 0.25rem 0;
+      padding-left: 1rem;
+      position: relative;
+      line-height: 1.4;
+    }
+    .option-card ul li::before {
+      content: '—';
+      color: var(--bronze);
+      position: absolute;
+      left: 0;
+      font-size: 0.75rem;
+    }
+    .option-card .option-footer {
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-family: 'Bebas Neue', sans-serif;
+    }
+
+    /* ─── FAQ ─── */
+    .faq-list { margin-top: 1.5rem; }
+    .faq-item {
+      border-top: 1px solid var(--rule);
+      padding: 1.4rem 0;
+    }
+    .faq-item:last-child { border-bottom: 1px solid var(--rule); }
+    .faq-q {
+      font-family: 'Libre Baskerville', serif;
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--ink);
+      margin-bottom: 0.5rem;
+    }
+    .faq-a {
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    /* ─── WHY WE DO THIS ─── */
+    .mission-block {
+      background: var(--ink);
+      color: var(--cream);
+      padding: 4rem 2rem;
+    }
+    .mission-inner {
+      max-width: 860px;
+      margin: 0 auto;
+    }
+    .mission-block .section-label { color: var(--bronze-light); }
+    .mission-block .section-title { color: var(--cream); }
+    .mission-block p {
+      font-size: 1rem;
+      color: #C8C0B0;
+      max-width: 600px;
+      line-height: 1.85;
+      margin-bottom: 1.2rem;
+    }
+    .mission-block p:last-child { margin-bottom: 0; }
+    .mission-block strong { color: var(--cream); }
+
+    /* ─── FORM ─── */
+    .form-section {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 4rem 2rem 6rem;
+    }
+    .form-section .section-label { color: var(--bronze); }
+    .form-section .section-title { margin-bottom: 0.5rem; }
+    .form-section .form-intro {
+      font-size: 0.88rem;
+      color: var(--muted);
+      margin-bottom: 2.5rem;
+    }
+
+    .app-form {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.2rem;
+    }
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+    .field-group.full { grid-column: 1 / -1; }
+    .field-group label {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 0.8rem;
+      letter-spacing: 0.15em;
+      color: var(--muted);
+    }
+    .field-group input,
+    .field-group textarea,
+    .field-group select {
+      background: transparent;
+      border: 1px solid var(--rule);
+      border-radius: 0;
+      padding: 0.75rem 0.9rem;
+      font-family: 'Libre Baskerville', serif;
+      font-size: 0.88rem;
+      color: var(--ink);
+      outline: none;
+      transition: border-color 0.18s;
+      width: 100%;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+    .field-group input:focus,
+    .field-group textarea:focus,
+    .field-group select:focus {
+      border-color: var(--bronze);
+    }
+    .field-group input::placeholder,
+    .field-group textarea::placeholder {
+      color: #B0A898;
+    }
+    .field-group textarea {
+      resize: vertical;
+      min-height: 110px;
+    }
+
+    .form-submit-row {
+      grid-column: 1 / -1;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      margin-top: 0.5rem;
+    }
+    .btn-submit {
+      background: var(--ink);
+      color: var(--cream);
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1rem;
+      letter-spacing: 0.15em;
+      padding: 0.9rem 2.4rem;
+      border: 2px solid var(--ink);
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .btn-submit:hover:not(:disabled) {
+      background: var(--bronze);
+      border-color: var(--bronze);
+    }
+    .btn-submit:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .form-note {
+      font-size: 0.78rem;
+      color: var(--muted);
+      font-style: italic;
+      line-height: 1.5;
+    }
+
+    #form-success {
+      display: none;
+      margin-top: 2rem;
+      padding: 1.6rem 1.8rem;
+      border: 1px solid var(--bronze);
+      background: #F0EAE0;
+    }
+    #form-success p {
+      font-size: 0.92rem;
+      color: var(--ink);
+      line-height: 1.7;
+    }
+    #form-success strong {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.1rem;
+      letter-spacing: 0.08em;
+      display: block;
+      margin-bottom: 0.4rem;
+      color: var(--bronze);
+    }
+    #form-error {
+      display: none;
+      margin-top: 1rem;
+      font-size: 0.85rem;
+      color: #8B2020;
+    }
+
+    /* ─── FOOTER STRIP ─── */
+    .page-footer {
+      border-top: 1px solid var(--rule);
+      padding: 1.5rem 2rem;
+      text-align: center;
+      font-size: 0.75rem;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+    }
+    .page-footer a { color: var(--muted); text-decoration: none; }
+    .page-footer a:hover { color: var(--bronze); }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 600px) {
+      .hero { padding: 3rem 1.2rem 2.5rem; }
+      .section { padding: 3rem 1.2rem; }
+      .form-section { padding: 3rem 1.2rem 4rem; }
+      .app-form { grid-template-columns: 1fr; }
+      .field-group.full { grid-column: 1; }
+      .form-submit-row { flex-direction: column; align-items: flex-start; gap: 1rem; }
+      .mission-block { padding: 3rem 1.2rem; }
+      .who-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="site-nav">
+    <a href="/" class="wordmark">Cadenza Arthouse</a>
+    <a href="/" class="back-link">&#8592; Back to Home</a>
+  </nav>
+
+  <!-- HERO -->
+  <header class="hero">
+    <p class="hero-eyebrow">Cadenza Arthouse — Houston, Texas</p>
+    <h1>Get<br><em>Featured</em></h1>
+    <p class="hero-sub">
+      Cadenza Arthouse documents Houston's artists, musicians, performers, makers, entrepreneurs, and community leaders through photography, interviews, editorial features, and cultural storytelling. Whether you're launching a project, promoting an event, building your portfolio, or preserving your story — we want to hear from you.
+    </p>
+    <a href="#apply" class="btn-primary">Apply for a Feature</a>
+  </header>
+
+  <!-- WHO SHOULD APPLY -->
+  <section class="section">
+    <p class="section-label">Who Should Apply</p>
+    <h2 class="section-title">Houston's Creators,<br>Makers & Community Leaders</h2>
+    <div class="who-grid">
+      <div class="who-card">
+        <span class="who-icon">🎨</span>
+        <h3>Artists</h3>
+        <p>Painters, sculptors, illustrators, and digital creators.</p>
+      </div>
+      <div class="who-card">
+        <span class="who-icon">🎵</span>
+        <h3>Musicians</h3>
+        <p>Bands, solo artists, producers, DJs, and composers.</p>
+      </div>
+      <div class="who-card">
+        <span class="who-icon">🎭</span>
+        <h3>Models & Performers</h3>
+        <p>Models, dancers, actors, and spoken word artists.</p>
+      </div>
+      <div class="who-card">
+        <span class="who-icon">🏪</span>
+        <h3>Businesses</h3>
+        <p>Local shops, makers, vendors, brands, and restaurants.</p>
+      </div>
+      <div class="who-card">
+        <span class="who-icon">🤝</span>
+        <h3>Organizations</h3>
+        <p>Nonprofits, community groups, and cultural programs.</p>
+      </div>
+      <div class="who-card">
+        <span class="who-icon">📅</span>
+        <h3>Events</h3>
+        <p>Markets, exhibitions, performances, festivals, and launches.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHAT HAPPENS -->
+  <section class="section">
+    <p class="section-label">What to Expect</p>
+    <h2 class="section-title">What Happens When<br>You're Featured</h2>
+    <p class="outcome-intro">A feature isn't just an article. It's a permanent record — something you can share with audiences, supporters, clients, and collaborators for years to come.</p>
+    <div class="checklist">
+      <div class="checklist-item"><span class="check">✓</span><span>Professional Photography</span></div>
+      <div class="checklist-item"><span class="check">✓</span><span>Written Interview</span></div>
+      <div class="checklist-item"><span class="check">✓</span><span>Editorial Article</span></div>
+      <div class="checklist-item"><span class="check">✓</span><span>Website Publication</span></div>
+      <div class="checklist-item"><span class="check">✓</span><span>Social Media Promotion</span></div>
+      <div class="checklist-item"><span class="check">✓</span><span>Archive Preservation</span></div>
+      <div class="checklist-item"><span class="check">✓</span><span>Future Search Visibility</span></div>
+    </div>
+    <blockquote class="outcome-pull">
+      A feature creates a permanent record of your work that can be shared with audiences, supporters, clients, collaborators, and future opportunities.
+    </blockquote>
+  </section>
+
+  <!-- FEATURE OPTIONS -->
+  <section class="section">
+    <p class="section-label">Participation Levels</p>
+    <h2 class="section-title">Feature Options</h2>
+    <div class="options-grid">
+
+      <div class="option-card">
+        <p class="option-level">Level 01</p>
+        <h3>Community Spotlight</h3>
+        <p class="ideal">Ideal for emerging creatives.</p>
+        <ul>
+          <li>Short profile</li>
+          <li>Select photos</li>
+          <li>Website publication</li>
+        </ul>
+        <p class="option-footer">Application required</p>
+      </div>
+
+      <div class="option-card">
+        <p class="option-level">Level 02</p>
+        <h3>Creator Profile</h3>
+        <p class="ideal">Ideal for artists building their public presence.</p>
+        <ul>
+          <li>Photography session</li>
+          <li>Interview</li>
+          <li>Editorial feature</li>
+          <li>Social media promotion</li>
+        </ul>
+        <p class="option-footer">Application required</p>
+      </div>
+
+      <div class="option-card">
+        <p class="option-level">Level 03</p>
+        <h3>Organization Feature</h3>
+        <p class="ideal">For businesses, nonprofits, and community initiatives.</p>
+        <ul>
+          <li>Leadership interview</li>
+          <li>Event coverage</li>
+          <li>Organizational story</li>
+          <li>Photo documentation</li>
+          <li>Website publication</li>
+        </ul>
+        <p class="option-footer">Application required</p>
+      </div>
+
+      <div class="option-card">
+        <p class="option-level">Level 04</p>
+        <h3>Event Coverage</h3>
+        <p class="ideal">For performances, markets, launches, exhibitions, and public events.</p>
+        <ul>
+          <li>Photography</li>
+          <li>Interviews</li>
+          <li>Editorial recap</li>
+          <li>Promotional coverage</li>
+        </ul>
+        <p class="option-footer">Application required</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section">
+    <p class="section-label">Common Questions</p>
+    <h2 class="section-title">Frequently Asked Questions</h2>
+    <div class="faq-list">
+      <div class="faq-item">
+        <p class="faq-q">Is everyone guaranteed a feature?</p>
+        <p class="faq-a">No. Cadenza selects stories based on relevance, timing, and available production capacity. We review every application carefully.</p>
+      </div>
+      <div class="faq-item">
+        <p class="faq-q">Is there a cost?</p>
+        <p class="faq-a">Some features are editorially selected at no cost. Expanded media services, commissioned content, and specialized coverage may involve fees — we'll discuss that after reviewing your application.</p>
+      </div>
+      <div class="faq-item">
+        <p class="faq-q">Do I need to be in Houston?</p>
+        <p class="faq-a">Houston-based stories receive priority consideration. Exceptional projects from elsewhere may be considered on a case-by-case basis.</p>
+      </div>
+      <div class="faq-item">
+        <p class="faq-q">Can businesses apply?</p>
+        <p class="faq-a">Yes. Businesses, nonprofits, artists, and community organizations are all welcome to apply.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHY WE DO THIS -->
+  <div class="mission-block">
+    <div class="mission-inner">
+      <p class="section-label">Our Mission</p>
+      <h2 class="section-title">Houston's Creative Community<br>Deserves Documentation</h2>
+      <p>Too many artists, musicians, organizers, and cultural leaders do important work that is never properly documented. That work shapes neighborhoods, builds community, and defines what Houston actually is — and most of it disappears without a record.</p>
+      <p>Cadenza Arthouse exists to change that. <strong>Every feature becomes part of a lasting archive</strong> of the people shaping our communities today.</p>
+    </div>
+  </div>
+
+  <!-- APPLICATION FORM -->
+  <section class="form-section" id="apply">
+    <p class="section-label">Apply</p>
+    <h2 class="section-title">Tell Us Your Story</h2>
+    <p class="form-intro">Fill out the form below. We review every application and will follow up if your story is a good fit.</p>
+
+    <form class="app-form" id="featureForm" novalidate>
+      <input type="hidden" name="access_key" value="3093d567-bc0c-44c5-95ec-8b278ae14972" />
+      <input type="hidden" name="subject" value="New Feature Application — Cadenza Arthouse" />
+      <input type="hidden" name="from_name" value="Cadenza Arthouse Site" />
+
+      <div class="field-group">
+        <label for="name">Name *</label>
+        <input type="text" id="name" name="name" placeholder="Your full name" required />
+      </div>
+
+      <div class="field-group">
+        <label for="email">Email *</label>
+        <input type="email" id="email" name="email" placeholder="your@email.com" required />
+      </div>
+
+      <div class="field-group">
+        <label for="org">Organization</label>
+        <input type="text" id="org" name="organization" placeholder="Band name, business, project, etc." />
+      </div>
+
+      <div class="field-group">
+        <label for="social">Website or Social Media</label>
+        <input type="text" id="social" name="website_social" placeholder="Instagram, website, SoundCloud, etc." />
+      </div>
+
+      <div class="field-group full">
+        <label for="what">What do you create? *</label>
+        <input type="text" id="what" name="what_you_create" placeholder="Describe your work or practice in a sentence or two" required />
+      </div>
+
+      <div class="field-group full">
+        <label for="why">Why should we feature you? *</label>
+        <textarea id="why" name="why_feature" placeholder="Tell us what makes your story worth documenting." required></textarea>
+      </div>
+
+      <div class="field-group full">
+        <label for="current">What are you currently working on?</label>
+        <textarea id="current" name="current_work" placeholder="Any upcoming projects, events, releases, or milestones."></textarea>
+      </div>
+
+      <div class="form-submit-row">
+        <button type="submit" class="btn-submit" id="submitBtn">Submit Application</button>
+        <p class="form-note">Applications are reviewed on a rolling basis.<br>Not all applications result in a feature.</p>
+      </div>
+    </form>
+
+    <div id="form-success">
+      <p><strong>Application Received</strong>We'll review your submission and reach out if your story is a good fit for Cadenza Arthouse. Thank you for being part of Houston's creative community.</p>
+    </div>
+    <p id="form-error">Something went wrong. Please try again or email us directly at <a href="mailto:operations@cadenzaarthouse.com">operations@cadenzaarthouse.com</a>.</p>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="page-footer">
+    &copy; 2025 Cadenza Arthouse &nbsp;|&nbsp; Houston, Texas &nbsp;|&nbsp;
+    <a href="mailto:operations@cadenzaarthouse.com">operations@cadenzaarthouse.com</a>
+  </footer>
+
+  <script>
+    const form = document.getElementById('featureForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const successBox = document.getElementById('form-success');
+    const errorMsg = document.getElementById('form-error');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errorMsg.style.display = 'none';
+
+      const formData = new FormData(form);
+      const originalText = submitBtn.textContent;
+      submitBtn.textContent = 'Sending...';
+      submitBtn.disabled = true;
+
+      try {
+        const response = await fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          body: formData
+        });
+        const data = await response.json();
+
+        if (response.ok) {
+          form.style.display = 'none';
+          successBox.style.display = 'block';
+          successBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } else {
+          throw new Error(data.message || 'Submission failed.');
+        }
+      } catch (err) {
+        errorMsg.style.display = 'block';
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+      }
+    });
+  </script>
+
+</body>
+</html>

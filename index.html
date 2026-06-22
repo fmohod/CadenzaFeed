@@ -50,7 +50,7 @@
 
       <nav class="masthead-nav">
         <a href="index.html" class="active">Home</a>
-        <a href="all.html">The Feed</a>
+        <a href="all.html">Press Archive</a>
         <a href="#" class="nav-dim">Galleries</a>
         <a href="#" class="nav-dim">About</a>
       </nav>
@@ -67,7 +67,7 @@
 
     <section id="latest" class="top-stories">
       <div class="section-label-bar">
-        <span class="section-label">The Feed</span>
+        <span class="section-label">Cadenza Arthouse Press</span>
         <span class="section-label-sub">Independent Reporting &amp; Features</span>
       </div>
 
@@ -81,7 +81,7 @@
 
     <div class="all-articles-cta">
       <a href="all.html" class="cta-button">
-        <span>Browse All Articles</span>
+        <span>Browse the Press Archive</span>
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <line x1="5" y1="12" x2="19" y2="12"/>
           <polyline points="12,5 19,12 12,19"/>
@@ -207,7 +207,7 @@
         const metas = await Promise.all(top3.map(f => getArticleMeta(f.name)));
         grid.innerHTML = metas.map((m, i) => renderCard(m, i)).join('');
 
-        localStorage.setItem('thefeed_folders', JSON.stringify(folders.map(f => f.name)));
+        localStorage.setItem('cadenzapress_folders', JSON.stringify(folders.map(f => f.name)));
       } catch (err) {
         grid.innerHTML = `
           <div class="error-state">

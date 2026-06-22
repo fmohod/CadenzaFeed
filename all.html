@@ -7,7 +7,7 @@
 <link rel="icon" href="/assets/favicon-32x32.png" type="image/png" sizes="32x32">
 <link rel="icon" href="/assets/favicon-192x192.png" type="image/png" sizes="192x192">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" sizes="180x180">
-  <title>The Feed | Cadenza Arthouse</title>
+  <title>Press Archive | Cadenza Arthouse</title>
   <link rel="stylesheet" href="style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -49,7 +49,7 @@
 
       <nav class="masthead-nav">
         <a href="index.html">Home</a>
-        <a href="all.html" class="active">The Feed</a>
+        <a href="all.html" class="active">Press Archive</a>
         <a href="#" class="nav-dim">Galleries</a>
         <a href="#" class="nav-dim">About</a>
       </nav>
@@ -66,14 +66,14 @@
 
     <div class="all-header">
       <div class="section-label-bar">
-        <span class="section-label">The Feed</span>
+        <span class="section-label">Cadenza Arthouse Press</span>
         <span class="section-label-sub">Independent Reporting &amp; Features</span>
       </div>
       <p class="all-subtitle" id="all-subtitle">Loading archive…</p>
     </div>
 
     <div class="search-bar">
-      <input type="text" id="search-input" placeholder="Filter articles…" autocomplete="off">
+      <input type="text" id="search-input" placeholder="Search the press archive…" autocomplete="off">
     </div>
 
     <div class="article-list" id="article-list">
@@ -190,7 +190,7 @@
       try {
         const folders = await getArticleFolders();
         document.getElementById('all-subtitle').textContent =
-          `${folders.length} article${folders.length !== 1 ? 's' : ''} in the archive`;
+          `${folders.length} article${folders.length !== 1 ? 's' : ''} in the press archive`;
 
         const metas = [];
         for (let i = 0; i < folders.length; i += 5) {
