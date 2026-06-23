@@ -3,18 +3,78 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="index, follow">
+
 <title>For the Love of Art</title>
+
 <meta name="date" content="2019-02-09">
 <meta name="description" content="Independent Houston artists gather for presentations and media moments in Sugarland, TX">
+<meta name="article-id" content="0001">
+
+<link rel="canonical" href="https://cadenzaarthouse.com/0001/">
+
+<!-- ── Open Graph ── -->
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Cadenza Arthouse Press">
+<meta property="og:title" content="For the Love of Art">
+<meta property="og:description" content="Independent Houston artists gather for presentations and media moments in Sugarland, TX">
+<meta property="og:url" content="https://cadenzaarthouse.com/0001/">
+<meta property="og:image" content="https://cadenzaarthouse.com/0001/thumb.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="article:published_time" content="2019-02-09T12:00:00-06:00">
+<meta property="article:author" content="Frankie Mohammed">
+<meta property="article:section" content="Community">
+
+<!-- ── Twitter / X card ── -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="For the Love of Art">
+<meta name="twitter:description" content="Independent Houston artists gather for presentations and media moments in Sugarland, TX">
+<meta name="twitter:image" content="https://cadenzaarthouse.com/0001/thumb.jpg">
+
+<!-- ── Structured data ── -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "NewsArticle",
+  "headline": "For the Love of Art",
+  "description": "Independent Houston artists gather for presentations and media moments in Sugarland, TX",
+  "image": ["https://cadenzaarthouse.com/0001/thumb.jpg"],
+  "datePublished": "2019-02-09T12:00:00-06:00",
+  "dateModified": "2019-02-09T12:00:00-06:00",
+  "author": {
+    "@type": "Person",
+    "name": "Frankie Mohammed"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Cadenza Arthouse Press",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://cadenzaarthouse.com/assets/logo.png"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://cadenzaarthouse.com/0001/"
+  }
+}
+</script>
+
+<link rel="icon" href="/assets/favicon.ico" type="image/x-icon">
+<link rel="icon" href="/assets/favicon-32x32.png" type="image/png" sizes="32x32">
+<link rel="icon" href="/assets/favicon-192x192.png" type="image/png" sizes="192x192">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" sizes="180x180">
 <link rel="stylesheet" href="../style.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 </head>
+
 <body class="article-body">
 
 <div class="article-header-bar">
 <a href="../index.html">← Home</a>
-<span class="site-name">THE FEED</span>
+<span class="site-name">CADENZA ARTHOUSE PRESS</span>
 <a href="../all.html">All Articles</a>
 </div>
 
@@ -30,64 +90,7 @@
 <span>Filed under: Community</span>
 </div>
 
-<!-- ═══════════════════════════════════════════
-AUTO SLIDESHOW — paste this block once per article
-Change the content of article-id to match the folder number
-═══════════════════════════════════════════ -->
-<meta name="article-id" content="0001">
-
-<style>
-.slideshow-wrap {
-width: 100%;
-margin: 32px 0 40px;
-position: relative;
-background: #111;
-overflow: hidden;
-}
-.slideshow-wrap img {
-width: 100%;
-height: 520px;
-object-fit: cover;
-display: block;
-opacity: 0;
-position: absolute;
-top: 0; left: 0;
-transition: opacity 0.9s ease;
-}
-.slideshow-wrap img.active {
-opacity: 1;
-position: relative;
-}
-.slideshow-dots {
-position: absolute;
-bottom: 14px;
-left: 50%;
-transform: translateX(-50%);
-display: flex;
-gap: 7px;
-z-index: 10;
-}
-.slideshow-dots span {
-width: 7px; height: 7px;
-border-radius: 50%;
-background: rgba(255,255,255,0.4);
-cursor: pointer;
-transition: background 0.3s;
-}
-.slideshow-dots span.active {
-background: rgba(255,255,255,0.95);
-}
-.slideshow-count {
-position: absolute;
-top: 14px; right: 16px;
-font-family: 'IBM Plex Mono', monospace;
-font-size: 11px;
-color: rgba(255,255,255,0.6);
-letter-spacing: 0.1em;
-z-index: 10;
-}
-</style>
-
+<!-- Auto slideshow — drop photos into /0001/images/ and they'll appear here automatically. -->
 <script>
 (function() {
 const GITHUB_USER = 'fmohod';
@@ -98,55 +101,119 @@ if (!id) return;
 fetch(`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${id}/images`)
 .then(r => r.ok ? r.json() : null)
 .then(files => {
-if (!files) return;
+  if (!files) return;
 
-const imgs = files
-.filter(f => /\.(jpg|jpeg|png|webp|gif)$/i.test(f.name))
-.map(f => f.download_url);
+  const imgs = files
+    .filter(f => /\.(jpg|jpeg|png|webp|gif)$/i.test(f.name))
+    .map(f => f.download_url);
 
-if (!imgs.length) return;
+  if (!imgs.length) return;
 
-// Build slideshow HTML
-const wrap = document.createElement('div');
-wrap.className = 'slideshow-wrap';
-wrap.innerHTML = `
-<div class="slideshow-count">1 / ${imgs.length}</div>
-${imgs.map((src, i) => `<img src="${src}" class="${i === 0 ? 'active' : ''}" loading="lazy">`).join('')}
-<div class="slideshow-dots">
-${imgs.map((_, i) => `<span class="${i === 0 ? 'active' : ''}"></span>`).join('')}
-</div>
-`;
+  const headline = document.querySelector('h1')?.textContent?.trim() || 'Photo';
 
-// Insert after .article-meta
-const meta = document.querySelector('.article-meta');
-if (meta) meta.after(wrap);
+  const wrap = document.createElement('div');
+  wrap.className = 'slideshow-wrap';
+  wrap.innerHTML = `
+    <div class="slideshow-count">1 / ${imgs.length}</div>
+    <button class="slideshow-arrow prev" aria-label="Previous">&#8249;</button>
+    <button class="slideshow-arrow next" aria-label="Next">&#8250;</button>
+    ${imgs.map((src, i) => `<img src="${src}" class="${i === 0 ? 'active' : ''}" alt="${headline} — photo ${i + 1} of ${imgs.length}" loading="lazy">`).join('')}
+    <div class="slideshow-dots">
+      ${imgs.map((_, i) => `<span class="${i === 0 ? 'active' : ''}"></span>`).join('')}
+    </div>
+  `;
 
-// Cycle logic
-const imgEls  = wrap.querySelectorAll('img');
-const dots    = wrap.querySelectorAll('.slideshow-dots span');
-const counter = wrap.querySelector('.slideshow-count');
-let current   = 0;
+  const meta = document.querySelector('.article-meta');
+  if (meta) meta.after(wrap);
 
-function goTo(n) {
-imgEls[current].classList.remove('active');
-dots[current].classList.remove('active');
-current = (n + imgs.length) % imgs.length;
-imgEls[current].classList.add('active');
-dots[current].classList.add('active');
-counter.textContent = `${current + 1} / ${imgs.length}`;
-}
+  const imgEls  = wrap.querySelectorAll('img');
+  const dots    = wrap.querySelectorAll('.slideshow-dots span');
+  const counter = wrap.querySelector('.slideshow-count');
+  let current   = 0;
+  let autoTimer;
 
-// Click dots to jump
-dots.forEach((dot, i) => dot.addEventListener('click', () => goTo(i)));
+  function fitHeight(imgEl) {
+    if (imgEl.naturalWidth && imgEl.naturalHeight) {
+      const ratio = imgEl.naturalHeight / imgEl.naturalWidth;
+      const maxH  = window.innerHeight * 0.80;
+      const h     = Math.min(wrap.offsetWidth * ratio, maxH);
+      wrap.style.height = h + 'px';
+    }
+  }
 
-// Auto-advance every 10 seconds
-setInterval(() => goTo(current + 1), 10000);
+  imgEls.forEach(img => {
+    if (img.complete) { fitHeight(img); }
+    else { img.addEventListener('load', () => fitHeight(img), { once: true }); }
+  });
+  window.addEventListener('resize', () => fitHeight(imgEls[current]));
+
+  function goTo(n) {
+    imgEls[current].classList.remove('active');
+    dots[current].classList.remove('active');
+    current = (n + imgs.length) % imgs.length;
+    imgEls[current].classList.add('active');
+    dots[current].classList.add('active');
+    counter.textContent = `${current + 1} / ${imgs.length}`;
+    fitHeight(imgEls[current]);
+  }
+
+  function resetTimer() {
+    clearInterval(autoTimer);
+    autoTimer = setInterval(() => goTo(current + 1), 10000);
+  }
+
+  dots.forEach((dot, i) => dot.addEventListener('click', () => { goTo(i); resetTimer(); }));
+  wrap.querySelector('.prev').addEventListener('click', () => { goTo(current - 1); resetTimer(); });
+  wrap.querySelector('.next').addEventListener('click', () => { goTo(current + 1); resetTimer(); });
+
+  let touchStartX = null;
+  let touchStartY = null;
+
+  wrap.addEventListener('touchstart', e => {
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+  }, { passive: true });
+
+  wrap.addEventListener('touchend', e => {
+    if (touchStartX === null) return;
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    const dy = e.changedTouches[0].clientY - touchStartY;
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
+      goTo(dx < 0 ? current + 1 : current - 1);
+      resetTimer();
+    }
+    touchStartX = null;
+    touchStartY = null;
+  }, { passive: true });
+
+  resetTimer();
 })
-.catch(() => {}); // silently do nothing if no images folder
+.catch(() => {});
 })();
 </script>
-<!-- ═══════════════════════════════════════════ -->
 
 <div class="article-body">
 
-<p>SUGARLAND, Texas (CA) &mdash; Attending the "For the Love of Art" event felt like stepping into a living tapestry of creativity and warmth, a vibrant celebration hosted by the dynamic&nbsp;<a title="Sad Renee" href="https://www.instagram.com/authorreneeblackwell/">Renee Blackwell</a>. The air was charged with anticipation as artists and spectators alike gathered, eager to dive into an evening that promised to be a feast for the senses and the soul.<br /><br />As I meandered through the crowd, the eclectic mix of attendees was immediately striking&mdash;families, young professionals, and art aficionados, all drawn together by a shared love of art and community. The venue buzzed with energy, every corner alive with the spirit of creation. At the Cadenza Arthouse table, Allysen, with her infectious enthusiasm and radiant smile, was a beacon of light, engaging with children and adults alike, handing out stickers that quickly became treasured keepsakes.<br /><br />The culinary delights prepared by a local family added a layer of homeliness to the event, their delicious offerings ensuring that the evening was as much a treat for the palate as it was for the eyes and ears. It was a beautiful reminder of the power of food to bring people together, to create a sense of belonging and togetherness in the midst of art and expression.<br /><br />Highlight of the evening, however, was the soul-stirring poetry that filled the air, weaving a magic all its own.&nbsp;<a title="Duchess Pendragon" href="https://www.instagram.com/duchess.pendragon/">Duchess Pendragon</a>, with her commanding presence and evocative words, captivated the audience, her poetry resonating deep within, stirring hearts and minds. Equally memorable was Sad Renee herself, taking the stage to recite a poem that left an indelible mark on all who listened. In that moment, she was not just the organizer behind this magnificent gathering; she was a visionary, a poet, a soul speaking truth and beauty into existence.<br /><br />The Cadenza Arthouse chief was there, ever the dedicated artist, two cameras in hand, capturing every nuance, every smile, and every moment of raw emotion. His dedication to immortalizing the event was evident in the careful attention he paid to each subject, ensuring that the essence of the evening would live on long after the night had ended.<br /><br />Reflecting on the event now, it's clear that "For the Love of Art" was more than just an exhibition or a gathering. It was a profound expression of community, of the power of art to unite, to heal, and to inspire. It was a&nbsp;day that celebrated the individual talents of each artist&nbsp;and the collective spirit that animates and enriches our lives. As a spectator, I left feeling uplifted, reminded of the beauty that emerges when people come together in the name of art and heart.<br /><strong> <em>more to follow...</em></strong></p>
+<p>SUGARLAND, Texas (CA) &mdash; Attending the "For the Love of Art" event felt like stepping into a living tapestry of creativity and warmth, a vibrant celebration hosted by the dynamic&nbsp;<a title="Sad Renee" href="https://www.instagram.com/authorreneeblackwell/">Renee Blackwell</a>. The air was charged with anticipation as artists and spectators alike gathered, eager to dive into an evening that promised to be a feast for the senses and the soul.</p>
+
+<p>As I meandered through the crowd, the eclectic mix of attendees was immediately striking&mdash;families, young professionals, and art aficionados, all drawn together by a shared love of art and community. The venue buzzed with energy, every corner alive with the spirit of creation. At the Cadenza Arthouse table, Allysen, with her infectious enthusiasm and radiant smile, was a beacon of light, engaging with children and adults alike, handing out stickers that quickly became treasured keepsakes.</p>
+
+<p>The culinary delights prepared by a local family added a layer of homeliness to the event, their delicious offerings ensuring that the evening was as much a treat for the palate as it was for the eyes and ears. It was a beautiful reminder of the power of food to bring people together, to create a sense of belonging and togetherness in the midst of art and expression.</p>
+
+<p>Highlight of the evening, however, was the soul-stirring poetry that filled the air, weaving a magic all its own.&nbsp;<a title="Duchess Pendragon" href="https://www.instagram.com/duchess.pendragon/">Duchess Pendragon</a>, with her commanding presence and evocative words, captivated the audience, her poetry resonating deep within, stirring hearts and minds. Equally memorable was Sad Renee herself, taking the stage to recite a poem that left an indelible mark on all who listened. In that moment, she was not just the organizer behind this magnificent gathering; she was a visionary, a poet, a soul speaking truth and beauty into existence.</p>
+
+<p>The Cadenza Arthouse chief was there, ever the dedicated artist, two cameras in hand, capturing every nuance, every smile, and every moment of raw emotion. His dedication to immortalizing the event was evident in the careful attention he paid to each subject, ensuring that the essence of the evening would live on long after the night had ended.</p>
+
+<p>Reflecting on the event now, it's clear that "For the Love of Art" was more than just an exhibition or a gathering. It was a profound expression of community, of the power of art to unite, to heal, and to inspire. It was a&nbsp;day that celebrated the individual talents of each artist&nbsp;and the collective spirit that animates and enriches our lives. As a spectator, I left feeling uplifted, reminded of the beauty that emerges when people come together in the name of art and heart.<br><strong><em>more to follow...</em></strong></p>
+
+</div>
+
+<div class="article-footer-nav">
+<a href="../all.html">← All Articles</a>
+<a href="../get-featured.html">Get Featured →</a>
+</div>
+
+</div>
+
+</body>
+</html>

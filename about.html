@@ -3,20 +3,236 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Cadenza Arthouse is an independent media and editorial platform based in Houston, documenting art, music, wellness, and community life through photography, interviews, and published features.">
+  <meta name="description" content="Cadenza Arthouse is an independent Houston publication documenting artists, entrepreneurs, cultural projects, and community life through reporting, photography, interviews, and editorial storytelling.">
   <link rel="icon" href="/assets/favicon.ico" type="image/x-icon">
   <link rel="icon" href="/assets/favicon-32x32.png" type="image/png" sizes="32x32">
   <link rel="icon" href="/assets/favicon-192x192.png" type="image/png" sizes="192x192">
   <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" sizes="180x180">
-  <title>About Cadenza Arthouse | Independent Media & Photography</title>
+  <title>About Cadenza Arthouse | Independent Media & Cultural Archive</title>
   <link rel="stylesheet" href="style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <style>
+    /* ── About page scoped styles ───────────────────────────
+       Editorial rebuild. Reuses site fonts/palette from root
+       style.css but defines its own structure since this page
+       is one-off, not a repeatable article template. */
+
+    .about-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 64px 24px 100px;
+    }
+
+    .about-kicker {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: #A07840;
+      text-align: center;
+      margin: 0 0 14px;
+    }
+
+    .about-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(2.4rem, 6vw, 3.6rem);
+      letter-spacing: 0.02em;
+      text-align: center;
+      color: #111111;
+      margin: 0 0 40px;
+    }
+
+    /* Opening mission statement — larger, more generous than body copy */
+    .mission-open {
+      font-family: 'Libre Baskerville', serif;
+      font-size: 1.28rem;
+      line-height: 1.75;
+      color: #111111;
+      margin: 0 0 26px;
+    }
+
+    .mission-open:first-of-type {
+      font-size: 1.42rem;
+      font-weight: 700;
+    }
+
+    .about-section p {
+      font-family: 'Libre Baskerville', serif;
+      font-size: 1.08rem;
+      line-height: 1.75;
+      color: #222222;
+      margin: 0 0 22px;
+    }
+
+    .section-divider {
+      border: none;
+      border-top: 1px solid rgba(17,17,17,0.14);
+      margin: 64px 0 48px;
+    }
+
+    .about-h2 {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.78rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #A07840;
+      margin: 0 0 28px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid rgba(160,120,64,0.3);
+    }
+
+    /* Featured pull quote, between Mission and What We Publish */
+    .pull-quote {
+      font-family: 'Libre Baskerville', serif;
+      font-style: italic;
+      font-size: clamp(1.5rem, 3.4vw, 2rem);
+      line-height: 1.5;
+      text-align: center;
+      color: #111111;
+      max-width: 600px;
+      margin: 48px auto 64px;
+      position: relative;
+    }
+    .pull-quote::before,
+    .pull-quote::after {
+      content: "";
+      display: block;
+      width: 40px;
+      height: 2px;
+      background: #A07840;
+      margin: 0 auto 18px;
+    }
+    .pull-quote::after { margin: 18px auto 0; }
+
+    .publish-list {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 26px;
+      font-family: 'Libre Baskerville', serif;
+      font-size: 1.08rem;
+      color: #222222;
+      columns: 2;
+      column-gap: 32px;
+    }
+    .publish-list li {
+      padding: 7px 0 7px 18px;
+      position: relative;
+      border-bottom: 1px solid rgba(17,17,17,0.08);
+    }
+    .publish-list li::before {
+      content: "—";
+      position: absolute;
+      left: 0;
+      color: #A07840;
+    }
+
+    /* Editorial Values — 2-column grid of 5 */
+    .values-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 36px 40px;
+    }
+    .value-item h3 {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #111111;
+      margin: 0 0 10px;
+    }
+    .value-item h3::before {
+      content: "";
+      display: inline-block;
+      width: 16px;
+      height: 1px;
+      background: #A07840;
+      margin-right: 10px;
+      vertical-align: middle;
+    }
+    .value-item p {
+      font-family: 'Libre Baskerville', serif;
+      font-size: 1rem;
+      line-height: 1.65;
+      color: #333333;
+      margin: 0;
+    }
+
+    /* Editorial Direction — founder section */
+    .founder-row {
+      display: grid;
+      grid-template-columns: 140px 1fr;
+      gap: 28px;
+      align-items: start;
+      margin-bottom: 8px;
+    }
+    .founder-portrait {
+      width: 140px;
+      height: 170px;
+      object-fit: cover;
+      filter: grayscale(1) contrast(1.05);
+      border: 1px solid rgba(17,17,17,0.12);
+    }
+    .founder-caption {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.08em;
+      color: #555555;
+      margin-top: 10px;
+      line-height: 1.5;
+    }
+    .founder-caption strong {
+      display: block;
+      color: #111111;
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      margin-bottom: 2px;
+    }
+    .founder-text p {
+      font-family: 'Libre Baskerville', serif;
+      font-size: 1.08rem;
+      line-height: 1.75;
+      color: #222222;
+      margin: 0 0 22px;
+    }
+
+    /* Archive emphasis line */
+    .archive-emphasis {
+      font-family: 'Libre Baskerville', serif;
+      font-style: italic;
+      font-size: 1.15rem;
+      color: #111111;
+      text-align: center;
+      margin: 34px 0;
+    }
+
+    /* Closing statement — distinguished, not a boxed blockquote */
+    .closing-statement {
+      font-family: 'Libre Baskerville', serif;
+      font-size: 1.2rem;
+      line-height: 1.7;
+      text-align: center;
+      color: #111111;
+      max-width: 580px;
+      margin: 0 auto 36px;
+    }
+
+    .about-cta { text-align: center; margin-top: 8px; }
+
+    @media (max-width: 600px) {
+      .about-wrap { padding: 44px 20px 70px; }
+      .publish-list { columns: 1; }
+      .values-grid { grid-template-columns: 1fr; }
+      .founder-row { grid-template-columns: 100px 1fr; }
+      .founder-portrait { width: 100px; height: 124px; }
+    }
+  </style>
 </head>
 <body>
 
   <!-- ═══════════════════════════════════════════════════════
-       MASTHEAD — newspaper flag treatment
+       MASTHEAD
   ═══════════════════════════════════════════════════════ -->
   <header class="masthead">
     <div class="masthead-inner">
@@ -61,48 +277,119 @@
   </header>
 
   <!-- ═══════════════════════════════════════════════════════
-       MAIN CONTENT
+       ABOUT CONTENT
   ═══════════════════════════════════════════════════════ -->
   <main>
-    <article class="article-wrap">
+    <div class="about-wrap">
 
-      <p class="article-kicker">About the Publication</p>
-      <h1>About Cadenza Arthouse</h1>
+      <p class="about-kicker">About the Publication</p>
+      <h2 class="about-title">About Cadenza Arthouse</h2>
 
-      <div class="article-body">
+      <!-- Section 1: Mission -->
+      <section class="about-section">
+        <p class="mission-open">Cadenza Arthouse is an independent Houston publication dedicated to documenting the people, projects, and cultural work that often go unrecorded.</p>
+        <p class="mission-open">While much of a city's creative life disappears into social media feeds, temporary event listings, and fragmented online platforms, we believe the artists, organizers, musicians, educators, entrepreneurs, and community builders shaping a culture deserve a lasting record.</p>
+        <p class="mission-open">Through reporting, interviews, photography, and editorial features, Cadenza Arthouse documents the people and ideas helping define contemporary Houston and the communities connected to it.</p>
+        <p class="mission-open">We publish stories not because they are trending, but because they matter.</p>
+      </section>
 
-        <p>Cadenza Arthouse is an independent media and editorial platform based in Houston, documenting the people, projects, and cultural work shaping art, music, wellness, and community life across the city.</p>
+      <!-- Featured pull quote -->
+      <p class="pull-quote">"We publish stories not because they are trending, but because they matter."</p>
 
-        <h2>What We Publish</h2>
-        <p>We produce feature stories, interviews, and photography that document the people and spaces shaping local culture — work built through on-the-ground reporting, not press releases.</p>
+      <hr class="section-divider">
 
-        <h2>Why Cadenza Exists</h2>
-        <p>Most of the work that shapes a city's culture goes undocumented. Artists, organizers, musicians, and small businesses build the things that define a community, and that work disappears without a record. Cadenza Arthouse exists to document it properly, and to keep it.</p>
+      <!-- Section 2: What We Publish -->
+      <section class="about-section">
+        <h2 class="about-h2">What We Publish</h2>
+        <p>Cadenza Arthouse publishes:</p>
+        <ul class="publish-list">
+          <li>Feature stories</li>
+          <li>Interviews</li>
+          <li>Photo essays</li>
+          <li>Event coverage</li>
+          <li>Community reporting</li>
+          <li>Cultural commentary</li>
+          <li>Artist and entrepreneur profiles</li>
+        </ul>
+        <p>Our focus is on documentation, storytelling, and preservation rather than short-term engagement metrics.</p>
+        <p>Every story becomes part of a growing archive intended to remain valuable long after an event has ended.</p>
+      </section>
 
-        <h2>Archive, Not Just Publication</h2>
-        <p>Every feature we publish becomes part of a permanent, growing archive — not a feed that disappears under the next post. We work with artists, organizers, performers, small businesses, and cultural projects to develop features that hold up as a lasting record.</p>
+      <hr class="section-divider">
 
-        <h2>Who This Is For</h2>
-        <p>Cadenza Arthouse is for the people and organizations doing work worth documenting, and for the readers, collaborators, and partners trying to understand what's actually happening in Houston's creative community.</p>
+      <!-- Section 3: Editorial Values -->
+      <section class="about-section">
+        <h2 class="about-h2">Editorial Values</h2>
+        <div class="values-grid">
+          <div class="value-item">
+            <h3>Documentation</h3>
+            <p>We prioritize preserving cultural activity that might otherwise disappear without a record.</p>
+          </div>
+          <div class="value-item">
+            <h3>Independence</h3>
+            <p>Coverage is selected based on editorial interest, community significance, and journalistic value — not popularity, status, or trends.</p>
+          </div>
+          <div class="value-item">
+            <h3>Curiosity</h3>
+            <p>Meaningful stories are often found in unexpected places. We believe curiosity is essential to good reporting.</p>
+          </div>
+          <div class="value-item">
+            <h3>Community</h3>
+            <p>We focus on the individuals, organizations, and projects actively shaping local culture and civic life.</p>
+          </div>
+          <div class="value-item">
+            <h3>Permanence</h3>
+            <p>Our goal is to create an archive that remains useful years after publication.</p>
+          </div>
+        </div>
+      </section>
 
-        <h2>What Makes Us Different</h2>
-        <p>We aren't advertising or promotion, and we aren't a personal blog. Cadenza Arthouse operates as a publication first: editorial selection, structured features, and an archive built to last — not content built to disappear in a feed.</p>
+      <hr class="section-divider">
 
-        <blockquote>If you are building something meaningful and want it documented, featured, or archived, you can apply through Get&nbsp;Featured.</blockquote>
+      <!-- Section 4: Editorial Direction -->
+      <section class="about-section">
+        <h2 class="about-h2">Editorial Direction</h2>
+        <div class="founder-row">
+          <div>
+            <img src="assets/founder.jpg" alt="Frankie Mohammed, Founder &amp; Publisher of Cadenza Arthouse" class="founder-portrait">
+            <p class="founder-caption"><strong>Frankie Mohammed</strong>Founder &amp; Publisher<br>Cadenza Arthouse</p>
+          </div>
+          <div class="founder-text">
+            <p>Cadenza Arthouse was founded by Houston photographer and publisher Frankie Mohammed in 2017.</p>
+            <p>Drawing from a background in photography, journalism, community engagement, and cultural documentation, Frankie established Cadenza Arthouse as a platform dedicated to preserving stories that might otherwise be overlooked.</p>
+            <p>Today, the publication continues to combine reporting, interviews, photography, and long-form storytelling to create a growing archive of Houston's creative and community landscape.</p>
+          </div>
+        </div>
+      </section>
 
-      </div>
+      <hr class="section-divider">
 
-      <div class="all-articles-cta" style="margin-top: 48px;">
-        <a href="get-featured.html" class="cta-button">
-          <span>Apply to Get Featured</span>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="5" y1="12" x2="19" y2="12"/>
-            <polyline points="12,5 19,12 12,19"/>
-          </svg>
-        </a>
-      </div>
+      <!-- Section 5: The Archive -->
+      <section class="about-section">
+        <h2 class="about-h2">Archive, Not Feed</h2>
+        <p>Most online content is designed to disappear.</p>
+        <p>Cadenza Arthouse operates differently.</p>
+        <p>We believe stories, photographs, interviews, and cultural records should remain accessible long after they are published. Every feature contributes to a permanent archive documenting the people and projects shaping the communities we serve.</p>
+        <p class="archive-emphasis">Our goal is not simply to report what happened.<br>Our goal is to preserve why it mattered.</p>
+      </section>
 
-    </article>
+      <hr class="section-divider">
+
+      <!-- Section 6: Closing / CTA -->
+      <section class="about-section">
+        <p class="closing-statement">If you are building something meaningful and believe it deserves documentation, editorial coverage, or archival preservation, we invite you to apply through our Get Featured section.</p>
+        <div class="about-cta">
+          <a href="get-featured.html" class="cta-button">
+            <span>Apply To Get Featured</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="5" y1="12" x2="19" y2="12"/>
+              <polyline points="12,5 19,12 12,19"/>
+            </svg>
+          </a>
+        </div>
+      </section>
+
+    </div>
   </main>
 
   <!-- ═══════════════════════════════════════════════════════
