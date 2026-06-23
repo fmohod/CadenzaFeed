@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Cadenza Arthouse is an independent media and editorial platform based in Houston, documenting art, music, wellness, and community life through photography, interviews, and published features.">
+  <link rel="icon" href="/assets/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/assets/favicon-32x32.png" type="image/png" sizes="32x32">
+  <link rel="icon" href="/assets/favicon-192x192.png" type="image/png" sizes="192x192">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" sizes="180x180">
+  <title>About Cadenza Arthouse | Independent Media & Photography</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════════════════
+       MASTHEAD — newspaper flag treatment
+  ═══════════════════════════════════════════════════════ -->
+  <header class="masthead">
+    <div class="masthead-inner">
+
+      <div class="masthead-top-rule"></div>
+
+      <div class="masthead-flag">
+        <div class="masthead-flag-left">
+          <span class="masthead-est">Established 2017</span>
+          <span class="masthead-dot">·</span>
+          <span class="masthead-loc">Houston, Texas</span>
+        </div>
+        <div class="masthead-flag-center">
+          <a href="index.html" class="masthead-logo-link">
+            <img src="assets/logo.png" alt="Cadenza Arthouse" class="masthead-logo">
+          </a>
+          <div class="masthead-wordmark">
+            <h1 class="masthead-title">Cadenza Arthouse</h1>
+            <p class="masthead-tagline">Independent Media&nbsp;&nbsp;·&nbsp;&nbsp;Photography&nbsp;&nbsp;·&nbsp;&nbsp;Cultural Archive</p>
+          </div>
+        </div>
+        <div class="masthead-flag-right">
+          <span class="masthead-date" id="live-date"></span>
+        </div>
+      </div>
+
+      <div class="masthead-rule-double">
+        <div class="rule-thick"></div>
+        <div class="rule-thin"></div>
+      </div>
+
+      <nav class="masthead-nav">
+        <a href="index.html">Home</a>
+        <a href="all.html">Press Archive</a>
+        <a href="#" class="nav-dim">Galleries</a>
+        <a href="about.html" class="active">About</a>
+      </nav>
+
+      <div class="masthead-bottom-rule"></div>
+
+    </div>
+  </header>
+
+  <!-- ═══════════════════════════════════════════════════════
+       MAIN CONTENT
+  ═══════════════════════════════════════════════════════ -->
+  <main>
+    <article class="article-wrap">
+
+      <p class="article-kicker">About the Publication</p>
+      <h1>About Cadenza Arthouse</h1>
+
+      <div class="article-body">
+
+        <p>Cadenza Arthouse is an independent media and editorial platform based in Houston, documenting the people, projects, and cultural work shaping art, music, wellness, and community life across the city.</p>
+
+        <h2>What We Publish</h2>
+        <p>We produce feature stories, interviews, and photography that document the people and spaces shaping local culture — work built through on-the-ground reporting, not press releases.</p>
+
+        <h2>Why Cadenza Exists</h2>
+        <p>Most of the work that shapes a city's culture goes undocumented. Artists, organizers, musicians, and small businesses build the things that define a community, and that work disappears without a record. Cadenza Arthouse exists to document it properly, and to keep it.</p>
+
+        <h2>Archive, Not Just Publication</h2>
+        <p>Every feature we publish becomes part of a permanent, growing archive — not a feed that disappears under the next post. We work with artists, organizers, performers, small businesses, and cultural projects to develop features that hold up as a lasting record.</p>
+
+        <h2>Who This Is For</h2>
+        <p>Cadenza Arthouse is for the people and organizations doing work worth documenting, and for the readers, collaborators, and partners trying to understand what's actually happening in Houston's creative community.</p>
+
+        <h2>What Makes Us Different</h2>
+        <p>We aren't advertising or promotion, and we aren't a personal blog. Cadenza Arthouse operates as a publication first: editorial selection, structured features, and an archive built to last — not content built to disappear in a feed.</p>
+
+        <blockquote>If you are building something meaningful and want it documented, featured, or archived, you can apply through Get&nbsp;Featured.</blockquote>
+
+      </div>
+
+      <div class="all-articles-cta" style="margin-top: 48px;">
+        <a href="get-featured.html" class="cta-button">
+          <span>Apply to Get Featured</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="5" y1="12" x2="19" y2="12"/>
+            <polyline points="12,5 19,12 12,19"/>
+          </svg>
+        </a>
+      </div>
+
+    </article>
+  </main>
+
+  <!-- ═══════════════════════════════════════════════════════
+       FOOTER
+  ═══════════════════════════════════════════════════════ -->
+  <footer class="site-footer">
+    <div class="footer-rule"></div>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <img src="assets/logo.png" alt="Cadenza Arthouse" class="footer-logo">
+        <span class="footer-wordmark">Cadenza Arthouse</span>
+      </div>
+      <p class="footer-mission">Independent media platform documenting culture, art, and community. Est. 2017, Houston, Texas.</p>
+      <p class="footer-legal">Self-hosted. No trackers. Just words.&nbsp;&nbsp;·&nbsp;&nbsp;© 2026 Cadenza Arthouse. All Rights Reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('live-date').textContent =
+      new Date().toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+  </script>
+
+</body>
+</html>
