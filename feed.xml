@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Cadenza Arthouse Press</title>
+    <link>https://cadenzaarthouse.com/</link>
+    <atom:link href="https://cadenzaarthouse.com/feed.xml" rel="self" type="application/rss+xml" />
+    <description>Independent media, photography, and documentary coverage of arts, culture, and community in Houston and beyond.</description>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 23 Jun 2026 08:11:18 +0000</lastBuildDate>
+    <generator>Cadenza Arthouse manual feed builder</generator>
+    <item>
+      <title>713 Day: Cafecito, Comunidad y Cultura in Houston</title>
+      <link>https://cadenzaarthouse.com/0005/</link>
+      <guid isPermaLink="true">https://cadenzaarthouse.com/0005/</guid>
+      <pubDate>Wed, 16 Jul 2025 17:50:00 -0500</pubDate>
+      <description>Cadenza Arthouse documents United We Dream Texas' 713 Day celebration in Houston — Aztec dance, music, and community organizers uplifting immigrant voices.</description>
+      <enclosure url="https://cadenzaarthouse.com/0005/thumb.png" type="image/png" />
+    </item>
+    <item>
+      <title>Echoes of Unity at the Pan-African Connection - Dallas</title>
+      <link>https://cadenzaarthouse.com/0004/</link>
+      <guid isPermaLink="true">https://cadenzaarthouse.com/0004/</guid>
+      <pubDate>Wed, 03 Apr 2024 12:00:00 -0600</pubDate>
+      <description>I came for the poetry and accidentally found an entire Black-owned marketplace, incredible food, elders dropping wisdom, poets dropping truth, and enough unexpected moments to blow my mind clean out of my head. Welcome to the Pan-African Connection—one of Dallas' hidden cultural treasures.</description>
+      <enclosure url="https://cadenzaarthouse.com/0004/thumb.jpg" type="image/jpeg" />
+    </item>
+    <item>
+      <title>Womankind 2024 by Cultured Concepts</title>
+      <link>https://cadenzaarthouse.com/0003/</link>
+      <guid isPermaLink="true">https://cadenzaarthouse.com/0003/</guid>
+      <pubDate>Sat, 23 Mar 2024 12:00:00 -0600</pubDate>
+      <description>A motorcycle parade, world champion martial artists, yoga queens, artists, healers, entrepreneurs, and one visionary organizer. Step inside Womankind 2024 and experience a powerful celebration of feminine energy, community, creativity, and empowerment in the heart of Houston.</description>
+      <enclosure url="https://cadenzaarthouse.com/0003/thumb.jpg" type="image/jpeg" />
+    </item>
+    <item>
+      <title>Chelita Lenice Fashion Show</title>
+      <link>https://cadenzaarthouse.com/0002/</link>
+      <guid isPermaLink="true">https://cadenzaarthouse.com/0002/</guid>
+      <pubDate>Sun, 11 Apr 2021 12:00:00 -0600</pubDate>
+      <description>A brief photo journal check-in at the fashion show.  Our photographer picks up an appreciation for the city and leaves something to come back for.</description>
+      <enclosure url="https://cadenzaarthouse.com/0002/thumb.jpg" type="image/jpeg" />
+    </item>
+    <item>
+      <title>For the Love of Art</title>
+      <link>https://cadenzaarthouse.com/0001/</link>
+      <guid isPermaLink="true">https://cadenzaarthouse.com/0001/</guid>
+      <pubDate>Sat, 09 Feb 2019 12:00:00 -0600</pubDate>
+      <description>Independent Houston artists gather for presentations and media moments in Sugarland, TX</description>
+      <enclosure url="https://cadenzaarthouse.com/0001/thumb.png" type="image/png" />
+    </item>
+  </channel>
+</rss>
