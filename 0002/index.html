@@ -72,11 +72,44 @@
 
 <body class="article-body">
 
-<div class="article-header-bar">
-<a href="../index.html">← Home</a>
-<span class="site-name">CADENZA ARTHOUSE PRESS</span>
-<a href="../all.html">All Articles</a>
-</div>
+<!-- MASTHEAD (uniform site header) -->
+<header class="masthead">
+  <div class="masthead-inner">
+    <div class="masthead-top-rule"></div>
+    <div class="masthead-flag">
+      <div class="masthead-flag-left">
+        <span class="masthead-est">Established 2017</span>
+        <span class="masthead-dot">·</span>
+        <span class="masthead-loc">Houston, Texas</span>
+      </div>
+      <div class="masthead-flag-center">
+        <a href="../index.html" class="masthead-logo-link">
+          <img src="../assets/logo.png" alt="Cadenza Arthouse" class="masthead-logo">
+        </a>
+        <div class="masthead-wordmark">
+          <span class="masthead-title">Cadenza Arthouse</span>
+          <p class="masthead-tagline">Independent Media&nbsp;&nbsp;·&nbsp;&nbsp;Photography&nbsp;&nbsp;·&nbsp;&nbsp;Cultural Archive</p>
+        </div>
+      </div>
+      <div class="masthead-flag-right">
+        <span class="masthead-date" id="live-date"></span>
+      </div>
+    </div>
+    <div class="masthead-rule-double">
+      <div class="rule-thick"></div>
+      <div class="rule-thin"></div>
+    </div>
+    <nav class="masthead-nav">
+      <a href="../index.html">Home</a>
+      <a href="../all.html">Press Archive</a>
+      <a href="#" class="nav-dim">Galleries</a>
+      <a href="../about.html">About</a>
+      <a href="../support.html">Support</a>
+    </nav>
+    <div class="masthead-bottom-rule"></div>
+  </div>
+</header>
+<script>(function(){var d=document.getElementById('live-date');if(d){d.textContent=new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});}})();</script>
 
 <div class="article-wrap">
 

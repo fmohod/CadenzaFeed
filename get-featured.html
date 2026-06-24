@@ -4,7 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Get Featured | Cadenza Arthouse</title>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -53,6 +54,41 @@
       transition: color 0.2s, border-color 0.2s;
     }
     .site-nav .back-link:hover { color: var(--bronze); border-color: var(--bronze); }
+
+    /* ─── UNIFORM MASTHEAD (ported from style.css for site-wide consistency) ─── */
+    .masthead { background-color:#F6F2EB; position:sticky; top:0; z-index:100; box-shadow:0 2px 8px rgba(0,0,0,0.06); }
+    .masthead-inner { max-width:1160px; margin:0 auto; padding:0 24px; }
+    .masthead-top-rule { border-top:1px solid #111111; margin-top:18px; }
+    .masthead-flag { display:grid; grid-template-columns:1fr auto 1fr; align-items:center; padding:14px 0 12px; gap:16px; }
+    .masthead-flag-left, .masthead-flag-right { display:flex; flex-direction:column; gap:3px; font-family:'IBM Plex Mono',monospace; font-size:0.68rem; letter-spacing:0.08em; text-transform:uppercase; color:#555; }
+    .masthead-flag-right { align-items:flex-end; text-align:right; }
+    .masthead-dot { color:#A07840; }
+    .masthead-flag-center { display:flex; flex-direction:column; align-items:center; gap:6px; text-align:center; }
+    .masthead-logo-link { display:block; }
+    .masthead-logo { height:56px; width:auto; }
+    .masthead-wordmark { display:flex; flex-direction:column; align-items:center; gap:2px; }
+    .masthead-title { font-family:'Bebas Neue',sans-serif; font-size:2.4rem; letter-spacing:0.12em; line-height:1; color:#111111; text-transform:uppercase; }
+    .masthead-tagline { font-family:'IBM Plex Mono',monospace; font-size:0.62rem; letter-spacing:0.14em; text-transform:uppercase; color:#A07840; }
+    .masthead-rule-double { display:flex; flex-direction:column; gap:3px; }
+    .rule-thick { border-top:3px solid #111111; }
+    .rule-thin { border-top:1px solid #111111; }
+    .masthead-nav { display:flex; justify-content:center; gap:36px; padding:10px 0; }
+    .masthead-nav a { font-family:'IBM Plex Mono',monospace; font-size:0.72rem; letter-spacing:0.16em; text-transform:uppercase; color:#111111; padding-bottom:2px; border-bottom:2px solid transparent; transition:border-color 0.2s, color 0.2s; }
+    .masthead-nav a:hover { border-bottom-color:#A07840; color:#A07840; }
+    .masthead-nav a.active { border-bottom-color:#111111; }
+    .masthead-nav a.nav-dim { color:#888; }
+    .masthead-nav a.nav-dim:hover { color:#A07840; border-bottom-color:#A07840; }
+    .masthead-bottom-rule { border-top:1px solid #CCBFA8; }
+    @media (max-width:700px){
+      .masthead-flag { grid-template-columns:1fr; text-align:center; }
+      .masthead-flag-left, .masthead-flag-right { display:none; }
+      .masthead-title { font-size:1.8rem; }
+      .masthead-nav { gap:20px; flex-wrap:wrap; }
+    }
+    @media (max-width:480px){
+      .masthead-logo { height:40px; }
+      .masthead-nav a { font-size:0.65rem; }
+    }
 
     /* ─── HERO ─── */
     .hero {
@@ -464,10 +500,44 @@
 <body>
 
   <!-- NAV -->
-  <nav class="site-nav">
-    <a href="/" class="wordmark">Cadenza Arthouse</a>
-    <a href="/" class="back-link">&#8592; Back to Home</a>
-  </nav>
+  <!-- MASTHEAD (uniform site header) -->
+  <header class="masthead">
+    <div class="masthead-inner">
+      <div class="masthead-top-rule"></div>
+      <div class="masthead-flag">
+        <div class="masthead-flag-left">
+          <span class="masthead-est">Established 2017</span>
+          <span class="masthead-dot">·</span>
+          <span class="masthead-loc">Houston, Texas</span>
+        </div>
+        <div class="masthead-flag-center">
+          <a href="index.html" class="masthead-logo-link">
+            <img src="assets/logo.png" alt="Cadenza Arthouse" class="masthead-logo">
+          </a>
+          <div class="masthead-wordmark">
+            <span class="masthead-title">Cadenza Arthouse</span>
+            <p class="masthead-tagline">Independent Media&nbsp;&nbsp;·&nbsp;&nbsp;Photography&nbsp;&nbsp;·&nbsp;&nbsp;Cultural Archive</p>
+          </div>
+        </div>
+        <div class="masthead-flag-right">
+          <span class="masthead-date" id="live-date"></span>
+        </div>
+      </div>
+      <div class="masthead-rule-double">
+        <div class="rule-thick"></div>
+        <div class="rule-thin"></div>
+      </div>
+      <nav class="masthead-nav">
+        <a href="index.html">Home</a>
+        <a href="all.html">Press Archive</a>
+        <a href="#" class="nav-dim">Galleries</a>
+        <a href="about.html">About</a>
+        <a href="support.html">Support</a>
+      </nav>
+      <div class="masthead-bottom-rule"></div>
+    </div>
+  </header>
+  <script>(function(){var d=document.getElementById('live-date');if(d){d.textContent=new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});}})();</script>
 
   <!-- HERO -->
   <header class="hero">
