@@ -201,6 +201,10 @@
           allArticles = metas;
           renderList(metas);
         }
+        // Re-sort by article date descending once all metadata is loaded
+        // (folder number ≠ publish date order)
+        allArticles.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+        renderList(allArticles);
       } catch (err) {
         list.innerHTML = `<div class="error-state"><p>⚠ Could not load articles. Check your GITHUB_USER and GITHUB_REPO config.</p></div>`;
         console.error(err);

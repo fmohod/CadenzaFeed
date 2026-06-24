@@ -204,9 +204,10 @@
         document.getElementById('article-count').textContent =
           `${folders.length} article${folders.length !== 1 ? 's' : ''} published`;
 
-        const top3  = folders.slice(0, 3);
-        const metas = await Promise.all(top3.map(f => getArticleMeta(f.name)));
-        grid.innerHTML = metas.map((m, i) => renderCard(m, i)).join('');
+        // Fetch all metas so we can sort by date (folder number ≠ publish date order)
+        const metas = await Promise.all(folders.map(f => getArticleMeta(f.name)));
+        metas.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+        grid.innerHTML = metas.slice(0, 3).map((m, i) => renderCard(m, i)).join('');
 
         localStorage.setItem('cadenzapress_folders', JSON.stringify(folders.map(f => f.name)));
       } catch (err) {
