@@ -80,4 +80,11 @@
     <priority>0.7</priority>
   </url>
 
+  <url>
+    <loc>https://cadenzaarthouse.com/0008/</loc>
+    <lastmod>2024-08-25</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
 </urlset>
