@@ -96,16 +96,65 @@ class Presentation {
     this._inputCooldown = 0;
   }
 
+  // Build a chunky, pixelated, bronze-tinted version of the brand logo entirely
+  // in code — downscale to a low-res buffer, then recolor the black artwork to
+  // bronze using its own alpha as a mask. No new image asset required.
+  _prepareBootLogo() {
+    return new Promise(resolve => {
+      const img = new Image();
+      img.onload = () => {
+        const pw = 130; // low-res pixel width — controls chunkiness
+        const ph = Math.max(1, Math.round(pw * (img.height / img.width)));
+        const buf = document.createElement('canvas');
+        buf.width = pw; buf.height = ph;
+        const bctx = buf.getContext('2d');
+        bctx.imageSmoothingEnabled = false;
+        bctx.drawImage(img, 0, 0, pw, ph);
+        // Recolor: keep the logo's alpha shape, fill it bronze.
+        bctx.globalCompositeOperation = 'source-in';
+        bctx.fillStyle = PALETTE.bronze;
+        bctx.fillRect(0, 0, pw, ph);
+        resolve(buf);
+      };
+      img.onerror = () => resolve(null);
+      img.src = '../assets/logo.png';
+    });
+  }
+
+  // CRT overlay: scanlines, a slow phosphor scan band, and a vignette.
+  _drawCRT(ctx, frame) {
+    const w = this.canvas.width, h = this.canvas.height;
+    // scanlines
+    ctx.fillStyle = 'rgba(0,0,0,0.22)';
+    for (let y = 0; y < h; y += 3) ctx.fillRect(0, y, w, 1);
+    // slow bronze scan band sweeping down
+    const bandY = ((frame * 1.4) % (h + 160)) - 80;
+    const band = ctx.createLinearGradient(0, bandY - 50, 0, bandY + 50);
+    band.addColorStop(0, 'rgba(160,120,64,0)');
+    band.addColorStop(0.5, 'rgba(160,120,64,0.06)');
+    band.addColorStop(1, 'rgba(160,120,64,0)');
+    ctx.fillStyle = band;
+    ctx.fillRect(0, bandY - 50, w, 100);
+    // vignette
+    const vig = ctx.createRadialGradient(w / 2, h / 2, h * 0.28, w / 2, h / 2, h * 0.78);
+    vig.addColorStop(0, 'rgba(0,0,0,0)');
+    vig.addColorStop(1, 'rgba(0,0,0,0.55)');
+    ctx.fillStyle = vig;
+    ctx.fillRect(0, 0, w, h);
+  }
+
   async showBoot(archive) {
+    const logo = await this._prepareBootLogo();
+
     return new Promise(resolve => {
       const lines = [
         { text: 'CADENZA ARCHIVE v0.01', delay: 0 },
         { text: '', delay: 600 },
         { text: 'Initializing...', delay: 900 },
         { text: 'Scanning content providers...', delay: 1800 },
-        { text: '  ✓ Records', delay: 2400 },
-        { text: '  ✓ NPCs', delay: 2700 },
-        { text: '  ✓ Locations', delay: 3000 },
+        { text: '  > Records', delay: 2400 },
+        { text: '  > NPCs', delay: 2700 },
+        { text: '  > Locations', delay: 3000 },
         { text: '', delay: 3400 },
         { text: 'Integrity Check...', delay: 3800 },
         { text: '  0.4%', delay: 4400 },
@@ -121,18 +170,43 @@ class Presentation {
 
       const visible = [];
       let done = false;
+      let frame = 0;
+
+      const W = this.canvas.width;
+      const logoW = 300;
+      const logoH = logo ? Math.round(logoW * (logo.height / logo.width)) : 0;
+      const logoX = Math.round((W - logoW) / 2);
+      const logoY = 16;
+      const textTop = logo ? logoY + logoH + 26 : 80;
+      const lineH = 19;
 
       const draw = () => {
         const ctx = this.ctx;
+        frame++;
         ctx.fillStyle = PALETTE.bg;
         ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+        // pixelated bronze logo with a faint flicker
+        if (logo) {
+          ctx.save();
+          ctx.imageSmoothingEnabled = false;
+          ctx.globalAlpha = 0.9 + 0.1 * Math.sin(frame * 0.25);
+          ctx.drawImage(logo, logoX, logoY, logoW, logoH);
+          ctx.restore();
+        }
+
+        // terminal text
         ctx.font = '14px "IBM Plex Mono", monospace';
-        let y = 80;
+        let y = textTop;
         for (const line of visible) {
           ctx.fillStyle = line.color || PALETTE.text;
           ctx.fillText(line.text, 60, y);
-          y += 22;
+          y += lineH;
         }
+
+        // CRT overlay on top of everything
+        this._drawCRT(ctx, frame);
+
         if (!done) requestAnimationFrame(draw);
       };
       draw();
