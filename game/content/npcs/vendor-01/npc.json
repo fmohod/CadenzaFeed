@@ -1,0 +1,16 @@
+{
+  "schema": 1,
+  "id": "npc:vendor-01",
+  "name": "Marcus",
+  "era": "2024",
+  "canon": "fiction",
+  "location": "location:third-ward-street",
+  "tags": ["vendor", "third-ward", "community", "houston"],
+  "description": "A street vendor who sets up near the community center most mornings. He knows everyone who passes through this block.",
+  "dialogue": {
+    "default": "You new around here? Don't see many people walking around taking notes.",
+    "after_record_0001": "Art shows, huh? Used to be more of those around here. People stopped showing up. Or maybe the shows stopped happening. Hard to say which came first.",
+    "after_record_0003": "Cultured Concepts — yeah, I know them. Good people. They do a lot that doesn't make the news. That event badge you found? That's just the surface.",
+    "after_sync": "You've been busy. I can tell. People remember more when someone's actually paying attention."
+  }
+}

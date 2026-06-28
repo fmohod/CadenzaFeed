@@ -1,0 +1,17 @@
+{
+  "schema": 1,
+  "id": "npc:frankie-2024",
+  "name": "Frankie",
+  "era": "2024",
+  "canon": "archive-reconstruction",
+  "location": "location:apartment",
+  "tags": ["archivist", "photographer", "journalist", "houston"],
+  "description": "A photographer and archivist. He seems distracted, like someone sorting through a stack of photographs trying to remember where each one was taken.",
+  "dialogue": {
+    "default": "I've been trying to piece it all back together. The records exist — I know they do. But the connections between them... something broke.",
+    "after_record_0001": "That art show. I remember now. It was in Sugarland. February. Cold for Houston. There were people there I haven't thought about in years.",
+    "after_record_0002": "Chelita. That fashion show was important. People didn't realize it at the time — independent designers, doing it themselves. That's the whole story right there.",
+    "after_record_0003": "Cultured Concepts. They've been building something real. That event was proof. Keep going — there's more connected to them than you'd think.",
+    "after_sync": "You can feel it, right? The archive is starting to breathe again. Every record you bring back makes the next one easier to find."
+  }
+}

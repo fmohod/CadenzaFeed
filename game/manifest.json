@@ -1,0 +1,10 @@
+{
+  "schema": 1,
+  "generated": "2026-06-28",
+  "records": ["0001", "0002", "0003", "0004", "0005", "0006", "0007", "0008"],
+  "npcs": ["frankie-2024", "vendor-01", "musician-01", "organizer-01", "archivist-note"],
+  "locations": ["apartment", "third-ward-street", "community-center"],
+  "quests": [],
+  "eras": ["2024"],
+  "activeEra": "2024"
+}

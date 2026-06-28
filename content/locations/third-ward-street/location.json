@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "id": "location:third-ward-street",
+  "name": "Third Ward — Community Block",
+  "era": "2024",
+  "canon": "archive-reconstruction",
+  "tags": ["third-ward", "houston", "community", "street", "outdoor"],
+  "description": "A block in Third Ward. Morning light. A vendor is setting up. Somewhere nearby, a Record is waiting to be found.",
+  "interactables": [
+    {
+      "id": "npc-vendor",
+      "type": "npc",
+      "npcId": "npc:vendor-01",
+      "position": { "tileX": 5, "tileY": 4 }
+    },
+    {
+      "id": "record-fragment-0003",
+      "type": "record",
+      "recordId": "record:0003",
+      "position": { "tileX": 11, "tileY": 3 },
+      "label": "Scattered Papers",
+      "hint": "Something is on the ground near the community center steps."
+    },
+    {
+      "id": "apartment-door",
+      "type": "exit",
+      "label": "Your Building",
+      "position": { "tileX": 1, "tileY": 4 },
+      "destination": "location:apartment"
+    }
+  ],
+  "tilemap": "third-ward-street",
+  "music": null,
+  "ambience": "city-morning"
+}

@@ -1,0 +1,35 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: #0d0b08;
+  color: #F6F2EB;
+  font-family: 'IBM Plex Mono', monospace;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+#game-canvas {
+  display: block;
+  image-rendering: pixelated;
+  border: 1px solid #2a2118;
+}
+
+#reset-btn {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  background: transparent;
+  border: 1px solid #3a2e1e;
+  color: #5a4a3a;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  padding: 6px 10px;
+  cursor: pointer;
+  letter-spacing: 1px;
+  z-index: 400;
+}
+#reset-btn:hover { border-color: #A07840; color: #A07840; }

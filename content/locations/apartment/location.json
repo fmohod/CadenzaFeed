@@ -1,0 +1,42 @@
+{
+  "schema": 1,
+  "id": "location:apartment",
+  "name": "The Archive Office",
+  "era": "2024",
+  "canon": "archive-reconstruction",
+  "tags": ["home", "base", "terminal", "archive"],
+  "description": "A small apartment that has slowly become something else. Shelves. Cables. Hard drives. A corkboard with photos and string. The terminal is the oldest thing here.",
+  "interactables": [
+    {
+      "id": "terminal-main",
+      "type": "terminal",
+      "label": "Archive Terminal",
+      "position": { "tileX": 3, "tileY": 2 },
+      "action": "openTerminal"
+    },
+    {
+      "id": "camera-shelf",
+      "type": "examine",
+      "label": "Camera Bag",
+      "position": { "tileX": 7, "tileY": 1 },
+      "text": "A worn camera bag. The strap has been replaced twice. Inside: two lenses, a battery pack, and a memory card labeled 'DO NOT FORMAT.'"
+    },
+    {
+      "id": "notebook",
+      "type": "examine",
+      "label": "Notebook",
+      "position": { "tileX": 5, "tileY": 3 },
+      "text": "Pages of handwritten notes. Names, dates, locations. Most have arrows connecting them. A few lines are underlined three times."
+    },
+    {
+      "id": "front-door",
+      "type": "exit",
+      "label": "Front Door",
+      "position": { "tileX": 9, "tileY": 5 },
+      "destination": "location:third-ward-street"
+    }
+  ],
+  "tilemap": "apartment",
+  "music": null,
+  "ambience": "city-quiet"
+}

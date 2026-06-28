@@ -1,0 +1,28 @@
+{
+  "schema": 1,
+  "id": "record:0002",
+  "title": "Chelita Lenice Fashion Show",
+  "date": "2021-04-11",
+  "era": "2021",
+  "canon": "historical",
+  "location": "location:houston",
+  "tags": ["houston", "fashion", "art", "community", "2021"],
+  "summary": "A fashion event showcasing independent designers and creative talent from the Houston community.",
+  "relationships": [
+    { "type": "located_at", "object": "location:houston" }
+  ],
+  "media": {
+    "thumbnail": "thumb.jpg",
+    "article": "https://cadenzaarthouse.com/0002/"
+  },
+  "game": {
+    "inGameTitle": "Record 0002 — Chelita Lenice",
+    "flavorText": "A program from a fashion show. The designers' names are listed in careful handwriting on the back.",
+    "unlocks": {
+      "npcDialogue": ["frankie-2024:after_record_0002"],
+      "mapPins": [],
+      "rumors": [],
+      "terminalEntries": ["terminal:record-0002"]
+    }
+  }
+}

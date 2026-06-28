@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cadenza Arthouse — Archive RPG Sandbox 1</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <canvas id="game-canvas"></canvas>
+  <button id="reset-btn" title="Clear save data and restart">RESET SAVE</button>
+
+  <!-- Engine: Archive → Simulation → Presentation -->
+  <script src="engine/archive.js?v=2"></script>
+  <script src="engine/simulation.js?v=2"></script>
+  <script src="engine/engine.js?v=2"></script>
+  <script src="engine/presentation.js?v=2"></script>
+
+  <script>
+    const canvas = document.getElementById('game-canvas');
+    const presentation = new Presentation(canvas);
+    const engine = new Engine();
+
+    document.getElementById('reset-btn').addEventListener('click', () => {
+      if (confirm('Reset all save data?')) engine.resetSave();
+    });
+
+    engine.init(presentation).catch(e => {
+      console.error('Engine init failed:', e.message, e.stack);
+    });
+  </script>
+
+</body>
+</html>
