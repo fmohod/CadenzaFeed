@@ -1,9 +1,10 @@
 {
   "schema": 1,
   "generated": "2026-06-28",
+  "_note": "records[] is only a fallback seed. The engine discovers articles dynamically via the GitHub API and reads each as a Record. npcs[] and locations[] are game-only constructs that have no home in the article archive.",
   "records": ["0001", "0002", "0003", "0004", "0005", "0006", "0007", "0008"],
-  "npcs": ["frankie-2024", "vendor-01", "musician-01", "organizer-01", "archivist-note"],
-  "locations": ["apartment", "third-ward-street", "community-center"],
+  "npcs": ["frankie-2024", "vendor-01"],
+  "locations": ["apartment", "third-ward-street"],
   "quests": [],
   "eras": ["2024"],
   "activeEra": "2024"

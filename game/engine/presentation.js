@@ -239,12 +239,33 @@ class Presentation {
     const loc = data.location;
     const mapKey = loc.tilemap || 'apartment';
     this.currentMap = TILEMAPS[mapKey] || TILEMAPS.apartment;
-    this.currentLocationData = loc;
+
+    // Build the live interactable list: the neighborhood's base interactables
+    // plus dynamically spawned Records whose game-location matches this
+    // neighborhood's slug. The location file never names specific records —
+    // it only provides spawn points. The archive decides what appears.
+    const base = (loc.interactables || []).slice();
+    const spawned = [];
+    if (loc.recordSlug && loc.recordSpawns) {
+      const matching = this._archive.getRecordsByLocation(loc.recordSlug)
+        .filter(r => !this._simulation.isRecovered(r.id));
+      matching.forEach((rec, i) => {
+        const spawn = loc.recordSpawns[i];
+        if (!spawn) return; // more matching records than spawn points — rest listed in terminal
+        spawned.push({
+          id: `record-spawn-${rec.articleId}`,
+          type: 'record',
+          recordId: rec.id,
+          position: { tileX: spawn.tileX, tileY: spawn.tileY },
+          label: spawn.label || 'Scattered Papers',
+        });
+      });
+    }
+    this.currentLocationData = { ...loc, interactables: [...base, ...spawned] };
     document.getElementById('hud-location').textContent = loc.name.toUpperCase();
 
     // Place player at entrance
-    const interactables = loc.interactables || [];
-    const entrance = interactables.find(i => i.type === 'exit' && i.destination === this._simulation.state?.previousLocation);
+    const entrance = base.find(i => i.type === 'exit' && i.destination === this._simulation.state?.previousLocation);
     if (entrance) {
       this.player.x = entrance.position.tileX;
       this.player.y = entrance.position.tileY;
@@ -435,18 +456,42 @@ class Presentation {
       lines.push(`<div style="color:${PALETTE.red};margin-bottom:12px;">! Sync pending — press TAB to synchronize</div>`);
     }
 
-    lines.push(`<div style="margin-bottom:12px;color:${PALETTE.textDim};">RECOVERED RECORDS</div>`);
-    for (const recordId of simulation.state.recovered) {
-      const record = archive.getRecord(recordId);
-      if (record) {
-        lines.push(`<div style="color:${PALETTE.green};margin-bottom:6px;">■ ${record.game?.inGameTitle || record.title}</div>`);
-        lines.push(`<div style="color:${PALETTE.textDim};font-size:12px;margin-bottom:10px;margin-left:16px;">${record.summary}</div>`);
+    // Recovered records
+    if (recovered > 0) {
+      lines.push(`<div style="margin-bottom:12px;color:${PALETTE.textDim};">RECOVERED RECORDS</div>`);
+      for (const recordId of simulation.state.recovered) {
+        const record = archive.getRecord(recordId);
+        if (record) {
+          lines.push(`<div style="color:${PALETTE.green};margin-bottom:6px;">■ ${record.game?.inGameTitle || record.title}</div>`);
+          lines.push(`<div style="color:${PALETTE.textDim};font-size:12px;margin-bottom:10px;margin-left:16px;">${record.summary || ''}</div>`);
+        }
       }
     }
 
-    const remaining = total - recovered;
-    if (remaining > 0) {
-      lines.push(`<div style="color:${PALETTE.textDim};margin-top:8px;">${remaining} record${remaining !== 1 ? 's' : ''} unrecovered</div>`);
+    // Unrecovered records become "signals." A signal is reachable if its
+    // neighborhood has been built (a location declares its slug); otherwise it
+    // is a locked signal — detected, but not yet accessible.
+    const reachableSlugs = new Set(
+      [...archive.locations.values()].map(l => l.recordSlug).filter(Boolean)
+    );
+    const unrecovered = archive.getAllRecords().filter(r => !simulation.isRecovered(r.id));
+    const reachable = unrecovered.filter(r => reachableSlugs.has(r.location));
+    const locked = unrecovered.filter(r => !reachableSlugs.has(r.location));
+
+    if (reachable.length) {
+      lines.push(`<div style="margin:14px 0 8px;color:${PALETTE.textDim};">SIGNALS DETECTED — RECOVERABLE NOW</div>`);
+      for (const r of reachable) {
+        lines.push(`<div style="color:${PALETTE.bronze};margin-bottom:4px;">◆ ${r.title}</div>`);
+        lines.push(`<div style="color:${PALETTE.textDim};font-size:11px;margin-bottom:8px;margin-left:16px;">${r.location} · ${r.era}</div>`);
+      }
+    }
+
+    if (locked.length) {
+      lines.push(`<div style="margin:14px 0 8px;color:${PALETTE.textDim};">SIGNALS DETECTED — LOCATION NOT YET ACCESSIBLE</div>`);
+      for (const r of locked) {
+        lines.push(`<div style="color:${PALETTE.textDim};margin-bottom:4px;">▢ ${r.title}</div>`);
+        lines.push(`<div style="color:${PALETTE.textDim};font-size:11px;margin-bottom:8px;margin-left:16px;opacity:0.6;">${r.location || 'unknown'} · ${r.era} · locked</div>`);
+      }
     }
 
     lines.push(`<div style="margin-top:20px;color:${PALETTE.textDim};font-size:11px;">[ ENTER ] Close terminal</div>`);
