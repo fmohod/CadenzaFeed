@@ -62,6 +62,7 @@ class ArchiveTerminal {
     const rec = sim ? sim.getRecoveredCount() : 0;
     const total = sim ? sim.getTotalCount() : 0;
     this._frame('CADENZA ARCHIVE OS', `RECORDS ${rec}/${total}`);
+    if (this.backBtn) this.backBtn.textContent = '✕ EXIT';   // top-level: back = power off
     const items = [
       { label: `RECORDS         (${rec} recovered)`, action: () => this._records() },
       { label: 'SYSTEM', action: () => this._system() },
@@ -219,6 +220,7 @@ class ArchiveTerminal {
     this.sel = 0;
     this._readerScroll = null;
     this._imgCtx = null;
+    if (this.backBtn) this.backBtn.textContent = '‹ BACK';   // home overrides to ✕ EXIT
   }
 
   _list(items) {
@@ -328,6 +330,7 @@ class ArchiveTerminal {
     root.id = 'archive-terminal';
     root.innerHTML = `
       <div class="at-bar">
+        <button class="at-back" type="button">‹ BACK</button>
         <span class="at-bar-title"></span>
         <span class="at-bar-status"></span>
       </div>
@@ -337,11 +340,16 @@ class ArchiveTerminal {
     `;
     document.body.appendChild(root);
     this.root = root;
+    this.backBtn = root.querySelector('.at-back');
     this.barTitle = root.querySelector('.at-bar-title');
     this.barStatus = root.querySelector('.at-bar-status');
     this.content = root.querySelector('.at-content');
     this.actionWrap = root.querySelector('.at-actions');
     this.foot = root.querySelector('.at-foot');
+
+    // Persistent touch/mouse BACK control — present on every screen so phones
+    // (no ESC key) can always navigate up or exit.
+    this.backBtn.addEventListener('click', () => this._back());
   }
 
   _injectStyles() {
@@ -358,10 +366,16 @@ class ArchiveTerminal {
         content: ''; position: absolute; inset: 0; pointer-events: none;
         background: repeating-linear-gradient(rgba(0,0,0,0) 0 2px, rgba(0,0,0,0.18) 2px 3px);
       }
-      .at-bar { display: flex; justify-content: space-between; align-items: baseline;
+      .at-bar { display: flex; align-items: center; gap: 12px;
         border-bottom: 1px solid #3a2e1e; padding-bottom: 8px; margin-bottom: 10px; }
-      .at-bar-title { color: #A07840; font-size: 15px; letter-spacing: 2px; text-transform: uppercase; }
-      .at-bar-status { color: #6f6a60; font-size: 11px; }
+      .at-back { flex: none; background: rgba(40,33,24,0.85); border: 1px solid #A07840;
+        color: #F6F2EB; font-family: inherit; font-size: 12px; letter-spacing: 1px;
+        padding: 8px 14px; min-height: 40px; cursor: pointer; }
+      .at-back:hover { background: #A07840; color: #0d0b08; }
+      .at-back:active { transform: scale(0.95); }
+      .at-bar-title { flex: 1; min-width: 0; color: #A07840; font-size: 15px; letter-spacing: 2px;
+        text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .at-bar-status { flex: none; color: #6f6a60; font-size: 11px; white-space: nowrap; }
       .at-content { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
       .at-actions { display: flex; gap: 10px; flex-wrap: wrap; padding: 8px 0; }
       .at-actions:empty { display: none; }
