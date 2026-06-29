@@ -174,7 +174,7 @@ class Presentation {
 
       const logoW = 150;
       const logoH = logo ? Math.round(logoW * (logo.height / logo.width)) : 0;
-      const logoX = 40, logoY = 28;
+      const logoX = W - 40 - logoW, logoY = 28; // logo top-right
       const bodyTop = 142, lineH = 18;
 
       const draw = (ts) => {
@@ -186,7 +186,7 @@ class Presentation {
         ctx.fillStyle = BG;
         ctx.fillRect(0, 0, W, H);
 
-        // ── header: pixelated bronze logo (left) + vendor tag (right) ──
+        // ── header: vendor tag (left) + pixelated bronze logo (right) ──
         if (logo) {
           ctx.save();
           ctx.imageSmoothingEnabled = false;
@@ -195,12 +195,11 @@ class Presentation {
           ctx.restore();
         }
         ctx.font = '12px "IBM Plex Mono", monospace';
-        ctx.textAlign = 'right';
-        ctx.fillStyle = GREY;
-        ctx.fillText('Cadenza Arthouse', W - 40, 44);
-        ctx.fillStyle = DIM;
-        ctx.fillText('Houston, Texas  ·  Est. 2017', W - 40, 62);
         ctx.textAlign = 'left';
+        ctx.fillStyle = GREY;
+        ctx.fillText('Cadenza Arthouse', 40, 44);
+        ctx.fillStyle = DIM;
+        ctx.fillText('Houston, Texas  ·  Est. 2017', 40, 62);
 
         // header divider rule
         ctx.fillStyle = DIM;
