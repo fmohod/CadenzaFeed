@@ -496,6 +496,32 @@ class Presentation {
     this.player.y = ny;
   }
 
+  // Touch action button — same effect as pressing E while standing next to
+  // something. Mirrors the keyboard interact path so game logic is unaware of
+  // the input source.
+  touchInteract(simulation, archive) {
+    if (this._inputCooldown > 0) return;
+    if (this.interactTarget) {
+      this._interact(this.interactTarget, simulation, archive);
+      this._inputCooldown = 0.4;
+    }
+  }
+
+  // A short, human-readable verb for the touch action button, based on what the
+  // player is currently next to (or which modal is open).
+  touchActionLabel() {
+    if (this.terminalOpen) return 'CLOSE';
+    if (this.dialogueOpen) return 'NEXT';
+    const t = this.interactTarget;
+    if (!t) return '';
+    if (t.type === 'npc') return 'TALK';
+    if (t.type === 'record') return 'TAKE';
+    if (t.type === 'terminal') return 'OPEN';
+    if (t.type === 'exit') return 'GO';
+    if (t.type === 'examine') return 'LOOK';
+    return 'USE';
+  }
+
   _interact(item, simulation, archive) {
     if (item.type === 'exit') {
       simulation.travelTo(item.destination);

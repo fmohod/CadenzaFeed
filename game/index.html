@@ -2,7 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>Cadenza Arthouse — Archive</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -13,17 +16,23 @@
   <canvas id="game-canvas"></canvas>
   <button id="reset-btn" title="Clear save data and restart">RESET SAVE</button>
 
-  <!-- Engine: Archive → Simulation → Presentation (+ Audio) -->
-  <script src="engine/archive.js?v=8"></script>
-  <script src="engine/simulation.js?v=8"></script>
-  <script src="engine/audio.js?v=8"></script>
-  <script src="engine/engine.js?v=8"></script>
-  <script src="engine/presentation.js?v=8"></script>
+  <!-- Engine: Archive → Simulation → Presentation (+ Audio + Touch) -->
+  <script src="engine/archive.js?v=9"></script>
+  <script src="engine/simulation.js?v=9"></script>
+  <script src="engine/audio.js?v=9"></script>
+  <script src="engine/engine.js?v=9"></script>
+  <script src="engine/presentation.js?v=9"></script>
+  <script src="engine/touch.js?v=9"></script>
 
   <script>
     const canvas = document.getElementById('game-canvas');
     const presentation = new Presentation(canvas);
     const engine = new Engine();
+
+    // On-screen controls for phones/tablets. Desktop is untouched unless ?touch.
+    if (TouchControls.shouldEnable()) {
+      window.touchControls = new TouchControls(engine);
+    }
 
     document.getElementById('reset-btn').addEventListener('click', () => {
       if (confirm('Reset all save data?')) engine.resetSave();

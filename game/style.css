@@ -1,21 +1,33 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-body {
+html, body {
   background: #0d0b08;
   color: #F6F2EB;
   font-family: 'IBM Plex Mono', monospace;
   overflow: hidden;
+  overscroll-behavior: none;
+  touch-action: none;            /* no scroll/zoom gestures while playing */
+}
+
+body {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
+  min-height: 100dvh;            /* fill the screen on phones, minus browser chrome */
 }
 
+/* Native size on desktop; scale to fit while preserving aspect on smaller/touch
+   screens. min() caps at the native 768px so desktop stays crisp. */
 #game-canvas {
   display: block;
   image-rendering: pixelated;
   border: 1px solid #2a2118;
+  aspect-ratio: 768 / 528;
+  width: min(768px, 100vw, calc(100dvh * 768 / 528));
+  height: auto;
+  touch-action: none;
 }
 
 #reset-btn {
@@ -33,3 +45,13 @@ body {
   z-index: 400;
 }
 #reset-btn:hover { border-color: #A07840; color: #A07840; }
+
+/* On touch devices the bottom-right corner belongs to the action button —
+   move RESET to the top-left, clear of the joystick and buttons. */
+@media (pointer: coarse) {
+  #reset-btn {
+    top: max(12px, env(safe-area-inset-top));
+    left: max(12px, env(safe-area-inset-left));
+    bottom: auto; right: auto;
+  }
+}

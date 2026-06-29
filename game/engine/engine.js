@@ -120,6 +120,13 @@ class Engine {
     window.addEventListener('keyup', e => { this._keys[e.key] = false; });
   }
 
+  // Virtual key input. Touch controls (joystick / on-screen buttons) feed the
+  // same key map the keyboard does, so the game loop is unaware of input source.
+  setVirtualKey(key, down) {
+    this._keys[key] = down;
+    if (down && this.audio) this.audio.unlock();
+  }
+
   _autoSave() {
     if (!this.simulation) return;
     try {
