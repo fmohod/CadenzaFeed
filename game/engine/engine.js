@@ -70,6 +70,10 @@ class Engine {
     // Hand off to presentation for first render
     await this.presentation.init(this.archive, this.simulation, this.bus);
 
+    // Full-screen Archive OS terminal (reads Archive Records, not HTML).
+    this.terminal = new ArchiveTerminal(this);
+    this.terminal.wire();
+
     // Travel to current location
     this.simulation.travelTo(this.simulation.getCurrentLocation());
 

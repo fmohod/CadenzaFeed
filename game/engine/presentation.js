@@ -558,7 +558,8 @@ class Presentation {
       return;
     }
     if (item.type === 'terminal') {
-      this._openTerminal(simulation, archive);
+      // The full-screen Archive OS (engine/terminal.js) listens for this.
+      this._bus.emit('OpenTerminal', {});
       return;
     }
   }
