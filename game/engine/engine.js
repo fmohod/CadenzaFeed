@@ -17,6 +17,7 @@ class Engine {
   constructor() {
     this.bus = new EventBus();
     this.archive = new Archive();
+    this.audio = new AudioManager(this.bus);
     this.simulation = null;
     this.presentation = null;
     this.running = false;
@@ -29,8 +30,10 @@ class Engine {
   async init(presentation) {
     this.presentation = presentation;
 
-    // Boot sequence
+    // Boot sequence — the ENTER that ends it is the user gesture that lets
+    // browsers play audio, so unlock the audio context right here.
     await this.presentation.showBoot(this.archive);
+    this.audio.unlock();
 
     // Load archive from manifest
     const ok = await this.archive.load('manifest.json');
@@ -49,6 +52,10 @@ class Engine {
 
     // Init simulation
     this.simulation = new Simulation(this.archive, this.bus);
+
+    // Audio reacts to engine events (music per area, stingers on recovery/sync).
+    // Wire before the first travelTo so the opening area's music starts.
+    this.audio.wire();
 
     // Load save if exists
     const saved = this._loadSave();
@@ -96,11 +103,18 @@ class Engine {
   _bindInput() {
     window.addEventListener('keydown', e => {
       this._keys[e.key] = true;
+      // First keypress is the user gesture that unlocks browser audio.
+      this.audio.unlock();
       // Toggle dev mode
       if (e.key === 'F12') {
         e.preventDefault();
         this.devMode = !this.devMode;
         this.bus.emit('DevModeToggled', { active: this.devMode });
+      }
+      // Toggle mute
+      if (e.key === 'm' || e.key === 'M') {
+        const muted = this.audio.toggleMute();
+        this.bus.emit('MuteToggled', { muted });
       }
     });
     window.addEventListener('keyup', e => { this._keys[e.key] = false; });

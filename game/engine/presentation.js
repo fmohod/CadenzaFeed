@@ -121,102 +121,139 @@ class Presentation {
     });
   }
 
-  // CRT overlay: scanlines, a slow phosphor scan band, and a vignette.
-  _drawCRT(ctx, frame) {
+  // Subtle CRT overlay — faint scanlines + a gentle vignette, like an old
+  // monitor showing a BIOS POST screen. Kept light so text stays crisp.
+  _drawCRT(ctx) {
     const w = this.canvas.width, h = this.canvas.height;
-    // scanlines
-    ctx.fillStyle = 'rgba(0,0,0,0.22)';
+    ctx.fillStyle = 'rgba(0,0,0,0.16)';
     for (let y = 0; y < h; y += 3) ctx.fillRect(0, y, w, 1);
-    // slow bronze scan band sweeping down
-    const bandY = ((frame * 1.4) % (h + 160)) - 80;
-    const band = ctx.createLinearGradient(0, bandY - 50, 0, bandY + 50);
-    band.addColorStop(0, 'rgba(160,120,64,0)');
-    band.addColorStop(0.5, 'rgba(160,120,64,0.06)');
-    band.addColorStop(1, 'rgba(160,120,64,0)');
-    ctx.fillStyle = band;
-    ctx.fillRect(0, bandY - 50, w, 100);
-    // vignette
-    const vig = ctx.createRadialGradient(w / 2, h / 2, h * 0.28, w / 2, h / 2, h * 0.78);
+    const vig = ctx.createRadialGradient(w / 2, h / 2, h * 0.35, w / 2, h / 2, h * 0.85);
     vig.addColorStop(0, 'rgba(0,0,0,0)');
-    vig.addColorStop(1, 'rgba(0,0,0,0.55)');
+    vig.addColorStop(1, 'rgba(0,0,0,0.4)');
     ctx.fillStyle = vig;
     ctx.fillRect(0, 0, w, h);
   }
 
+  // An Award/AMI-style BIOS POST screen. The "hardware" being detected is the
+  // archive itself — the player is powering on an archive reconstruction machine.
   async showBoot(archive) {
     const logo = await this._prepareBootLogo();
 
     return new Promise(resolve => {
+      const W = this.canvas.width, H = this.canvas.height;
+
+      // BIOS palette: warm greys / white on near-black, bronze for warnings.
+      const WHITE = '#efe9dd', GREY = '#c4bdaf', DIM = '#6f6a60', BRONZE = PALETTE.bronze;
+      const BG = '#060504';
+      const MEM_TARGET = 524288; // 512MB, the classic count-up
+      const MEM_FROM = 1300, MEM_TO = 2700;
+
+      // POST log: each line reveals at its delay. '__MEM__' is the live counter.
       const lines = [
-        { text: 'CADENZA ARCHIVE v0.01', delay: 0 },
-        { text: '', delay: 600 },
-        { text: 'Initializing...', delay: 900 },
-        { text: 'Scanning content providers...', delay: 1800 },
-        { text: '  > Records', delay: 2400 },
-        { text: '  > NPCs', delay: 2700 },
-        { text: '  > Locations', delay: 3000 },
-        { text: '', delay: 3400 },
-        { text: 'Integrity Check...', delay: 3800 },
-        { text: '  0.4%', delay: 4400 },
-        { text: '', delay: 4800 },
-        { text: 'ERROR', delay: 5200, color: PALETTE.red },
-        { text: 'Archive Fragmented', delay: 5600, color: PALETTE.red },
-        { text: '', delay: 6000 },
-        { text: 'Records Found: 8', delay: 6400, color: PALETTE.bronze },
-        { text: 'Connections Found: 0', delay: 6800, color: PALETTE.textDim },
-        { text: '', delay: 7400 },
-        { text: '> Press ENTER to begin recovery', delay: 8000, color: PALETTE.bronze },
+        { text: 'CADENZA BIOS v0.01', at: 0, color: WHITE },
+        { text: 'Copyright (C) 2026 Cadenza Arthouse, Inc.', at: 250, color: GREY },
+        { text: '', at: 550 },
+        { text: 'Archive Core Processor ............ OK', at: 900, color: GREY },
+        { text: '__MEM__', at: 1300, color: GREY },
+        { text: '', at: 2800 },
+        { text: 'Detecting Archive Devices . . .', at: 3000, color: GREY },
+        { text: '    Records ................... Found', at: 3300, color: GREY },
+        { text: '    NPCs ...................... Found', at: 3550, color: GREY },
+        { text: '    Locations ................. Found', at: 3800, color: GREY },
+        { text: '    Terminals ................. Found', at: 4050, color: GREY },
+        { text: '', at: 4350 },
+        { text: 'Archive Integrity Check ......... FRAGMENTED', at: 4750, color: BRONZE },
+        { text: '    Connections Recovered : 0', at: 5100, color: GREY },
+        { text: '', at: 5450 },
+        { text: 'Records Detected : 8', at: 5800, color: WHITE },
       ];
+      const PROMPT_AT = 6300;
 
-      const visible = [];
       let done = false;
-      let frame = 0;
+      let start = null;
 
-      const W = this.canvas.width;
-      const logoW = 300;
+      const logoW = 150;
       const logoH = logo ? Math.round(logoW * (logo.height / logo.width)) : 0;
-      const logoX = Math.round((W - logoW) / 2);
-      const logoY = 16;
-      const textTop = logo ? logoY + logoH + 26 : 80;
-      const lineH = 19;
+      const logoX = 40, logoY = 28;
+      const bodyTop = 142, lineH = 18;
 
-      const draw = () => {
+      const draw = (ts) => {
+        if (ts === undefined) ts = performance.now();
+        if (start === null) start = ts;
+        const elapsed = ts - start;
         const ctx = this.ctx;
-        frame++;
-        ctx.fillStyle = PALETTE.bg;
-        ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
-        // pixelated bronze logo with a faint flicker
+        ctx.fillStyle = BG;
+        ctx.fillRect(0, 0, W, H);
+
+        // ── header: pixelated bronze logo (left) + vendor tag (right) ──
         if (logo) {
           ctx.save();
           ctx.imageSmoothingEnabled = false;
-          ctx.globalAlpha = 0.9 + 0.1 * Math.sin(frame * 0.25);
+          ctx.globalAlpha = 0.92 + 0.08 * Math.sin(elapsed / 90);
           ctx.drawImage(logo, logoX, logoY, logoW, logoH);
           ctx.restore();
         }
+        ctx.font = '12px "IBM Plex Mono", monospace';
+        ctx.textAlign = 'right';
+        ctx.fillStyle = GREY;
+        ctx.fillText('Cadenza Arthouse', W - 40, 44);
+        ctx.fillStyle = DIM;
+        ctx.fillText('Houston, Texas  ·  Est. 2017', W - 40, 62);
+        ctx.textAlign = 'left';
 
-        // terminal text
-        ctx.font = '14px "IBM Plex Mono", monospace';
-        let y = textTop;
-        for (const line of visible) {
-          ctx.fillStyle = line.color || PALETTE.text;
-          ctx.fillText(line.text, 60, y);
+        // header divider rule
+        ctx.fillStyle = DIM;
+        ctx.fillRect(40, 120, W - 80, 1);
+
+        // ── POST body ──
+        ctx.font = '13px "IBM Plex Mono", monospace';
+        let y = bodyTop;
+        for (const line of lines) {
+          if (elapsed < line.at) break;
+          let text = line.text, color = line.color || GREY;
+          if (text === '__MEM__') {
+            if (elapsed < MEM_TO) {
+              const p = Math.max(0, (elapsed - MEM_FROM) / (MEM_TO - MEM_FROM));
+              text = `Memory Test : ${Math.floor(p * MEM_TARGET)}K`;
+            } else {
+              text = `Memory Test : ${MEM_TARGET}K OK`;
+            }
+          }
+          ctx.fillStyle = color;
+          ctx.fillText(text, 40, y);
           y += lineH;
         }
 
-        // CRT overlay on top of everything
-        this._drawCRT(ctx, frame);
+        // ── prompt + blinking cursor ──
+        if (elapsed >= PROMPT_AT) {
+          ctx.fillStyle = WHITE;
+          const prompt = 'Press ENTER to begin recovery';
+          ctx.fillText(prompt, 40, y + 10);
+          if (Math.floor(elapsed / 500) % 2 === 0) {
+            const cw = ctx.measureText(prompt + ' ').width;
+            ctx.fillStyle = BRONZE;
+            ctx.fillRect(40 + cw, y - 1, 9, 13);
+          }
+        }
+
+        // ── footer chrome: key hints + BIOS serial ──
+        ctx.font = '11px "IBM Plex Mono", monospace';
+        ctx.fillStyle = DIM;
+        ctx.fillText('ENTER = Recover Records     F10 = Setup     F12 = Boot Menu', 40, H - 34);
+        ctx.textAlign = 'center';
+        ctx.fillText('2026/06/28-ARCHIVE-CORE-CADENZA-001', W / 2, H - 16);
+        ctx.textAlign = 'left';
+
+        this._drawCRT(ctx);
 
         if (!done) requestAnimationFrame(draw);
       };
-      draw();
-
-      lines.forEach(line => {
-        setTimeout(() => { visible.push(line); }, line.delay);
-      });
+      this._bootDrawForTest = draw; // verification hook
+      draw();                       // render frame 0 immediately, then self-animate
 
       const onKey = e => {
-        if (e.key === 'Enter' && visible.length >= lines.length) {
+        if (e.key === 'Enter' && start !== null && (performance.now() - start) >= PROMPT_AT) {
           done = true;
           window.removeEventListener('keydown', onKey);
           this.bootDone = true;
