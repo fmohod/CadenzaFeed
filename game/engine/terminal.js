@@ -91,8 +91,21 @@ class ArchiveTerminal {
     pre.className = 'at-pre';
     pre.textContent = info.join('\n');
     c.appendChild(pre);
+    // Maintenance lives in the machine's own settings, not on the player's HUD.
+    this._actionRow([{ label: 'RESET SAVE DATA', danger: true, action: () => this._resetSave() }]);
     this._foot('[ESC] back');
     this.selectables = [];
+  }
+
+  // Wipe local progress + read history, then restart. This is the only way to
+  // reset — relocated here from the HUD so it reads like a real machine's settings.
+  _resetSave() {
+    if (!confirm('Wipe all local archive data (progress + read history) and restart?')) return;
+    try {
+      localStorage.removeItem('cadenza-save');
+      localStorage.removeItem('cadenza-read');
+    } catch (e) {}
+    location.reload();
   }
 
   _records() {
@@ -245,7 +258,7 @@ class ArchiveTerminal {
     this.actionWrap.innerHTML = '';
     actions.forEach(a => {
       const b = document.createElement('button');
-      b.className = 'at-btn';
+      b.className = 'at-btn' + (a.danger ? ' at-btn-danger' : '');
       b.textContent = a.label;
       b.addEventListener('click', a.action);
       this.actionWrap.appendChild(b);
@@ -330,13 +343,15 @@ class ArchiveTerminal {
     root.id = 'archive-terminal';
     root.innerHTML = `
       <div class="at-bar">
-        <button class="at-back" type="button">‹ BACK</button>
         <span class="at-bar-title"></span>
         <span class="at-bar-status"></span>
       </div>
       <div class="at-content"></div>
       <div class="at-actions"></div>
-      <div class="at-foot"></div>
+      <div class="at-nav">
+        <button class="at-back" type="button">‹ BACK</button>
+        <span class="at-foot"></span>
+      </div>
     `;
     document.body.appendChild(root);
     this.root = root;
@@ -366,21 +381,23 @@ class ArchiveTerminal {
         content: ''; position: absolute; inset: 0; pointer-events: none;
         background: repeating-linear-gradient(rgba(0,0,0,0) 0 2px, rgba(0,0,0,0.18) 2px 3px);
       }
-      .at-bar { display: flex; align-items: center; gap: 12px;
+      .at-bar { display: flex; align-items: baseline; gap: 12px;
         border-bottom: 1px solid #3a2e1e; padding-bottom: 8px; margin-bottom: 10px; }
-      .at-back { flex: none; background: rgba(40,33,24,0.85); border: 1px solid #A07840;
-        color: #F6F2EB; font-family: inherit; font-size: 12px; letter-spacing: 1px;
-        padding: 8px 14px; min-height: 40px; cursor: pointer; }
-      .at-back:hover { background: #A07840; color: #0d0b08; }
-      .at-back:active { transform: scale(0.95); }
       .at-bar-title { flex: 1; min-width: 0; color: #A07840; font-size: 15px; letter-spacing: 2px;
         text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
       .at-bar-status { flex: none; color: #6f6a60; font-size: 11px; white-space: nowrap; }
       .at-content { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
       .at-actions { display: flex; gap: 10px; flex-wrap: wrap; padding: 8px 0; }
       .at-actions:empty { display: none; }
-      .at-foot { border-top: 1px solid #3a2e1e; padding-top: 8px; margin-top: 8px;
-        color: #6f6a60; font-size: 11px; letter-spacing: 1px; }
+      .at-nav { display: flex; align-items: center; gap: 14px;
+        border-top: 1px solid #3a2e1e; padding-top: 10px; margin-top: 8px; }
+      .at-back { flex: none; background: rgba(40,33,24,0.85); border: 1px solid #A07840;
+        color: #F6F2EB; font-family: inherit; font-size: 13px; letter-spacing: 1px;
+        padding: 10px 20px; min-height: 44px; cursor: pointer; }
+      .at-back:hover { background: #A07840; color: #0d0b08; }
+      .at-back:active { transform: scale(0.96); }
+      .at-foot { flex: 1; min-width: 0; color: #6f6a60; font-size: 11px; letter-spacing: 1px;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
       .at-list { display: flex; flex-direction: column; }
       .at-item { display: flex; justify-content: space-between; align-items: center;
@@ -394,6 +411,8 @@ class ArchiveTerminal {
       .at-btn { background: rgba(40,33,24,0.8); border: 1px solid #A07840; color: #F6F2EB;
         font-family: inherit; font-size: 12px; letter-spacing: 1px; padding: 8px 14px; cursor: pointer; }
       .at-btn:hover { background: #A07840; color: #0d0b08; }
+      .at-btn-danger { border-color: #8a3a2a; color: #d89a8a; }
+      .at-btn-danger:hover { background: #8a3a2a; color: #F6F2EB; }
 
       .at-pre { white-space: pre-wrap; font-size: 13px; line-height: 1.6; color: #c8c2b4; }
       .at-loading, .at-empty { color: #6f6a60; padding: 24px 4px; font-size: 13px; }

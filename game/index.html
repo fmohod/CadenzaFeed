@@ -14,7 +14,7 @@
 <body>
 
   <canvas id="game-canvas"></canvas>
-  <button id="reset-btn" title="Clear save data and restart">RESET SAVE</button>
+  <!-- Save reset lives inside the in-game terminal (SYSTEM screen), not on the HUD. -->
 
   <!-- Engine: Archive → Simulation → Presentation (+ Audio + Records + Terminal + Touch) -->
   <script src="engine/archive.js?v=12"></script>
@@ -23,7 +23,7 @@
   <script src="engine/record.js?v=13"></script>
   <script src="engine/engine.js?v=12"></script>
   <script src="engine/presentation.js?v=12"></script>
-  <script src="engine/terminal.js?v=14"></script>
+  <script src="engine/terminal.js?v=15"></script>
   <script src="engine/touch.js?v=12"></script>
 
   <script>
@@ -35,10 +35,6 @@
     if (TouchControls.shouldEnable()) {
       window.touchControls = new TouchControls(engine);
     }
-
-    document.getElementById('reset-btn').addEventListener('click', () => {
-      if (confirm('Reset all save data?')) engine.resetSave();
-    });
 
     engine.init(presentation).catch(e => {
       console.error('Engine init failed:', e.message, e.stack);
