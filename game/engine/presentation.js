@@ -227,7 +227,7 @@ class Presentation {
         // ── prompt + blinking cursor ──
         if (elapsed >= PROMPT_AT) {
           ctx.fillStyle = WHITE;
-          const prompt = 'Press ENTER to begin recovery';
+          const prompt = 'Press ENTER or TAP to begin recovery';
           ctx.fillText(prompt, 40, y + 10);
           if (Math.floor(elapsed / 500) % 2 === 0) {
             const cw = ctx.measureText(prompt + ' ').width;
@@ -239,7 +239,7 @@ class Presentation {
         // ── footer chrome: key hints + BIOS serial ──
         ctx.font = '11px "IBM Plex Mono", monospace';
         ctx.fillStyle = DIM;
-        ctx.fillText('ENTER = Recover Records     F10 = Setup     F12 = Boot Menu', 40, H - 34);
+        ctx.fillText('ENTER / TAP = Recover Records     F10 = Setup     F12 = Boot Menu', 40, H - 34);
         ctx.textAlign = 'center';
         ctx.fillText('2026/06/28-ARCHIVE-CORE-CADENZA-001', W / 2, H - 16);
         ctx.textAlign = 'left';
@@ -251,15 +251,22 @@ class Presentation {
       this._bootDrawForTest = draw; // verification hook
       draw();                       // render frame 0 immediately, then self-animate
 
-      const onKey = e => {
-        if (e.key === 'Enter' && start !== null && (performance.now() - start) >= PROMPT_AT) {
-          done = true;
-          window.removeEventListener('keydown', onKey);
-          this.bootDone = true;
-          resolve();
-        }
+      // Dismiss on ENTER (keyboard) OR a tap/click anywhere (touch / mouse),
+      // but only once the prompt is showing. The tap is also the user gesture
+      // browsers require before audio can play.
+      const finish = () => {
+        if (done || start === null) return;
+        if ((performance.now() - start) < PROMPT_AT) return;
+        done = true;
+        window.removeEventListener('keydown', onKey);
+        window.removeEventListener('pointerdown', onTap);
+        this.bootDone = true;
+        resolve();
       };
+      const onKey = e => { if (e.key === 'Enter') finish(); };
+      const onTap = () => finish();
       window.addEventListener('keydown', onKey);
+      window.addEventListener('pointerdown', onTap);
     });
   }
 
@@ -291,7 +298,7 @@ class Presentation {
     dlg.innerHTML = `
       <div id="dialogue-speaker" style="color:${PALETTE.bronze};font-size:11px;letter-spacing:2px;margin-bottom:8px;"></div>
       <div id="dialogue-text" style="font-size:14px;line-height:1.7;"></div>
-      <div style="margin-top:14px;color:${PALETTE.textDim};font-size:11px;">[ ENTER ] Continue</div>
+      <div style="margin-top:14px;color:${PALETTE.textDim};font-size:11px;">[ ENTER ] or tap to continue</div>
     `;
     document.body.appendChild(dlg);
 
@@ -565,17 +572,27 @@ class Presentation {
     document.getElementById('dialogue-text').textContent = text;
     document.getElementById('dialogue').style.display = 'block';
 
+    // Advance on key OR tap anywhere (keyboard-free on mobile). The 100ms delay
+    // before binding stops the same press/tap that opened it from closing it.
+    const close = () => {
+      document.getElementById('dialogue').style.display = 'none';
+      this.dialogueOpen = false;
+      window.removeEventListener('keydown', onKey);
+      window.removeEventListener('pointerdown', onTap);
+      if (this.dialogueCallback) this.dialogueCallback();
+      this.dialogueCallback = null;
+    };
     const onKey = e => {
       if (e.key === 'Enter' || e.key === 'e' || e.key === 'E' || e.key === ' ') {
         e.preventDefault();
-        document.getElementById('dialogue').style.display = 'none';
-        this.dialogueOpen = false;
-        window.removeEventListener('keydown', onKey);
-        if (this.dialogueCallback) this.dialogueCallback();
-        this.dialogueCallback = null;
+        close();
       }
     };
-    setTimeout(() => window.addEventListener('keydown', onKey), 100);
+    const onTap = () => close();
+    setTimeout(() => {
+      window.addEventListener('keydown', onKey);
+      window.addEventListener('pointerdown', onTap);
+    }, 100);
   }
 
   _openTerminal(simulation, archive) {
@@ -589,7 +606,7 @@ class Presentation {
     lines.push(`<div style="color:${PALETTE.textDim};margin-bottom:16px;">Records: ${recovered} / ${total} &nbsp;|&nbsp; Era: ${simulation.getEra()}</div>`);
 
     if (hasPending) {
-      lines.push(`<div style="color:${PALETTE.red};margin-bottom:12px;">! Sync pending — press TAB to synchronize</div>`);
+      lines.push(`<div style="color:${PALETTE.red};margin-bottom:12px;">! Sync pending — press TAB or use the SYNC button</div>`);
     }
 
     // Recovered records
@@ -630,21 +647,27 @@ class Presentation {
       }
     }
 
-    lines.push(`<div style="margin-top:20px;color:${PALETTE.textDim};font-size:11px;">[ ENTER ] Close terminal</div>`);
+    lines.push(`<div style="margin-top:20px;color:${PALETTE.textDim};font-size:11px;">[ ENTER ] or tap outside to close</div>`);
 
     const term = document.getElementById('terminal');
     term.innerHTML = lines.join('');
     term.style.display = 'block';
 
-    const onKey = e => {
-      if (e.key === 'Enter' || e.key === 'Escape') {
-        e.preventDefault();
-        term.style.display = 'none';
-        this.terminalOpen = false;
-        window.removeEventListener('keydown', onKey);
-      }
+    const close = () => {
+      term.style.display = 'none';
+      this.terminalOpen = false;
+      window.removeEventListener('keydown', onKey);
+      window.removeEventListener('pointerdown', onTap);
     };
-    setTimeout(() => window.addEventListener('keydown', onKey), 100);
+    const onKey = e => {
+      if (e.key === 'Enter' || e.key === 'Escape') { e.preventDefault(); close(); }
+    };
+    // Tap outside the panel closes it; taps inside scroll/read normally.
+    const onTap = e => { if (!term.contains(e.target)) close(); };
+    setTimeout(() => {
+      window.addEventListener('keydown', onKey);
+      window.addEventListener('pointerdown', onTap);
+    }, 100);
   }
 
   render(simulation, archive, devMode) {
