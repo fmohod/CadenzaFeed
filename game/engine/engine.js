@@ -1,17 +1,9 @@
 // ENGINE CORE
-// Event bus. Game loop. Input. Save/load. Coordinates Archive + Simulation + Presentation.
+// Game loop. Input. Save/load. Coordinates Archive + Simulation + Presentation.
 // Never references specific Records, NPCs, or Locations by name.
-
-class EventBus {
-  constructor() { this._listeners = {}; }
-  on(event, fn) {
-    if (!this._listeners[event]) this._listeners[event] = [];
-    this._listeners[event].push(fn);
-  }
-  emit(event, data) {
-    (this._listeners[event] || []).forEach(fn => fn(data));
-  }
-}
+//
+// EventBus moved to platform/events/bus.js (Architecture v1.0 — first extraction).
+// It is loaded as a global before this file; the Engine just constructs one.
 
 class Engine {
   constructor() {

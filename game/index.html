@@ -16,15 +16,18 @@
   <canvas id="game-canvas"></canvas>
   <!-- Save reset lives inside the in-game terminal (SYSTEM screen), not on the HUD. -->
 
+  <!-- platform/ — shared libraries (Architecture v1.0), loaded before app code -->
+  <script src="/platform/events/bus.js?v=16"></script>
+
   <!-- Engine: Archive → Simulation → Presentation (+ Audio + Records + Terminal + Touch) -->
-  <script src="engine/archive.js?v=12"></script>
-  <script src="engine/simulation.js?v=12"></script>
-  <script src="engine/audio.js?v=12"></script>
-  <script src="engine/record.js?v=13"></script>
-  <script src="engine/engine.js?v=12"></script>
-  <script src="engine/presentation.js?v=12"></script>
-  <script src="engine/terminal.js?v=15"></script>
-  <script src="engine/touch.js?v=12"></script>
+  <script src="engine/archive.js?v=16"></script>
+  <script src="engine/simulation.js?v=16"></script>
+  <script src="engine/audio.js?v=16"></script>
+  <script src="engine/record.js?v=16"></script>
+  <script src="engine/engine.js?v=16"></script>
+  <script src="engine/presentation.js?v=16"></script>
+  <script src="engine/terminal.js?v=16"></script>
+  <script src="engine/touch.js?v=16"></script>
 
   <script>
     const canvas = document.getElementById('game-canvas');
