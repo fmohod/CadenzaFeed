@@ -1,70 +1,602 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="robots" content="noindex">
-  <title>Cadenza Archive — Terminal</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Cadenza Archive Terminal</title>
+    <!-- Importing pixel and monospace fonts to match the retro/SNES/terminal aesthetic -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- CORE VARIABLES --- */
+        :root {
+            --bg-color: #050505;
+            --panel-bg: #111111;
+            --text-main: #eaeaea;
+            --text-dim: #888888;
+            --accent-glow: rgba(255, 255, 255, 0.1);
+            --status-green: #4caf50;
+            --status-red: #f44336;
+            
+            --font-pixel: 'VT323', monospace;
+            --font-mono: 'Share Tech Mono', monospace;
+        }
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+        /* --- GLOBAL RESET & CRT EFFECTS --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none; /* Prevent text selection for app-like feel */
+        }
 
-  <style>
-    /* The standalone shell owns only the boot/background chrome. The terminal
-       injects its own full-screen styles (engine/terminal.js #archive-terminal). */
-    html, body {
-      margin: 0; height: 100%; background: #050403; color: #c8c2b4;
-      font-family: 'IBM Plex Mono', monospace; overflow: hidden;
-    }
-    #boot {
-      position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
-      flex-direction: column; gap: 14px; background: #050403; z-index: 10;
-      transition: opacity 0.4s ease;
-    }
-    body.booted #boot { opacity: 0; pointer-events: none; }
-    #boot .b-title { color: #A07840; letter-spacing: 3px; font-size: 15px; text-transform: uppercase; }
-    #boot .b-status { color: #6f6a60; font-size: 12px; letter-spacing: 1px; }
-    #boot::after { /* scanlines, matching the terminal aesthetic */
-      content: ''; position: absolute; inset: 0; pointer-events: none;
-      background: repeating-linear-gradient(rgba(0,0,0,0) 0 2px, rgba(0,0,0,0.18) 2px 3px);
-    }
-  </style>
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: var(--font-mono);
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
 
-  <!-- PlatformConfig (INTERFACE_CONTRACTS.md §2). archiveRoot '' = same-origin
-       root; the apex/subdomain both serve the article archive at root. mode is
-       overridable via ?mode=archivist. The shell never hardcodes paths. -->
-  <script>
-    window.CADENZA_CONFIG = {
-      interfaceVersion: 1,
-      archiveRoot: '',        // articles resolve at the deployment root
-      mode: 'public',         // default; ?mode=archivist unlocks full access
-      developer: false
-    };
-  </script>
+        /* Scanlines */
+        body::before {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 2;
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+        }
+
+        /* Screen Flicker / Phosphor Glow */
+        body::after {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: radial-gradient(circle, rgba(255,255,255,0.03) 0%, rgba(0,0,0,0.4) 100%);
+            z-index: 3;
+            pointer-events: none;
+            animation: flicker 0.15s infinite;
+        }
+
+        @keyframes flicker {
+            0% { opacity: 0.95; }
+            50% { opacity: 1; }
+            100% { opacity: 0.98; }
+        }
+
+        /* --- BOOT SEQUENCE --- */
+        #boot-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 40px;
+            font-size: 1.2rem;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: flex-start;
+            background: var(--bg-color);
+        }
+
+        .boot-line {
+            opacity: 0;
+            margin-bottom: 8px;
+        }
+
+        .skip-hint {
+            position: absolute;
+            bottom: 40px;
+            right: 40px;
+            font-size: 1rem;
+            color: var(--text-dim);
+            animation: blink 1.5s infinite;
+        }
+
+        /* --- MAIN INTERFACE --- */
+        #main-interface {
+            display: none;
+            width: 100%;
+            max-width: 900px;
+            height: 100%;
+            padding: 20px;
+            flex-direction: column;
+            justify-content: space-between;
+            z-index: 5;
+            position: relative;
+        }
+
+        /* Beveled 16-bit Panel Style */
+        .panel {
+            background: var(--panel-bg);
+            border: 4px solid;
+            border-top-color: #444;
+            border-left-color: #444;
+            border-bottom-color: #000;
+            border-right-color: #000;
+            padding: 30px;
+            box-shadow: 10px 10px 0px rgba(0,0,0,0.5);
+            position: relative;
+        }
+
+        /* Header / Logo */
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px dashed #444;
+            padding-bottom: 20px;
+        }
+
+        .logo-img {
+            max-width: 250px;
+            margin-bottom: 15px;
+            /* Render logo with high contrast/monochrome for terminal feel */
+            filter: grayscale(100%) contrast(200%) brightness(150%) drop-shadow(0 0 5px rgba(255,255,255,0.2));
+        }
+
+        .title {
+            font-family: var(--font-pixel);
+            font-size: 2.5rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* System Status Block */
+        .sys-status {
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+            color: var(--text-dim);
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .status-light {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background-color: var(--status-green);
+            border-radius: 50%;
+            margin-right: 8px;
+            box-shadow: 0 0 8px var(--status-green);
+            animation: blink 2s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* Menu */
+        .menu-title {
+            font-family: var(--font-pixel);
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            color: var(--text-dim);
+        }
+
+        .menu-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .menu-item {
+            font-size: 1.4rem;
+            padding: 8px 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            border: 2px solid transparent;
+            transition: all 0.1s;
+        }
+
+        .menu-item .cursor {
+            margin-right: 15px;
+            opacity: 0;
+            color: #fff;
+        }
+
+        /* Active/Hover states mapping to keyboard selection */
+        .menu-item.active {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid #555;
+            border-top-color: #222;
+            border-left-color: #222;
+            border-bottom-color: #777;
+            border-right-color: #777;
+        }
+
+        .menu-item.active .cursor {
+            opacity: 1;
+            animation: rapid-blink 0.5s infinite;
+        }
+
+        .menu-item.disabled {
+            color: #555;
+        }
+
+        @keyframes rapid-blink {
+            0%, 49% { opacity: 1; }
+            50%, 100% { opacity: 0; }
+        }
+
+        /* Footer */
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            font-size: 1rem;
+            padding: 10px 20px;
+            background: #0a0a0a;
+            border-top: 2px solid #333;
+            color: var(--text-dim);
+        }
+
+        .typing-cursor::after {
+            content: '█';
+            animation: blink 1s step-start infinite;
+        }
+
+        /* Modals */
+        .modal-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 20;
+        }
+
+        .modal-content {
+            max-width: 600px;
+            width: 90%;
+        }
+
+        .modal-body {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .sys-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+            color: #ccc;
+        }
+
+        .btn-close {
+            display: inline-block;
+            padding: 5px 15px;
+            background: #222;
+            border: 2px solid #fff;
+            border-bottom-color: #555;
+            border-right-color: #555;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        
+        .btn-close:active {
+            border-top-color: #555;
+            border-left-color: #555;
+            border-bottom-color: #fff;
+            border-right-color: #fff;
+        }
+
+        /* Responsiveness */
+        @media (max-width: 768px) {
+            .title { font-size: 1.8rem; }
+            .sys-status { font-size: 0.9rem; flex-direction: column; }
+            .menu-item { font-size: 1.1rem; }
+            .panel { padding: 15px; }
+            .sys-grid { grid-template-columns: 1fr; }
+            .footer { flex-direction: column; text-align: center; gap: 5px; font-size: 0.8rem; }
+        }
+    </style>
 </head>
 <body>
 
-  <div id="boot">
-    <div class="b-title">CADENZA ARCHIVE OS</div>
-    <div class="b-status" id="boot-status">INITIALIZING…</div>
-  </div>
+    <!-- BOOT SEQUENCE -->
+    <div id="boot-screen">
+        <div class="boot-line" id="l1">CADENZA ARCHIVE SYSTEM</div>
+        <div class="boot-line" id="l2">INITIALIZING...</div>
+        <div class="boot-line" id="l3">Loading archive modules...</div>
+        <div class="boot-line" id="l4">Checking storage...</div>
+        <div class="boot-line" id="l5">Synchronizing records...</div>
+        <div class="boot-line" id="l6" style="margin-top: 20px; color: var(--status-green);">READY</div>
+        
+        <div class="skip-hint">[ Press ENTER or CLICK to start ]</div>
+    </div>
 
-  <!-- Shared platform library (root-absolute so it works at /terminal/ or a
-       subdomain root) -->
-  <script src="/platform/events/bus.js?v=16"></script>
+    <!-- MAIN INTERFACE -->
+    <div id="main-interface">
+        <div style="flex-grow: 1; display: flex; flex-direction: column; justify-content: center;">
+            <div class="panel">
+                
+                <div class="header">
+                    <!-- Referencing the official logo provided -->
+                    <img src="./cadenza-logo-1.png" alt="Cadenza Arthouse Logo" class="logo-img" onerror="this.style.display='none'">
+                    <h1 class="title">Cadenza Archive Terminal</h1>
+                </div>
 
-  <!-- Archive + Record services + the Terminal UI. NOTE: simulation/engine/
-       presentation/audio/touch are deliberately NOT loaded — there is no game
-       world here. The standalone host supplies the engine-shaped surface. -->
-  <script src="/game/engine/archive.js?v=17"></script>
-  <script src="/game/engine/record.js?v=16"></script>
-  <script src="/game/engine/terminal.js?v=16"></script>
+                <div class="sys-status">
+                    <div>Archive Build: <span style="color:#fff">1.0.4</span></div>
+                    <div>Terminal Version: <span style="color:#fff">0.9b</span></div>
+                    <div>Status: <span class="status-light"></span>ONLINE</div>
+                    <div>Archive Nodes Connected: <span style="color:#fff">4</span></div>
+                </div>
 
-  <!-- Standalone host: builds the Archive, wraps it, boots the Terminal -->
-  <script src="standalone-host.js?v=1"></script>
+                <h2 class="menu-title">MAIN MENU</h2>
+                <ul class="menu-list" id="menu-list">
+                    <li class="menu-item disabled" data-action="enter-terminal">
+                        <span class="cursor">▶</span> 1. Enter Archive Terminal <span style="font-size:0.8em; margin-left:10px;">[COMING SOON]</span>
+                    </li>
+                    <li class="menu-item" data-action="link" data-href="https://www.cadenzaarthouse.com">
+                        <span class="cursor">▶</span> 2. Website
+                    </li>
+                    <li class="menu-item" data-action="link" data-href="https://www.cadenzaarthouse.com/all.html">
+                        <span class="cursor">▶</span> 3. Press Archive
+                    </li>
+                    <li class="menu-item" data-action="modal" data-target="about-modal">
+                        <span class="cursor">▶</span> 4. About Cadenza Arthouse
+                    </li>
+                    <li class="menu-item" data-action="modal" data-target="sysinfo-modal">
+                        <span class="cursor">▶</span> 5. System Information
+                    </li>
+                </ul>
+            </div>
+        </div>
 
+        <div class="footer">
+            <div>CONNECTED</div>
+            <div>terminal.cadenzaarthouse.com</div>
+            <div>READY</div>
+            <div><span id="clock">00:00:00</span> <span class="typing-cursor"></span></div>
+        </div>
+    </div>
+
+    <!-- MODALS -->
+    <div class="modal-overlay" id="about-modal">
+        <div class="panel modal-content">
+            <h2 class="menu-title">ABOUT CADENZA ARTHOUSE</h2>
+            <div class="modal-body">
+                The Archive Terminal is an experimental interface into the Cadenza Arthouse archive. 
+                <br><br>
+                It will eventually become the canonical interface shared between the website, RPG, AI systems, and future applications—bridging the gap between cultural documentation and technical infrastructure.
+            </div>
+            <div class="btn-close" onclick="closeModal()">[ ACKNOWLEDGE ]</div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="sysinfo-modal">
+        <div class="panel modal-content">
+            <h2 class="menu-title">SYSTEM DIAGNOSTICS</h2>
+            <div class="modal-body sys-grid">
+                <div>Developer:</div><div style="color:#fff">Cadenza Core Eng.</div>
+                <div>Repository Build:</div><div style="color:#fff">a7x9_stable</div>
+                <div>Environment:</div><div style="color:#fff" id="env-display">Detecting...</div>
+                <div>Resolution:</div><div style="color:#fff" id="res-display">Detecting...</div>
+                <div>Archive Count:</div><div style="color:#fff">7,492 Records</div>
+                <div>Memory:</div><div style="color:#fff">640K OK</div>
+            </div>
+            <div class="btn-close" onclick="closeModal()">[ RETURN ]</div>
+        </div>
+    </div>
+
+    <script>
+        /** * SYNTHESIZED RETRO AUDIO ENGINE
+         * Uses Web Audio API to generate beeps without external files.
+         */
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        function playTone(freq, type, duration, vol = 0.1) {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            
+            oscillator.type = type;
+            oscillator.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            
+            gainNode.gain.setValueAtTime(vol, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            
+            oscillator.start();
+            oscillator.stop(audioCtx.currentTime + duration);
+        }
+
+        const SFX = {
+            boot: () => {
+                // Ascending sequence for startup
+                playTone(400, 'square', 0.1, 0.05);
+                setTimeout(() => playTone(600, 'square', 0.1, 0.05), 100);
+                setTimeout(() => playTone(800, 'square', 0.3, 0.05), 200);
+            },
+            move: () => playTone(300, 'square', 0.05, 0.02),
+            select: () => {
+                playTone(600, 'square', 0.05, 0.05);
+                setTimeout(() => playTone(800, 'square', 0.1, 0.05), 50);
+            },
+            error: () => playTone(150, 'sawtooth', 0.2, 0.05)
+        };
+
+
+        /**
+         * BOOT SEQUENCE LOGIC
+         */
+        const bootScreen = document.getElementById('boot-screen');
+        const mainInterface = document.getElementById('main-interface');
+        let isBooting = true;
+        let bootTimeouts = [];
+
+        function runBootSequence() {
+            const delays = [500, 1200, 2000, 2800, 3600, 4200];
+            
+            for (let i = 1; i <= 6; i++) {
+                let t = setTimeout(() => {
+                    document.getElementById(`l${i}`).style.opacity = 1;
+                    if(i < 6) playTone(800, 'square', 0.02, 0.01); // typing blip
+                }, delays[i-1]);
+                bootTimeouts.push(t);
+            }
+        }
+
+        function finishBoot() {
+            if (!isBooting) return;
+            isBooting = false;
+            
+            // Clear any pending boot animations
+            bootTimeouts.forEach(clearTimeout);
+            
+            // Try to play audio (requires user interaction first usually)
+            SFX.boot();
+
+            bootScreen.style.display = 'none';
+            mainInterface.style.display = 'flex';
+            
+            // Initialize system info
+            document.getElementById('env-display').innerText = navigator.userAgent.split(' ')[0] + ' ENV';
+            document.getElementById('res-display').innerText = `${window.screen.width}x${window.screen.height}`;
+            
+            updateMenuUI();
+        }
+
+        // Start Boot on load
+        window.onload = runBootSequence;
+
+        // Skip boot on interaction
+        window.addEventListener('keydown', (e) => {
+            if (isBooting && (e.key === 'Enter' || e.key === ' ')) {
+                finishBoot();
+            }
+        });
+        window.addEventListener('click', () => {
+            if (isBooting) finishBoot();
+        });
+
+
+        /**
+         * MENU NAVIGATION LOGIC
+         */
+        const menuItems = document.querySelectorAll('.menu-item');
+        let currentIndex = 1; // Start on the first enabled item (Website)
+        let inModal = false;
+
+        function updateMenuUI() {
+            menuItems.forEach((item, index) => {
+                if (index === currentIndex) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+        }
+
+        function handleSelect() {
+            const selected = menuItems[currentIndex];
+            const action = selected.getAttribute('data-action');
+            
+            if (selected.classList.contains('disabled')) {
+                SFX.error();
+                return;
+            }
+
+            SFX.select();
+
+            if (action === 'link') {
+                const href = selected.getAttribute('data-href');
+                // Small delay to hear the sound before navigating
+                setTimeout(() => window.location.href = href, 300);
+            } else if (action === 'modal') {
+                const target = selected.getAttribute('data-target');
+                document.getElementById(target).style.display = 'flex';
+                inModal = true;
+            }
+        }
+
+        function closeModal() {
+            document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none');
+            inModal = false;
+            SFX.move(); // Use move sound for closing
+        }
+
+        // Keyboard Controls
+        window.addEventListener('keydown', (e) => {
+            if (isBooting) return;
+
+            if (inModal) {
+                if (e.key === 'Escape' || e.key === 'Enter') closeModal();
+                return;
+            }
+
+            if (e.key === 'ArrowDown') {
+                currentIndex = (currentIndex + 1) % menuItems.length;
+                SFX.move();
+                updateMenuUI();
+            } else if (e.key === 'ArrowUp') {
+                currentIndex = (currentIndex - 1 + menuItems.length) % menuItems.length;
+                SFX.move();
+                updateMenuUI();
+            } else if (e.key === 'Enter') {
+                handleSelect();
+            }
+        });
+
+        // Mouse Controls
+        menuItems.forEach((item, index) => {
+            item.addEventListener('mouseenter', () => {
+                if (isBooting || inModal || currentIndex === index) return;
+                currentIndex = index;
+                SFX.move();
+                updateMenuUI();
+            });
+            
+            item.addEventListener('click', () => {
+                if (isBooting || inModal) return;
+                currentIndex = index;
+                handleSelect();
+            });
+        });
+
+
+        /**
+         * FOOTER CLOCK
+         */
+        function updateClock() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('en-US', { hour12: false });
+            document.getElementById('clock').innerText = timeString;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+    </script>
 </body>
 </html>
