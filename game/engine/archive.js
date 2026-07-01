@@ -2,9 +2,9 @@
 // Knows what exists. The website IS the database.
 //
 // Records are NOT stored as separate files. They are read directly from the
-// real article folders (../0001/index.html, ../0002/index.html, ...) by parsing
-// the standardized <meta name="game-*"> tags each article carries. Publishing a
-// new article with those tags makes it appear in the game automatically.
+// real article folders (/0001/index.html, /0002/index.html, ... resolved against
+// archiveRoot) by parsing the standardized <meta name="game-*"> tags each article
+// carries. Publishing a new article with those tags makes it appear automatically.
 //
 // The engine never hardcodes which articles exist. It discovers them — using the
 // same GitHub API the website homepage already uses — then reads their metadata.
@@ -13,7 +13,7 @@
 // remain as JSON under game/content/.
 
 class Archive {
-  constructor() {
+  constructor(opts = {}) {
     this.manifest = null;
     this.records = new Map();
     this.npcs = new Map();
@@ -23,6 +23,14 @@ class Archive {
     this.errors = [];
     this.GITHUB_USER = 'fmohod';
     this.GITHUB_REPO = 'CadenzaFeed';
+
+    // Where the article archive lives. '' = same-origin root, so the app reads
+    // local files locally and deployed files in production — and stays correct
+    // whether served from /game/ or a subdomain root. PlatformConfig will supply
+    // this in Step 2; defaulting here keeps the change additive.
+    this.archiveRoot = opts.archiveRoot
+      ?? (typeof window !== 'undefined' && window.CADENZA_CONFIG?.archiveRoot)
+      ?? '';
   }
 
   async load(manifestPath = 'manifest.json') {
@@ -89,7 +97,9 @@ class Archive {
   // DOMParser does not execute scripts, so this only reads metadata — safe.
   async _loadRecordFromArticle(id) {
     try {
-      const res = await fetch(`../${id}/index.html`);
+      // Root-absolute via archiveRoot ('' = same origin) — unambiguous at any
+      // serve depth or subdomain. Articles live at the deployment root.
+      const res = await fetch(`${this.archiveRoot}/${id}/index.html`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const html = await res.text();
       const doc = new DOMParser().parseFromString(html, 'text/html');

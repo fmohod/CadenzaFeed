@@ -16,9 +16,23 @@ const ARCHIVE_SCHEMA_VERSION = 1;
 class ArchiveRecordBuilder {
   // Build an Archive Record (type "article") from a 4-digit article id by reading
   // its published HTML. Returns null on failure (never throws).
+  //
+  // Path resolution: articles live at the deployment ROOT (/0001/index.html).
+  // From /game/ the correct relative hop is '../'; from a shell served at the
+  // root itself (the standalone /terminal/, or a subdomain root) it is ''. We
+  // resolve against CADENZA_CONFIG.archiveRoot so the SAME code is correct at any
+  // serve depth (INTERFACE_CONTRACTS.md §ArchiveService: root-absolute, never ../).
+  // Default '../' preserves existing /game/ behavior exactly — this change is additive.
+  static _articleRoot() {
+    const cfg = (typeof window !== 'undefined' && window.CADENZA_CONFIG) || {};
+    return cfg.archiveRoot ?? '../';
+  }
+
   static async build(articleId) {
     try {
-      const res = await fetch(`../${articleId}/index.html`);
+      const root = ArchiveRecordBuilder._articleRoot();
+      const sep = root && !root.endsWith('/') ? '/' : '';
+      const res = await fetch(`${root}${sep}${articleId}/index.html`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const html = await res.text();
       const doc = new DOMParser().parseFromString(html, 'text/html');
