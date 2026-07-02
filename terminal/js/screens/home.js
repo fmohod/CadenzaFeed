@@ -34,10 +34,10 @@ const HomeScreen = {
     onLeave: function() {},
     destroy: function() {},
 
-    get actions() {
+get actions() {
         return {
             'open-placeholder': (dataset, os) => {
-                document.getElementById('home-display-panel').innerHTML = `<p class="blink">ARCHIVE MODULE NOT LOADED (Phase 2 Pending)</p>`;
+                os.push(ArchiveListScreen);
             },
             'open-website': (dataset, os) => {
                 window.location.href = PlatformConfig.archiveRoot || '/';
