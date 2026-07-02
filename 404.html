@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/assets/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="/assets/favicon-32x32.png" type="image/png" sizes="32x32">
+    <link rel="icon" href="/assets/favicon-192x192.png" type="image/png" sizes="192x192">
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" sizes="180x180">
+    
+    <title>404 - Document Not Found | Cadenza Arthouse</title>
+    
+    <link rel="stylesheet" href="/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Custom layout just for the 404 message */
+        .error-container {
+            text-align: center;
+            padding: 15vh 1rem;
+            min-height: 50vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .error-code {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 8rem;
+            line-height: 1;
+            margin-bottom: 0.5rem;
+            letter-spacing: 2px;
+        }
+        .error-title {
+            font-family: 'Libre Baskerville', serif;
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .error-message {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 1.1rem;
+            margin-bottom: 3rem;
+            max-width: 600px;
+            color: #666; /* Inherits your dark theme gracefully if vars are set */
+        }
+    </style>
+</head>
+<body>
+
+    <header class="masthead">
+        <div class="masthead-inner">
+            <div class="masthead-top-rule"></div>
+            
+            <div class="masthead-flag">
+                <div class="masthead-flag-left">
+                    <span class="masthead-est">Established 2017</span>
+                    <span class="masthead-dot">·</span>
+                    <span class="masthead-loc">Houston, Texas</span>
+                </div>
+                
+                <div class="masthead-flag-center">
+                    <a href="/" class="masthead-logo-link">
+                        <img src="/assets/logo.png" alt="Cadenza Arthouse" class="masthead-logo">
+                    </a>
+                    <div class="masthead-wordmark">
+                        <h1 class="masthead-title">Cadenza Arthouse</h1>
+                        <p class="masthead-tagline">Independent Media&nbsp;&nbsp;·&nbsp;&nbsp;Photography&nbsp;&nbsp;·&nbsp;&nbsp;Cultural Archive</p>
+                    </div>
+                </div>
+                
+                <div class="masthead-flag-right">
+                    <span id="live-date" class="masthead-date"></span>
+                    <span id="article-count" class="masthead-count"></span>
+                </div>
+            </div>
+            
+            <div class="masthead-rule-double">
+                <div class="rule-thick"></div>
+                <div class="rule-thin"></div>
+            </div>
+            
+            <nav class="masthead-nav">
+                <a href="/">Home</a>
+                <a href="/all.html">Press Archive</a>
+                <a href="#" class="nav-dim">Galleries</a>
+                <a href="/about.html">About</a>
+                <a href="/support.html">Support</a>
+            </nav>
+            
+            <div class="masthead-bottom-rule"></div>
+        </div>
+    </header>
+
+    <main>
+        <div class="error-container">
+            <h1 class="error-code">404</h1>
+            <h2 class="error-title">Archive Not Found</h2>
+            <p class="error-message">The document or gallery you are looking for has been moved, renamed, or does not exist within the current archive.</p>
+            
+            <div class="all-articles-cta">
+                <a href="/" class="cta-button">
+                    <span>Return to Front Page</span>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="5" y1="12" x2="19" y2="12"/>
+                        <polyline points="12,5 19,12 12,19"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="footer-rule"></div>
+        <div class="footer-inner">
+            <div class="footer-brand">
+                <img src="/assets/logo.png" alt="Cadenza Arthouse" class="footer-logo">
+                <span class="footer-wordmark">Cadenza Arthouse</span>
+            </div>
+            <p class="footer-mission">Independent media platform documenting culture, art, and community. Est. 2017, Houston, Texas.</p>
+            <p class="footer-legal">Self-hosted. No trackers. Just words.&nbsp;&nbsp;·&nbsp;&nbsp;© 2026 Cadenza Arthouse. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Populate the live date exactly like the main index file
+        document.getElementById('live-date').textContent = new Date().toLocaleDateString('en-US', { 
+            weekday:'long', year:'numeric', month:'long', day:'numeric' 
+        });
+        
+        // Hide the API-driven article count on the 404 page since we don't need to run the GitHub fetch script here
+        document.getElementById('article-count').style.display = 'none';
+    </script>
+</body>
+</html>
