@@ -2,338 +2,81 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CAIN - Cadenza Arthouse Information Network</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CAIN | Cadenza Arthouse Information Network</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap" rel="stylesheet">
     
-    <style>
-        /* --- CORE VARIABLES --- */
-        :root {
-            --bg-color: #0a0a0a;
-            --panel-bg: #111111;
-            --text-main: #f0f0f0;
-            --text-dim: #7a7a7a;
-            --accent: #4caf50; /* Monochrome green/amber accent if desired, currently using white/grey */
-            --status-green: #4caf50;
-            --status-red: #f44336;
-            --border-highlight: #ffffff;
-            --border-shadow: #333333;
-            
-            --font-pixel: 'Press Start 2P', monospace;
-            --font-header: 'VT323', monospace;
-            --font-mono: 'Share Tech Mono', monospace;
-        }
-
-        /* --- GLOBAL RESET & CRT EFFECTS --- */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            user-select: none;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            font-family: var(--font-mono);
-            height: 100vh;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-        }
-
-        /* Subtle scanlines overlay */
-        body::before {
-            content: " ";
-            display: block;
-            position: absolute;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            right: 0;
-            background: linear-gradient(
-                to bottom,
-                rgba(18, 16, 16, 0) 50%,
-                rgba(0, 0, 0, 0.25) 50%
-            );
-            background-size: 100% 4px;
-            z-index: 999;
-            pointer-events: none;
-        }
-
-        /* CRT Screen Glow */
-        body::after {
-            content: " ";
-            display: block;
-            position: absolute;
-            top: 0;
-            left: 0;
-            bottom: 0;
-            right: 0;
-            background: radial-gradient(circle, rgba(255,255,255,0.03) 0%, rgba(0,0,0,0.4) 100%);
-            z-index: 998;
-            pointer-events: none;
-        }
-
-        /* --- BOOT SEQUENCE --- */
-        #boot-screen {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: var(--bg-color);
-            z-index: 100;
-            display: flex;
-            flex-direction: column;
-            padding: 2rem;
-            font-size: 1.2rem;
-        }
-
-        .boot-line {
-            opacity: 0;
-            margin-bottom: 0.5rem;
-        }
-
-        /* --- MAIN INTERFACE --- */
-        #main-ui {
-            display: none;
-            width: 100%;
-            max-width: 900px;
-            height: 90vh;
-            flex-direction: column;
-            padding: 1rem;
-            z-index: 10;
-        }
-
-        /* Header / Wordmark */
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 2px solid var(--text-dim);
-            padding-bottom: 1rem;
-            margin-bottom: 2rem;
-        }
-
-        .logo-container {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .logo-container img {
-            height: 50px;
-            image-rendering: pixelated;
-            filter: grayscale(100%) contrast(200%) drop-shadow(0 0 5px rgba(255,255,255,0.2));
-        }
-
-        h1 {
-            font-family: var(--font-header);
-            font-size: 2.5rem;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-        }
-
-        .sys-status {
-            text-align: right;
-            font-size: 0.9rem;
-            color: var(--status-green);
-        }
-
-        /* SNES Style Panels */
-        .panel {
-            background: var(--panel-bg);
-            border: 4px solid;
-            border-top-color: var(--border-highlight);
-            border-left-color: var(--border-highlight);
-            border-bottom-color: var(--border-shadow);
-            border-right-color: var(--border-shadow);
-            padding: 2rem;
-            margin-bottom: 1rem;
-            position: relative;
-        }
-
-        .layout-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-            flex-grow: 1;
-        }
-
-        h2 {
-            font-family: var(--font-pixel);
-            font-size: 1rem;
-            margin-bottom: 1.5rem;
-            color: var(--text-dim);
-        }
-
-        /* Menu System */
-        .menu-list {
-            list-style: none;
-        }
-
-        .menu-item {
-            font-size: 1.2rem;
-            padding: 0.8rem 1rem;
-            margin-bottom: 0.5rem;
-            cursor: pointer;
-            position: relative;
-            transition: all 0.1s;
-            display: flex;
-            align-items: center;
-        }
-
-        .menu-item::before {
-            content: '>';
-            position: absolute;
-            left: -5px;
-            opacity: 0;
-            color: var(--text-main);
-            font-family: var(--font-pixel);
-            font-size: 0.8rem;
-        }
-
-        .menu-item.active {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .menu-item.active::before {
-            opacity: 1;
-            animation: blink 1s infinite;
-        }
-
-        .menu-item.disabled {
-            color: var(--text-dim);
-        }
-
-        /* System Info Panel */
-        .sys-info {
-            font-size: 0.95rem;
-            line-height: 1.8;
-            color: var(--text-dim);
-        }
-        .sys-info span {
-            color: var(--text-main);
-        }
-
-        /* Footer */
-        footer {
-            margin-top: auto;
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.9rem;
-            color: var(--text-dim);
-            border-top: 1px solid var(--border-shadow);
-            padding-top: 0.5rem;
-        }
-
-        .blinking-cursor::after {
-            content: '█';
-            animation: blink 1s infinite;
-        }
-
-        @keyframes blink {
-            0%, 49% { opacity: 1; }
-            50%, 100% { opacity: 0; }
-        }
-
-        /* Modal */
-        #modal {
-            display: none;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 80%;
-            max-width: 500px;
-            z-index: 1000;
-            box-shadow: 10px 10px 0px rgba(0,0,0,0.8);
-        }
-    </style>
+    <link rel="stylesheet" href="css/terminal.css">
 </head>
 <body>
+    <div class="crt-overlay"></div>
+    <div class="scanlines"></div>
 
-    <div id="boot-screen">
-        <div class="boot-line">CADENZA ARTHOUSE INFORMATION NETWORK (CAIN)</div>
-        <div class="boot-line">INITIALIZING...</div>
-        <div class="boot-line">Loading archive modules... [OK]</div>
-        <div class="boot-line">Checking local storage nodes... [OK]</div>
-        <div class="boot-line">Synchronizing historical records... [OK]</div>
-        <div class="boot-line" style="margin-top: 2rem; color: #4caf50;">SYSTEM READY. PRESS ENTER TO ACCESS.</div>
+    <div id="boot-screen" class="screen active">
+        <div id="boot-text-container"></div>
+        <div class="skip-hint blink">Press [ENTER] to skip or initialize audio</div>
     </div>
 
-    <div id="main-ui">
-        <header>
-            <div class="logo-container">
-                <img src="../assets/logo.png" alt="Cadenza Logo" onerror="this.style.display='none'">
+    <div id="main-screen" class="screen hidden">
+        <header class="terminal-header">
+            <div class="brand">
+                <img src="../assets/logo.png" alt="Cadenza Arthouse Logo" class="crt-logo">
                 <div>
-                    <h1>CAIN TERMINAL</h1>
-                    <div style="font-size: 0.8rem; color: var(--text-dim);">ARCHIVE BUILD v1.0.4</div>
+                    <h1>C.A.I.N.</h1>
+                    <h2>CADENZA ARTHOUSE INFORMATION NETWORK</h2>
                 </div>
             </div>
-            <div class="sys-status">
-                STATUS: ONLINE<br>
-                NODES CONNECTED: 3
+            <div class="status-panel">
+                <p>Status: <span class="text-green blink-slow">ONLINE</span></p>
+                <p>Nodes: 4/4 Connected</p>
+                <p>Build: v1.0.4a</p>
             </div>
         </header>
 
-        <div class="layout-grid">
-            <div class="panel">
-                <h2>MAIN MENU</h2>
-                <ul class="menu-list" id="menu">
-                    <li class="menu-item active" data-action="terminal">Enter Archive Terminal</li>
-                    <li class="menu-item" data-action="website">Main Website</li>
-                    <li class="menu-item" data-action="press">Press Archive</li>
-                    <li class="menu-item" data-action="about">About CAIN</li>
-                </ul>
+        <main class="terminal-body">
+            <div class="panel menu-panel">
+                <h3 class="panel-title">MAIN MENU</h3>
+                <nav id="main-menu">
+                    <button class="menu-btn" data-action="archive">
+                        <span class="cursor-target">▶</span> Enter Archive Terminal
+                    </button>
+                    <button class="menu-btn" data-action="website">
+                        <span class="cursor-target">▶</span> Main Website
+                    </button>
+                    <button class="menu-btn" data-action="press">
+                        <span class="cursor-target">▶</span> Press Archive
+                    </button>
+                    <button class="menu-btn" data-action="about">
+                        <span class="cursor-target">▶</span> About C.A.I.N.
+                    </button>
+                    <button class="menu-btn" data-action="sysinfo">
+                        <span class="cursor-target">▶</span> System Information
+                    </button>
+                </nav>
             </div>
 
-            <div class="panel sys-info">
-                <h2>SYSTEM DIAGNOSTICS</h2>
-                <p>OS: <span>CAIN_ENV_v1</span></p>
-                <p>ARCHIVE COUNT: <span>00,248</span></p>
-                <p>DEVELOPER: <span>Cadenza Engineering</span></p>
-                <p>BUILD DATE: <span>JUL 02 2026</span></p>
-                <br>
-                <p>ENVIRONMENT: <span id="env-info">Loading...</span></p>
-                <p>RESOLUTION: <span id="res-info"></span></p>
-                <br>
-                <p id="dynamic-status" class="blinking-cursor">Awaiting input</p>
+            <div class="panel display-panel">
+                <div id="display-content">
+                    <h3 class="system-ready">SYSTEM READY</h3>
+                    <p>Awaiting operator input...</p>
+                    <p class="instruction">Use [ARROW KEYS] to navigate. [ENTER] to select.</p>
+                </div>
             </div>
-        </div>
+        </main>
 
-        <footer>
-            <div>CONNECTED: terminal.cadenzaarthouse.com</div>
-            <div id="clock">00:00:00</div>
+        <footer class="terminal-footer">
+            <p>terminal.cadenzaarthouse.com</p>
+            <p id="clock">00:00:00</p>
+            <p>READY <span class="blink">_</span></p>
         </footer>
     </div>
 
-    <div id="modal" class="panel">
-        <h2 style="color: var(--text-main)">ABOUT CAIN</h2>
-        <p style="font-size: 1rem; line-height: 1.5; margin-bottom: 1.5rem; color: var(--text-dim);">
-            The Cadenza Arthouse Information Network (CAIN) Terminal is an experimental interface into the archive. <br><br>
-            It will eventually become the canonical engine room shared between the website, RPG ecosystem, AI systems, and future applications.
-        </p>
-        <div style="text-align: center; color: var(--text-dim); font-size: 0.8rem;">[Press ESC or ENTER to close]</div>
-    </div>
-
-    <script>
-        /**
-         * AUDIO ENGINE
-         * Native Web Audio API Synthesizer (No external .wav files required)
-         */
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        
-        const SFX = {
-            playTone: (freq, type, duration, vol) => {
-                if(audioCtx.state === 'suspended') audioCtx.resume();
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.type = type;
-                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-                
-                gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+    <script src="js/audio.js"></script>
+    <script src="js/boot.js"></script>
+    <script src="js/menu.js"></script>
+    <script src="js/effects.js"></script>
+</body>
+</html>
