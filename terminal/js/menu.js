@@ -1,6 +1,7 @@
 // menu.js - Navigation and Display Logic
 function startClock() {
     const clockEl = document.getElementById('clock');
+    if (!clockEl) return;
     setInterval(() => {
         const now = new Date();
         clockEl.innerText = now.toLocaleTimeString('en-US', { hour12: false });
@@ -13,7 +14,9 @@ function initMenu() {
     let currentIndex = 0;
 
     // Trigger background fetch immediately
-    CAIN_Archive.init();
+    if (typeof CAIN_Archive !== 'undefined') {
+        CAIN_Archive.init();
+    }
 
     const views = {
         website: `<h3>MAIN WEBSITE</h3><p>Routing to external interface...</p><p>Target: cadenzaarthouse.com</p><p class="blink">Press [ENTER] to execute link.</p>`,
@@ -27,10 +30,8 @@ function initMenu() {
             if (index === currentIndex) {
                 btn.classList.add('selected');
                 
-                // If Archive is selected, ask CAIN_Archive for the list
                 if (btn.dataset.action === 'archive') {
                     display.innerHTML = CAIN_Archive.renderList();
-                    bindArchiveButtons();
                 } else {
                     display.innerHTML = views[btn.dataset.action] || `<p>Awaiting input...</p>`;
                 }
@@ -40,17 +41,27 @@ function initMenu() {
         });
     }
 
-    function bindArchiveButtons() {
-        const archiveBtns = document.querySelectorAll('.archive-btn');
-        archiveBtns.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                CAIN_Audio.navSelect();
-                const recordIndex = e.target.getAttribute('data-index');
-                display.innerHTML = CAIN_Archive.renderArticle(recordIndex);
-            });
-            btn.addEventListener('mouseenter', () => CAIN_Audio.navHover());
-        });
-    }
+    // Event Delegation: One listener for the whole display panel
+    display.addEventListener('click', (e) => {
+        // Record Selection
+        if (e.target.classList.contains('archive-btn')) {
+            CAIN_Audio.navSelect();
+            const recordIndex = e.target.getAttribute('data-index');
+            display.innerHTML = CAIN_Archive.renderArticle(recordIndex);
+        }
+        
+        // Return button
+        if (e.target.classList.contains('back-btn')) {
+            CAIN_Audio.navSelect();
+            display.innerHTML = CAIN_Archive.renderList();
+        }
+
+        // Link handling inside records
+        if (e.target.tagName === 'A') {
+            CAIN_Audio.navSelect();
+            // Allow default navigation
+        }
+    });
 
     function executeAction() {
         CAIN_Audio.navSelect();
@@ -58,6 +69,10 @@ function initMenu() {
         
         if (action === 'website') setTimeout(() => window.location.href = "https://cadenzaarthouse.com", 500);
         if (action === 'press') setTimeout(() => window.location.href = "https://cadenzaarthouse.com/all.html", 500);
+        if (action === 'archive') {
+             // Already handled by the click delegation above, but just in case:
+             display.innerHTML = CAIN_Archive.renderList();
+        }
     }
 
     document.addEventListener('keydown', (e) => {
@@ -85,7 +100,6 @@ function initMenu() {
                 updateSelection();
             }
         });
-        btn.addEventListener('click', executeAction);
     });
 
     updateSelection();
