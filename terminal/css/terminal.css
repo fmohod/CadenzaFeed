@@ -272,3 +272,17 @@ nav { display: flex; flex-direction: column; gap: 0.5rem; }
     font-size: 1.2rem;
 }
 .back-btn:hover { background: #fff; }
+/* Add to bottom of terminal.css */
+[data-selectable] {
+    cursor: pointer;
+    padding: 0.5rem;
+    border: 1px solid transparent;
+    transition: all 0.1s ease;
+}
+
+/* This is applied dynamically by focus.js */
+[data-selectable].focused {
+    background-color: rgba(32, 194, 14, 0.2);
+    border: 1px dashed var(--text-color);
+    text-shadow: var(--text-glow);
+}

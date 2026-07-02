@@ -15,69 +15,18 @@
     <div class="crt-overlay"></div>
     <div class="scanlines"></div>
 
-    <div id="boot-screen" class="screen active">
-        <div id="boot-text-container"></div>
-        <div class="skip-hint blink">Press [ENTER] to skip or initialize audio</div>
-    </div>
+    <main id="cain-os-display"></main>
 
-    <div id="main-screen" class="screen hidden">
-        <header class="terminal-header">
-            <div class="brand">
-                <img src="../assets/logo.png" alt="Cadenza Arthouse Logo" class="crt-logo">
-                <div>
-                    <h1>C.A.I.N.</h1>
-                    <h2>CADENZA ARTHOUSE INFORMATION NETWORK</h2>
-                </div>
-            </div>
-            <div class="status-panel">
-                <p>Status: <span class="text-green blink-slow">ONLINE</span></p>
-                <p id="node-count">Syncing Nodes...</p>
-                <p>Build: v1.0.4a</p>
-            </div>
-        </header>
-
-        <main class="terminal-body">
-            <div class="panel menu-panel">
-                <h3 class="panel-title">MAIN MENU</h3>
-                <nav id="main-menu">
-                    <button class="menu-btn" data-action="archive">
-                        <span class="cursor-target">▶</span> Enter Archive Terminal
-                    </button>
-                    <button class="menu-btn" data-action="website">
-                        <span class="cursor-target">▶</span> Main Website
-                    </button>
-                    <button class="menu-btn" data-action="press">
-                        <span class="cursor-target">▶</span> Press Archive
-                    </button>
-                    <button class="menu-btn" data-action="about">
-                        <span class="cursor-target">▶</span> About C.A.I.N.
-                    </button>
-                    <button class="menu-btn" data-action="sysinfo">
-                        <span class="cursor-target">▶</span> System Information
-                    </button>
-                </nav>
-            </div>
-
-            <div class="panel display-panel">
-                <div id="display-content">
-                    <h3 class="system-ready">SYSTEM READY</h3>
-                    <p>Awaiting operator input...</p>
-                    <p class="instruction">Use [ARROW KEYS] to navigate. [ENTER] to select.</p>
-                </div>
-            </div>
-        </main>
-
-        <footer class="terminal-footer">
-            <p>terminal.cadenzaarthouse.com</p>
-            <p id="clock">00:00:00</p>
-            <p>READY <span class="blink">_</span></p>
-        </footer>
-    </div>
-
-<script src="js/audio.js"></script>
-    <script src="js/archive.js"></script>
-    <script src="js/boot.js"></script>
-    <script src="js/menu.js"></script>
+    <script src="js/audio.js"></script>
     <script src="js/effects.js"></script>
+    <script src="js/config.js"></script>
+    
+    <script src="js/focus.js"></script>
+    <script src="js/system.js"></script>
+    
+    <script src="js/screens/boot.js"></script>
+    <script src="js/screens/home.js"></script>
+    
+    <script src="js/main.js"></script>
 </body>
 </html>
