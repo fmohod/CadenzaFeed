@@ -1,0 +1,40 @@
+{
+  "id": "phosphor",
+  "uuid": "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d",
+  "name": "Green Phosphor",
+  "description": "Classic green CRT terminal for CAIN OS. The compatibility baseline every other Interface Pack is measured against.",
+  "author": "Cadenza Arthouse",
+  "spec": "1.0",
+  "packVersion": "1.0.0",
+  "minimumOS": "1.0.0",
+  "maximumOS": "1.x",
+  "layout": "terminal-classic",
+  "animationProfile": "crt-flicker",
+  "soundProfile": "terminal-basic",
+  "entry": {
+    "css": "skin.css"
+  },
+  "assets": {
+    "preview": "preview.svg"
+  },
+  "sounds": {
+    "boot": "sounds/boot.wav",
+    "hover": "sounds/hover.wav",
+    "select": "sounds/select.wav",
+    "back": "sounds/back.wav",
+    "error": "sounds/error.wav",
+    "confirm": "sounds/confirm.wav"
+  },
+  "supports": {
+    "animations": true,
+    "wallpaper": false,
+    "crt": true,
+    "audio": true,
+    "scanlines": true,
+    "customCursor": false,
+    "highColor": false,
+    "reducedMotion": false,
+    "largeType": false
+  },
+  "certification": "official"
+}

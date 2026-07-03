@@ -1,0 +1,42 @@
+/* ============================================================
+   Green Phosphor — CAIN OS Interface Pack (skin)
+   Presentation only. No behavior. See CAIN Interface Pack Spec v1.0 §12.
+
+   This pack sets the CAIN OS core CSS custom properties. CAIN OS structure
+   (layout, focus, screens) lives in css/terminal.css and reads these variables,
+   so switching packs re-skins the same interface without touching behavior.
+   ============================================================ */
+
+:root {
+  /* core surface + text */
+  --bg-color: #050505;
+  --text-color: #20C20E;              /* classic phosphor green */
+  --muted-text-color: rgba(32, 194, 14, 0.6);
+  --text-glow: 0 0 5px rgba(32, 194, 14, 0.6);
+
+  /* structure */
+  --panel-border: 2px solid #20C20E;
+  --surface-color: rgba(32, 194, 14, 0.05);
+  --accent-color: #20C20E;
+  --focus-color: #20C20E;
+
+  /* status */
+  --danger-color: #e0533d;
+  --success-color: #20C20E;
+
+  /* type */
+  --font-main: 'Share Tech Mono', 'IBM Plex Mono', monospace;
+  --font-heading: 'VT323', 'IBM Plex Mono', monospace;
+
+  /* CRT presentation */
+  --wallpaper-image: none;
+  --scanline-opacity: 0.25;
+  --crt-vignette-opacity: 0.6;
+}
+
+/* Pack-scoped accents. Body carries `pack-phosphor` (applied by the Theme
+   Manager) so packs can add flourishes without leaking into other packs. */
+body.pack-phosphor .system-brand h1,
+body.pack-phosphor .screen-header h1 {
+  text-shadow: var(--text-glow);
+}
