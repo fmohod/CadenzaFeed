@@ -286,3 +286,58 @@ nav { display: flex; flex-direction: column; gap: 0.5rem; }
     border: 1px dashed var(--text-color);
     text-shadow: var(--text-glow);
 }
+
+/* --- HOME LOGO --- (tint the shared Cadenza mark to the active theme colour) */
+.system-logo {
+    max-width: 120px;
+    height: auto;
+    filter: invert(50%) sepia(100%) saturate(500%) hue-rotate(80deg) drop-shadow(0 0 6px var(--text-color));
+}
+
+/* --- RECORD DOSSIER (ArchiveRecordRenderer output) ---
+   The renderer emits semantic blocks with stable class names; CAIN OS skins them.
+   Styling the Record body here (structure) means every Interface Pack inherits a
+   readable dossier through the CSS variables. */
+.dossier-byline { font-size: 0.85rem; opacity: 0.7; margin-top: 0.5rem; }
+
+.dossier-content .ar-h {
+    font-family: var(--font-heading, monospace);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 1.4rem 0 0.6rem;
+    text-shadow: var(--text-glow);
+}
+.dossier-content .ar-h1 { font-size: 1.5rem; }
+.dossier-content .ar-h2 { font-size: 1.2rem; }
+.dossier-content .ar-h3 { font-size: 1rem; opacity: 0.85; }
+
+.dossier-content .ar-p {
+    font-size: 0.95rem;
+    line-height: 1.7;
+    margin: 0 0 1rem;
+}
+.dossier-content .ar-quote {
+    border-left: 3px solid var(--text-color);
+    padding-left: 1rem;
+    margin: 0 0 1rem;
+    font-style: italic;
+    opacity: 0.85;
+}
+.dossier-content .ar-list {
+    margin: 0 0 1rem 1.4rem;
+    line-height: 1.7;
+    font-size: 0.95rem;
+}
+.dossier-content .ar-media {
+    border: 1px dashed var(--text-color);
+    padding: 0.6rem 0.8rem;
+    margin: 0 0 1rem;
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    opacity: 0.85;
+}
+.dossier-content .ar-ref {
+    font-size: 0.8rem;
+    opacity: 0.7;
+    margin: 0.2rem 0;
+}

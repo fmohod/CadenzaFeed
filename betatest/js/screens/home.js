@@ -53,7 +53,8 @@ get actions() {
                 window.location.href = PlatformConfig.archiveRoot || '/';
             },
             'open-press': (dataset, os) => {
-                window.location.href = `${PlatformConfig.archiveRoot}/all.html`;
+                // Press Archive relocated from /all.html to /news/ (2026-07).
+                window.location.href = `${PlatformConfig.archiveRoot}/news/`;
             }
         };
     }

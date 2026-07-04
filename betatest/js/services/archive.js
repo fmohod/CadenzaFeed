@@ -1,67 +1,47 @@
+// CAIN OS — Archive Service
+// Discovers article folders and turns each into a full, typed Archive Record via
+// the canonical ArchiveRecordBuilder (game/engine/record.js) — the ONE HTML-aware
+// component in the project (RULES.md). CAIN never re-parses article HTML its own
+// way; it consumes Records, so the dossier reader renders clean body blocks instead
+// of leaking the site masthead/footer.
+
 class ArchiveService {
     constructor() {
-        this.cache = [];
+        this.cache = [];       // [{ id, title, record }]
         this.isSynced = false;
         this.isFetching = false;
     }
 
     async sync() {
         if (this.isSynced) return this.cache;
-        if (this.isFetching) return; 
-        
+        if (this.isFetching) return this.cache;
         this.isFetching = true;
-        let currentId = 1;
-        let maxSearched = false;
 
-        // Loop and fetch folders until we hit a 404
-        while (!maxSearched) {
-            let folderId = currentId.toString().padStart(4, '0');
-            
-            // Contextual routing based on config
-            let targetUrl = PlatformConfig.environment === 'local' 
-                ? `../${folderId}/index.html` 
-                : `${PlatformConfig.archiveRoot}/${folderId}/index.html`;
-
+        // Contiguous discovery: 0001, 0002, … until a folder is missing.
+        // ArchiveRecordBuilder.build() resolves paths via CADENZA_CONFIG.archiveRoot
+        // and returns null on a 404, which marks the end of the range.
+        let id = 1;
+        while (true) {
+            const folderId = String(id).padStart(4, '0');
+            let record = null;
             try {
-                let response = await fetch(targetUrl);
-                if (response.ok) {
-                    let htmlText = await response.text();
-                    let record = this._parseHTML(htmlText, folderId);
-                    if (record) this.cache.push(record);
-                    currentId++;
-                } else {
-                    maxSearched = true; // 404 hit, stop searching
-                }
-            } catch (error) {
-                console.warn(`[Service] Network halt on record ${folderId}`);
-                maxSearched = true;
+                record = await ArchiveRecordBuilder.build(folderId);
+            } catch (e) {
+                console.warn(`[Service] Build halted at record ${folderId}`, e);
             }
+            if (!record) break;
+            this.cache.push({ id: folderId, title: record.title, record });
+            id++;
         }
-        
+
         this.isFetching = false;
         this.isSynced = true;
         return this.cache;
     }
 
+    // Returns the cache entry { id, title, record } for a 4-digit folder id.
     getRecord(id) {
-        return this.cache.find(rec => rec.id === id);
-    }
-
-    _parseHTML(htmlString, folderId) {
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(htmlString, 'text/html');
-        
-        // Extract basic data. Adjust selectors based on your actual Markdown/HTML structure in the 000X folders
-        const titleElement = doc.querySelector('title') || doc.querySelector('h1');
-        const title = titleElement ? titleElement.innerText.replace(' | Cadenza Arthouse', '') : `UNKNOWN RECORD ${folderId}`;
-        
-        const contentBody = doc.querySelector('main') || doc.querySelector('body');
-        
-        return {
-            id: folderId,
-            title: title.trim(),
-            content: contentBody ? contentBody.innerHTML : '<p class="blink">DATA CORRUPTED</p>'
-        };
+        return this.cache.find(item => item.id === id);
     }
 }
 

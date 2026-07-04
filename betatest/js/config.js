@@ -12,3 +12,11 @@ const SystemClock = {
     now: () => new Date(),
     formatTerminalTime: () => SystemClock.now().toLocaleTimeString('en-US', { hour12: false })
 };
+
+// The canonical ArchiveRecordBuilder (game/engine/record.js) resolves article
+// paths against window.CADENZA_CONFIG.archiveRoot. Local: '..' (from /betatest/ up
+// to the repo root, so '../0001/index.html'). Production: the apex origin. This
+// keeps CAIN's record parsing aligned with its own ArchiveService discovery.
+window.CADENZA_CONFIG = {
+    archiveRoot: PlatformConfig.environment === 'local' ? '..' : PlatformConfig.archiveRoot
+};
