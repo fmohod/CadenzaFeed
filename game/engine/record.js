@@ -154,7 +154,12 @@ class RecordResolver {
 // Turn a Record's body into semantic DOM with stable class names. The consumer
 // (terminal, website, museum) supplies the CSS skin. Generic by design.
 class ArchiveRecordRenderer {
-  static toFragment(record) {
+  // options.linkReferences (default false): render the REFERENCES list as real
+  // clickable <a target="_blank"> links. The in-world game terminal leaves this
+  // off (sources are listed, not navigated to); the standalone CAIN terminal
+  // opts in so operators can open a source in a new tab.
+  static toFragment(record, options = {}) {
+    const linkReferences = options.linkReferences === true;
     const frag = document.createDocumentFragment();
     const refs = [];
 
@@ -204,7 +209,15 @@ class ArchiveRecordRenderer {
       const seen = new Set();
       refs.forEach(l => {
         if (seen.has(l.href)) return; seen.add(l.href);
-        const r = document.createElement('div');
+        let r;
+        if (linkReferences) {
+          r = document.createElement('a');
+          r.href = l.href;
+          r.target = '_blank';
+          r.rel = 'noopener noreferrer';
+        } else {
+          r = document.createElement('div');
+        }
         r.className = 'ar-ref';
         r.textContent = `• ${l.text} — ${l.href.replace(/^https?:\/\//, '')}`;
         frag.appendChild(r);

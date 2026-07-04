@@ -341,6 +341,20 @@ nav { display: flex; flex-direction: column; gap: 0.5rem; }
     opacity: 0.7;
     margin: 0.2rem 0;
 }
+/* Clickable references (CAIN opts into linkReferences) — themed + open in new tab */
+.dossier-content a.ar-ref {
+    display: inline-block;
+    color: var(--accent-color, var(--text-color));
+    text-decoration: none;
+    cursor: pointer;
+    opacity: 0.9;
+}
+.dossier-content a.ar-ref:hover,
+.dossier-content a.ar-ref:focus {
+    opacity: 1;
+    text-decoration: underline;
+    text-shadow: var(--text-glow);
+}
 
 /* =======================================================================
    TERMINAL-CLASSIC LAYOUT  (structure — engine-owned)

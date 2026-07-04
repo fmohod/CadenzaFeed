@@ -32,8 +32,10 @@ const RecordViewScreen = {
         `;
 
         // Semantic body via the canonical renderer — no page chrome leaks in.
+        // linkReferences:true → the REFERENCES list becomes real links that open
+        // in a new tab (CAIN is a browsing tool, not the in-world game terminal).
         const body = document.getElementById('dossier-body');
-        body.appendChild(ArchiveRecordRenderer.toFragment(rec));
+        body.appendChild(ArchiveRecordRenderer.toFragment(rec, { linkReferences: true }));
     },
 
     onEnter: function(os, data) {},
