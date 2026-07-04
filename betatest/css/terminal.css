@@ -341,3 +341,68 @@ nav { display: flex; flex-direction: column; gap: 0.5rem; }
     opacity: 0.7;
     margin: 0.2rem 0;
 }
+
+/* =======================================================================
+   TERMINAL-CLASSIC LAYOUT  (structure — engine-owned)
+   Interface Packs skin these classes via CSS variables; the structure lives
+   here so every pack shares the same layout. (CAIN Interface Pack Spec §9.)
+   ======================================================================= */
+.screen-layout { height: 100vh; padding: 2rem; display: flex; gap: 2rem; }
+
+/* --- HOME --- */
+.home-layout { flex-direction: row; }
+.home-sidebar {
+    width: 320px; flex: none; display: flex; flex-direction: column;
+    border-right: var(--panel-border); padding-right: 2rem;
+}
+.system-brand { margin-bottom: 2.5rem; text-align: left; }
+.system-brand h1 { font-family: var(--font-heading); font-size: 2.5rem; letter-spacing: 3px; margin-top: 0.5rem; }
+.system-brand p { font-size: 0.8rem; opacity: 0.7; }
+.menu-stack { display: flex; flex-direction: column; gap: 0.4rem; }
+.home-main { flex: 1; display: flex; flex-direction: column; }
+.home-main h2 { font-size: 1rem; letter-spacing: 2px; opacity: 0.8; margin-bottom: 1rem; }
+.system-readout {
+    margin-top: auto; border-top: var(--panel-border); padding-top: 1rem;
+    display: flex; flex-direction: column; gap: 0.3rem; font-size: 0.85rem;
+}
+.system-readout span { opacity: 0.6; letter-spacing: 2px; }
+.system-readout strong { font-size: 1.1rem; }
+
+/* --- SHARED LIST ROWS --- */
+.menu-item {
+    padding: 0.7rem 1rem; cursor: pointer; font-size: 1.05rem;
+    border: 1px solid transparent; letter-spacing: 1px;
+}
+
+/* --- SETTINGS --- */
+.settings-layout { flex-direction: column; gap: 1.2rem; }
+.screen-header {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    border-bottom: var(--panel-border); padding-bottom: 1rem;
+}
+.screen-header h2 { font-size: 0.8rem; letter-spacing: 2px; opacity: 0.7; }
+.screen-header h1 { font-family: var(--font-heading); font-size: 2rem; letter-spacing: 2px; }
+.status-pill { border: var(--panel-border); padding: 0.4rem 0.9rem; font-size: 0.75rem; letter-spacing: 1px; align-self: center; }
+.settings-grid {
+    flex: 1; overflow-y: auto; display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.2rem; align-content: start;
+}
+.pack-card {
+    border: var(--panel-border); background: var(--surface-color);
+    display: flex; flex-direction: column; overflow: hidden; cursor: pointer;
+}
+.pack-card.is-active { box-shadow: inset 0 0 0 2px var(--focus-color); }
+.pack-preview {
+    aspect-ratio: 16 / 9; background-size: cover; background-position: center;
+    background-color: #000; display: flex; align-items: flex-end; padding: 0.5rem;
+}
+.pack-preview span { font-size: 0.7rem; letter-spacing: 2px; background: rgba(0,0,0,0.6); padding: 0.2rem 0.5rem; }
+.pack-card-body { padding: 1rem; display: flex; flex-direction: column; gap: 0.5rem; }
+.pack-kicker { font-size: 0.7rem; letter-spacing: 2px; opacity: 0.6; text-transform: uppercase; }
+.pack-card-body h2 { font-family: var(--font-heading); font-size: 1.4rem; }
+.pack-card-body p { font-size: 0.85rem; line-height: 1.5; opacity: 0.85; }
+.pack-meta { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.4rem; font-size: 0.75rem; margin-top: 0.3rem; }
+.pack-meta dt { opacity: 0.55; }
+.pack-flags { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.3rem; }
+.pack-flags span { font-size: 0.65rem; border: 1px solid var(--muted-text-color); padding: 0.1rem 0.4rem; opacity: 0.8; }
+.screen-footer { border-top: var(--panel-border); padding-top: 1rem; }

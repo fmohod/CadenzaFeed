@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180" width="320" height="180">
+  <defs>
+    <linearGradient id="panel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#6e2a1c"/>
+      <stop offset="1" stop-color="#431612"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffe9a8"/>
+      <stop offset="1" stop-color="#b8860b"/>
+    </linearGradient>
+  </defs>
+
+  <!-- leather ground -->
+  <rect width="320" height="180" fill="#23100c"/>
+  <g stroke="#000" stroke-opacity="0.18" stroke-width="1">
+    <line x1="0" y1="30" x2="320" y2="30"/><line x1="0" y1="60" x2="320" y2="60"/>
+    <line x1="0" y1="90" x2="320" y2="90"/><line x1="0" y1="120" x2="320" y2="120"/>
+    <line x1="0" y1="150" x2="320" y2="150"/>
+  </g>
+
+  <!-- left window (party) -->
+  <g>
+    <rect x="14" y="18" width="120" height="144" rx="8" fill="url(#panel)" stroke="#e9c877" stroke-width="3"/>
+    <rect x="17" y="21" width="114" height="138" rx="6" fill="none" stroke="#1c0a08" stroke-width="1"/>
+    <text x="26" y="44" fill="#f4d98a" font-family="monospace" font-size="13">Crono</text>
+    <text x="26" y="62" fill="#f6ecc9" font-family="monospace" font-size="10">HP 999/999</text>
+    <text x="26" y="78" fill="#f6ecc9" font-family="monospace" font-size="10">MP  99/99</text>
+    <rect x="22" y="92" width="104" height="16" rx="4" fill="#8a3a24" stroke="#f0cf7a" stroke-width="1"/>
+    <text x="28" y="104" fill="#ffffff" font-family="monospace" font-size="10">&#9656; ITEM</text>
+    <text x="28" y="126" fill="#f6ecc9" font-family="monospace" font-size="10">TECH</text>
+    <text x="28" y="146" fill="#f6ecc9" font-family="monospace" font-size="10">STATUS</text>
+  </g>
+
+  <!-- right window (detail) -->
+  <g>
+    <rect x="146" y="18" width="160" height="144" rx="8" fill="url(#panel)" stroke="#e9c877" stroke-width="3"/>
+    <rect x="149" y="21" width="154" height="138" rx="6" fill="none" stroke="#1c0a08" stroke-width="1"/>
+    <rect x="158" y="30" width="90" height="18" rx="4" fill="url(#gold)"/>
+    <text x="164" y="44" fill="#2a1006" font-family="monospace" font-size="12">EPOCH</text>
+    <text x="158" y="72" fill="#f6ecc9" font-family="monospace" font-size="10">For the Love of Art</text>
+    <text x="158" y="90" fill="#d9c48a" font-family="monospace" font-size="9">2019 · COMMUNITY</text>
+    <text x="158" y="116" fill="#f6ecc9" font-family="monospace" font-size="9">PWR  SPD  MAG</text>
+    <text x="158" y="134" fill="#f4d98a" font-family="monospace" font-size="9">16-bit RPG menu</text>
+  </g>
+</svg>

@@ -1,6 +1,7 @@
 {
   "spec": "1.0",
   "packs": [
-    "phosphor"
+    "phosphor",
+    "epoch"
   ]
 }
