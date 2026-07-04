@@ -1,0 +1,119 @@
+/* ============================================================
+   Epoch — 16-bit JRPG menu skin for CAIN OS
+   Presentation only (CAIN Interface Pack Spec v1.0 §12). No behavior.
+   An original homage to classic SNES role-playing-game menus: gilded frames,
+   oxblood panels, cream text on aged leather. All assets authored in-house.
+   ============================================================ */
+
+:root {
+  --bg-color: #23100c;
+  --text-color: #f6ecc9;                 /* cream */
+  --muted-text-color: #d9c48a;           /* tan */
+  --text-glow: 1px 1px 0 rgba(0, 0, 0, 0.75);  /* embossed shadow, not a glow */
+
+  --panel-border: 2px solid #e9c877;     /* gold */
+  --surface-color: linear-gradient(#6e2a1c, #431612);  /* oxblood panel */
+  --accent-color: #f0cf7a;               /* gold */
+  --focus-color: #f0cf7a;
+  --danger-color: #e0533d;
+  --success-color: #8fce6a;
+
+  --font-main: 'Pixelify Sans', 'IBM Plex Mono', monospace;
+  --font-heading: 'Pixelify Sans', 'IBM Plex Mono', monospace;
+
+  --wallpaper-image: url("assets/parchment.svg");
+  --scanline-opacity: 0;
+  --crt-vignette-opacity: 0;
+}
+
+/* Clean console — Epoch drops CAIN's global CRT overlays (spec §12/§17). */
+body.pack-epoch .scanlines,
+body.pack-epoch .crt-overlay { display: none !important; }
+
+body.pack-epoch {
+  background-color: var(--bg-color);
+  background-image: url("assets/parchment.svg");
+  background-repeat: repeat;
+  background-size: 6px 6px;
+  color: var(--text-color);
+  font-family: var(--font-main);
+  text-shadow: var(--text-glow);
+  font-size: 19px;
+}
+
+/* --- Gilded window frames (concentric rings via box-shadow; honors radius) --- */
+body.pack-epoch .home-sidebar,
+body.pack-epoch .home-main,
+body.pack-epoch .pack-card {
+  border: none;
+  border-radius: 10px;
+  background: var(--surface-color);
+  padding: 1.3rem 1.5rem;
+  box-shadow:
+    0 0 0 2px #1c0a08,
+    0 0 0 4px #e9c877,
+    0 0 0 6px #a9772e,
+    0 0 0 8px #1c0a08,
+    inset 0 2px 0 rgba(255, 240, 200, 0.22),
+    inset 0 -4px 10px rgba(0, 0, 0, 0.45),
+    0 6px 16px rgba(0, 0, 0, 0.5);
+}
+body.pack-epoch .home-sidebar { padding-right: 1.5rem; }
+body.pack-epoch .pack-card { padding: 0; }   /* card frames its own header/body */
+
+/* Gold, embossed headings */
+body.pack-epoch h1,
+body.pack-epoch .system-brand h1,
+body.pack-epoch .screen-header h1,
+body.pack-epoch .pack-card-body h2 {
+  color: #f4d98a;
+  text-shadow: 1px 1px 0 #3a1408, 2px 2px 0 rgba(0, 0, 0, 0.45);
+}
+
+/* Home logo → warm gold instead of phosphor green */
+body.pack-epoch .system-logo {
+  filter: brightness(0) saturate(100%) invert(85%) sepia(55%) saturate(450%)
+          hue-rotate(358deg) drop-shadow(1px 1px 0 #3a1408);
+}
+
+/* --- Menu / list rows: the classic highlighted cursor row --- */
+body.pack-epoch .menu-item { border-radius: 6px; }
+body.pack-epoch .menu-item.focused,
+body.pack-epoch .menu-item:hover {
+  background: linear-gradient(#8a3a24, #5a2016);
+  color: #fff;
+  border: 1px solid #f0cf7a;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.5), 0 0 6px rgba(240, 207, 122, 0.35);
+}
+body.pack-epoch .menu-item.focused::before {
+  content: "\25B8  ";   /* ▸ gold cursor */
+  color: #f0cf7a;
+}
+
+/* --- Settings cards --- */
+body.pack-epoch .pack-card.is-active,
+body.pack-epoch .pack-card.focused {
+  box-shadow:
+    0 0 0 2px #1c0a08,
+    0 0 0 4px #ffe9a8,
+    0 0 0 6px #c9992e,
+    0 0 0 8px #1c0a08,
+    0 0 12px rgba(240, 207, 122, 0.45),
+    0 6px 16px rgba(0, 0, 0, 0.5);
+}
+body.pack-epoch .status-pill {
+  border: 2px solid #e9c877;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.25);
+  color: #f4d98a;
+}
+body.pack-epoch .pack-flags span { border-color: #a9772e; color: var(--muted-text-color); }
+
+/* --- Rules / dividers pick up the gold --- */
+body.pack-epoch .screen-header,
+body.pack-epoch .system-readout,
+body.pack-epoch .screen-footer { border-color: #a9772e; }
+
+/* --- Record dossier stays readable: cream body, gold rules --- */
+body.pack-epoch .dossier-content .ar-quote { border-left-color: #f0cf7a; }
+body.pack-epoch .dossier-byline { color: var(--muted-text-color); }

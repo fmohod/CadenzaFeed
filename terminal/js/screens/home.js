@@ -4,25 +4,32 @@ const HomeScreen = {
     state: {},
 
     render: function(container) {
+        const currentPack = CAIN_ThemeManager.currentTheme();
+        const bootLogo = CAIN_Assets.get('bootLogo') || '../assets/logo.png';
         container.innerHTML = `
-            <div class="screen-layout" style="display:flex; height:100vh; padding:2rem;">
-                <aside style="width: 300px; border-right: var(--panel-border); padding-right: 2rem;">
-                    <div style="margin-bottom: 2rem;">
-                        <img src="../assets/logo.png" alt="Logo" style="max-width:100%; filter: invert(1) sepia(1) hue-rotate(80deg) saturate(5);">
+            <div class="screen-layout home-layout">
+                <aside class="home-sidebar">
+                    <div class="system-brand">
+                        <img src="${bootLogo}" alt="CAIN logo" class="system-logo">
                         <h1>C.A.I.N.</h1>
-                        <p style="opacity:0.7">v1.2.0</p>
+                        <p>${PlatformConfig.version}</p>
                     </div>
                     
-                    <nav style="display:flex; flex-direction:column; gap:1rem;">
-                        <div class="menu-item" data-selectable data-action="open-placeholder">Enter Archive Terminal</div>
+                    <nav class="menu-stack">
+                        <div class="menu-item" data-selectable data-action="open-archive">Enter Archive Terminal</div>
+                        <div class="menu-item" data-selectable data-action="open-settings">Display Settings</div>
                         <div class="menu-item" data-selectable data-action="open-website">Main Website</div>
                         <div class="menu-item" data-selectable data-action="open-press">Press Archive</div>
                     </nav>
                 </aside>
                 
-                <main style="flex: 1; padding-left: 2rem;">
-                    <h2 style="margin-bottom: 1rem;">SYSTEM READY</h2>
+                <main class="home-main">
+                    <h2>SYSTEM READY</h2>
                     <p id="home-display-panel">Awaiting operator input...</p>
+                    <div class="system-readout">
+                        <span>INTERFACE PACK</span>
+                        <strong>${currentPack ? currentPack.name : 'Fallback Core'}</strong>
+                    </div>
                 </main>
             </div>
         `;
@@ -36,14 +43,18 @@ const HomeScreen = {
 
 get actions() {
         return {
-            'open-placeholder': (dataset, os) => {
+            'open-archive': (dataset, os) => {
                 os.push(ArchiveListScreen);
+            },
+            'open-settings': (dataset, os) => {
+                os.push(DisplaySettingsScreen);
             },
             'open-website': (dataset, os) => {
                 window.location.href = PlatformConfig.archiveRoot || '/';
             },
             'open-press': (dataset, os) => {
-                window.location.href = `${PlatformConfig.archiveRoot}/all.html`;
+                // Press Archive relocated from /all.html to /news/ (2026-07).
+                window.location.href = `${PlatformConfig.archiveRoot}/news/`;
             }
         };
     }
