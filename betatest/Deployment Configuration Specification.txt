@@ -1,0 +1,319 @@
+CAIN Deployment Configuration Specification v1.0
+=================================================
+
+Status: Draft v1.0 — implemented alongside the first Deployment Configuration
+loader, ahead of the July 17 fashion show deployment.
+Scope: CAIN OS / betatest terminal — Deployment Configuration layer
+Last updated: 2026-07-06
+Companion document: "CAIN Interface specifications.txt" (Interface Pack Spec v1.0)
+
+1. Purpose
+----------
+
+CAIN OS is not one product. It is one engine that runs many products. A
+"deployment" is the configuration data that turns the same running software
+into a fashion-show kiosk, a news-archive terminal, a busking tip jar, or a
+volunteer sign-up desk — with no forked code and no rebuild.
+
+Core principle:
+
+    The engine owns behavior.
+    Interface Packs own presentation.
+    Deployments own identity, menu structure, and content wiring.
+
+This mirrors the Interface Pack Spec's own core principle deliberately.
+Presentation and behavior were already separated for visuals; this document
+separates identity/content from both.
+
+2. The Four-Layer Model
+------------------------
+
+CAIN OS is organized into four layers. Each layer must be replaceable
+without touching the others.
+
+    Core Engine
+        Navigation, screen stack, focus/input handling, rendering, timers,
+        storage. Lives in js/system.js, js/focus.js, js/main.js.
+
+    Deployment Configuration   <- this document
+        Brand identity, logo, menu structure, form wiring, idle playlist,
+        QR destinations, outbound links, contact/social info. Pure data.
+        Lives in deployments/<id>/deployment.json.
+
+    Modules
+        Reusable functional units a deployment's menu can point at: forms,
+        gallery, video, QR display, booking, donations, etc. Built
+        incrementally; each module reads whatever a deployment.json exposes
+        for it. Lives in js/screens/ (and eventually js/modules/).
+
+    Interface Packs
+        Visuals only: typography, color, animation profile, sound profile,
+        icons, cursor, wallpaper. Never touches menu structure or behavior.
+        Lives in interface-packs/<id>/ (see Interface Pack Spec v1.0).
+
+Rule: a deployment must run correctly under any Interface Pack, and an
+Interface Pack must skin any deployment, without either side changing.
+
+3. Non-Negotiable Rules
+------------------------
+
+A Deployment Configuration file must never include or require:
+
+- JavaScript
+- HTML templates
+- inline script
+- styling decisions (colors, fonts, animation/sound profile selection)
+- direct DOM manipulation
+
+A Deployment Configuration file may only describe:
+
+- brand identity (name, tagline, logo)
+- a preferred default Interface Pack (advisory; user selection in Display
+  Settings still wins once made — see Interface Pack Spec §21)
+- menu structure (ordered list of items, each pointing at a Module action)
+- per-Module data (form fields + submit endpoint, idle playlist, QR target,
+  outbound link targets, contact/social info)
+
+If a menu item points at a Module that has not been built yet, the engine
+must render the Module Placeholder screen — never crash, never silently do
+nothing. (js/screens/module-placeholder.js)
+
+4. Directory Structure
+------------------------
+
+Deployments live under:
+
+    betatest/deployments/
+
+Required top-level structure:
+
+    deployments/
+        manifest.json
+
+        fashion-show/
+            deployment.json
+
+        cadenza-news/
+            deployment.json
+
+Folder names are stable, lowercase, kebab-case identifiers and must match
+the deployment's own "id" field, exactly like Interface Pack folders must
+match their "id" field.
+
+5. manifest.json
+------------------
+
+Required file: deployments/manifest.json
+
+Format:
+
+{
+  "spec": "1.0",
+  "default": "cadenza-news",
+  "deployments": [
+    "cadenza-news",
+    "fashion-show"
+  ]
+}
+
+Rules:
+
+- `spec` must equal "1.0".
+- `deployments` is an array of folder names; each must have a deployment.json.
+- `default` is used when no ?deployment= query param and no valid
+  localStorage selection exists.
+- An invalid or missing deployment in the array should be skipped, not
+  fatal — same tolerance as the Interface Pack manifest.
+
+6. deployment.json
+---------------------
+
+Required fields:
+
+{
+  "spec": "1.0",
+  "id": "fashion-show",
+  "brand": "Model Auctions",
+  "tagline": "Live Runway Event — Cadenza Arthouse",
+  "logo": "logo.svg",
+  "defaultInterfacePack": "epoch",
+
+  "kiosk": {
+    "idleTimeoutSeconds": 60,
+    "idlePlaylist": ["media/runway.mp4", "media/portfolio.mp4"]
+  },
+
+  "menu": [
+    { "label": "Become a Model", "action": "open-form", "target": "model" },
+    { "label": "Upcoming Events", "action": "open-archive" }
+  ],
+
+  "forms": {
+    "model": {
+      "title": "Become a Model",
+      "submit": "https://formspree.io/f/REPLACE_ME",
+      "fields": ["name", "email", "phone"]
+    }
+  },
+
+  "qr": { "label": "Scan to Join", "url": "https://modelauctions.net/join" },
+  "contact": { "email": "hello@modelauctions.net", "phone": "" },
+  "social": { "instagram": "", "website": "https://modelauctions.net" },
+  "links": { "website": "https://modelauctions.net" }
+}
+
+Field rules:
+
+id
+    Required. Must match the deployment folder name. Lowercase kebab-case.
+
+brand
+    Required. Display name shown on the Home screen.
+
+tagline
+    Optional. One-line subtitle under the brand name.
+
+logo
+    Optional. Path relative to the deployment folder. Falls back to the
+    active Interface Pack's bootLogo asset, then to a hardcoded default.
+
+defaultInterfacePack
+    Optional. Advisory suggestion for which pack looks best with this
+    deployment (e.g. Model Auctions <-> epoch). Does not override an
+    explicit user selection persisted by the Theme Manager.
+
+menu
+    Required. Ordered array of { label, action, target? }. `action` selects
+    a Module (see §7). `target` is Module-specific (a form id, a gallery id,
+    a link key). The Home screen renders this array directly and never
+    hardcodes menu items.
+
+forms
+    Required if any menu item uses "open-form". Keyed by form id (the
+    `target` used in the menu entry). Each form entry declares its own
+    submit endpoint and field list — see §8 on submission targets.
+
+kiosk.idlePlaylist
+    Required if Idle Mode is enabled for this deployment. Ordered list of
+    media paths relative to the deployment folder.
+
+qr
+    Optional (null if unused). A single label + url shown by the QR module.
+
+contact / social / links
+    Optional. Free-form key/value maps consumed by Modules and the
+    "open-link" action. `links` values starting with http(s):// are used
+    as-is; any other value is treated as a path relative to the archive
+    root (window.CADENZA_CONFIG.archiveRoot), preserving how the pre-
+    deployment "Main Website" / "Press Archive" links behaved.
+
+7. Menu Action Contract
+--------------------------
+
+Every menu item is { label, action, target? }. The engine (js/screens/
+home.js) owns a single generic dispatcher keyed by `action`. Adding a new
+deployment never requires touching this dispatcher; it only grows when a
+genuinely new action type — a new Module — is introduced.
+
+Actions defined as of this version:
+
+open-archive
+    Pushes the existing Archive Index / Record Dossier screens. No target.
+
+open-link
+    Resolves `target` against the deployment's `links` map and navigates.
+
+open-form
+    Should push a Form module screen for `target` (form id). Not yet built;
+    currently resolves to the Module Placeholder screen, which displays the
+    resolved form config (title, fields, submit endpoint) so the wiring is
+    verifiable before the Form module itself exists.
+
+open-gallery
+    Should push a Gallery module screen for `target`. Not yet built;
+    resolves to the Module Placeholder screen.
+
+open-qr
+    Should push a QR display module using the deployment's `qr` object. Not
+    yet built; resolves to the Module Placeholder screen.
+
+Unrecognized actions also resolve to the Module Placeholder screen rather
+than failing silently.
+
+8. Form Submission Targets
+------------------------------
+
+Per COO direction: no authentication, no database, in Phase One. A form's
+`submit` value is treated as an opaque endpoint URL by the eventual Form
+module — Google Forms, Formspree, Netlify Forms, a Cloudflare Worker, or a
+plain email endpoint are all acceptable and interchangeable. The interface
+must never know or care which transport is behind the URL; only the
+deployment.json entry changes if the transport changes later.
+
+9. Selection and Persistence
+--------------------------------
+
+Resolution order for which deployment loads on boot:
+
+1. `?deployment=<id>` query string — lets an already-deployed kiosk tablet
+   be repointed at a different event just by opening a different URL.
+2. Last deployment id persisted in localStorage (`cain.deployment`).
+3. `manifest.json`'s declared `default`.
+4. First entry in `manifest.json`'s `deployments` array.
+
+A deployment that fails validation is skipped exactly like an invalid
+Interface Pack: log a warning, do not crash, fall back to the next
+candidate in the order above.
+
+10. Relationship to Interface Packs
+---------------------------------------
+
+Conceptual flow on boot:
+
+    DeploymentLoader.init()   // decides WHAT: brand, menu, content
+    InterfacePackLoader.init()   // decides HOW: colors, type, motion, sound
+
+Both loaders run in parallel before the first screen renders. Screens read
+from both: CAIN_Deployment.current for content, CAIN_ThemeManager /
+CAIN_Assets for presentation. Neither loader knows the other exists.
+
+11. First Implementation Milestone
+---------------------------------------
+
+The Deployment Configuration system must support this vertical slice:
+
+1. Boot CAIN with no query param -> cadenza-news deployment loads (current
+   production behavior preserved exactly: Archive Terminal, Main Website,
+   Press Archive).
+2. Boot CAIN with ?deployment=fashion-show -> Model Auctions brand, logo,
+   and fashion-show menu render instead, with zero code changes.
+3. Selecting "Become a Model" or "Hire Photography" resolves to the Module
+   Placeholder screen and visibly displays that deployment's form config
+   (fields + submit endpoint) — proving the config reaches the screen layer.
+4. Switching Interface Packs in Display Settings continues to work
+   identically under both deployments.
+
+12. Deferred to Post-July-17 (Documented, Not Prioritized)
+----------------------------------------------------------------
+
+Per COO direction, these are real but explicitly not on the July 17
+critical path:
+
+- Interface Packs do not yet fully control sound/animation behavior
+  (js/effects.js runs a hardcoded CRT flicker regardless of the active
+  pack's animationProfile; js/audio.js synthesizes tones instead of playing
+  each pack's declared sound files). Tracked as a known bug, fixed in a
+  version after MVP deployment.
+- Idle Mode, the Form module, the QR display module, and the Gallery/Video
+  module are the next build priorities after this Deployment Configuration
+  layer, in that order.
+
+13. Summary Contract
+------------------------
+
+CAIN OS is the engine.
+Interface Packs are presentation packages.
+Deployment Configurations are identity and behavior packages.
+Modules are the reusable functional units deployments point their menus at.
+No deployment JavaScript. No deployment HTML. No deployment styling
+decisions. All four layers can change independently.

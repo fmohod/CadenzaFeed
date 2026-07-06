@@ -20,6 +20,17 @@ class TerminalOS {
         this.focus.scan(this.container);
     }
 
+    // Clears the entire screen stack and pushes a fresh one. Used by the Idle
+    // Manager to snap a kiosk back to Home before showing the attract loop,
+    // regardless of which screen the previous visitor left it on.
+    resetTo(screenPlugin, data = null) {
+        while (this.stack.length) {
+            const screen = this.stack.pop();
+            if (typeof screen.onLeave === 'function') screen.onLeave();
+        }
+        this.push(screenPlugin, data);
+    }
+
     pop() {
         if (this.stack.length > 1) {
             const poppedScreen = this.stack.pop();

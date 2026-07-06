@@ -7,7 +7,7 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&family=Pixelify+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/terminal.css?v=4">
+    <link rel="stylesheet" href="css/terminal.css?v=5">
     <link id="cain-interface-pack-css" rel="stylesheet" href="">
 </head>
 <body>
@@ -26,13 +26,21 @@
     <script src="/game/engine/record.js?v=3"></script>
     <script src="js/services/archive.js?v=2"></script>
     <script src="js/services/interface-packs.js"></script>
+    <!-- Deployment Configuration (Layer 2): brand, menu, forms, idle playlist,
+         QR, links. See "Deployment Configuration Specification.txt". -->
+    <script src="js/services/deployment.js"></script>
     <script src="js/focus.js"></script>
     <script src="js/system.js"></script>
+    <!-- Idle Manager (Core Engine): inactivity timing lives here; the media
+         it shows comes from the active deployment's kiosk.idlePlaylist. -->
+    <script src="js/idle.js"></script>
     <script src="js/screens/boot.js"></script>
-    <script src="js/screens/home.js?v=2"></script>
+    <script src="js/screens/home.js?v=3"></script>
     <script src="js/screens/archive.js"></script>
     <script src="js/screens/record.js?v=3"></script>
     <script src="js/screens/settings.js"></script>
+    <script src="js/screens/module-placeholder.js"></script>
+    <script src="js/screens/idle.js"></script>
     <script src="js/main.js"></script>
 </body>
 </html>

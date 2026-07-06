@@ -1,0 +1,56 @@
+{
+  "spec": "1.0",
+  "id": "fashion-show",
+  "brand": "Model Auctions",
+  "tagline": "Live Runway Event — Cadenza Arthouse",
+  "logo": "logo.svg",
+  "defaultInterfacePack": "epoch",
+
+  "kiosk": {
+    "idleTimeoutSeconds": 60,
+    "idlePlaylist": [
+      "media/runway.mp4",
+      "media/portfolio.mp4"
+    ]
+  },
+
+  "menu": [
+    { "label": "Become a Model", "action": "open-form", "target": "model" },
+    { "label": "Hire Photography", "action": "open-form", "target": "photographer" },
+    { "label": "Upcoming Events", "action": "open-archive" },
+    { "label": "Gallery", "action": "open-gallery", "target": "runway" },
+    { "label": "Scan to Join", "action": "open-qr" }
+  ],
+
+  "forms": {
+    "model": {
+      "title": "Become a Model",
+      "submit": "https://formspree.io/f/REPLACE_ME_MODEL",
+      "fields": ["name", "email", "phone", "instagram", "measurements", "photo"]
+    },
+    "photographer": {
+      "title": "Hire Photography",
+      "submit": "https://formspree.io/f/REPLACE_ME_PHOTOGRAPHER",
+      "fields": ["name", "email", "phone", "portfolioUrl", "dateNeeded"]
+    }
+  },
+
+  "qr": {
+    "label": "Scan to Join Model Auctions",
+    "url": "https://modelauctions.net/join"
+  },
+
+  "contact": {
+    "email": "hello@modelauctions.net",
+    "phone": ""
+  },
+
+  "social": {
+    "instagram": "",
+    "website": "https://modelauctions.net"
+  },
+
+  "links": {
+    "website": "https://modelauctions.net"
+  }
+}

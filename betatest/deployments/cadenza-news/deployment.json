@@ -1,0 +1,32 @@
+{
+  "spec": "1.0",
+  "id": "cadenza-news",
+  "brand": "C.A.I.N.",
+  "tagline": "Cadenza Arthouse Information Network",
+  "logo": "",
+  "defaultInterfacePack": "phosphor",
+
+  "kiosk": {
+    "idleTimeoutSeconds": 90,
+    "idlePlaylist": []
+  },
+
+  "menu": [
+    { "label": "Enter Archive Terminal", "action": "open-archive" },
+    { "label": "Main Website", "action": "open-link", "target": "website" },
+    { "label": "Press Archive", "action": "open-link", "target": "press" }
+  ],
+
+  "forms": {},
+
+  "qr": null,
+
+  "contact": {},
+
+  "social": {},
+
+  "links": {
+    "website": "/",
+    "press": "/news/"
+  }
+}
