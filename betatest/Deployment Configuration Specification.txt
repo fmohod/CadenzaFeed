@@ -157,7 +157,7 @@ Required fields:
   },
 
   "qr": { "label": "Scan to Join", "url": "https://modelauctions.net/join" },
-  "contact": { "email": "hello@modelauctions.net", "phone": "" },
+  "contact": { "email": "info@modelauctions.net", "phone": "" },
   "social": { "instagram": "", "website": "https://modelauctions.net" },
   "links": { "website": "https://modelauctions.net" }
 }
@@ -243,12 +243,41 @@ than failing silently.
 8. Form Submission Targets
 ------------------------------
 
-Per COO direction: no authentication, no database, in Phase One. A form's
-`submit` value is treated as an opaque endpoint URL by the eventual Form
-module — Google Forms, Formspree, Netlify Forms, a Cloudflare Worker, or a
-plain email endpoint are all acceptable and interchangeable. The interface
-must never know or care which transport is behind the URL; only the
-deployment.json entry changes if the transport changes later.
+Per COO direction: no authentication, no database, in Phase One. A form
+entry's transport is opaque to the eventual Form module — Google Forms,
+Formspree, Web3Forms, Netlify Forms, a Cloudflare Worker, or a plain email
+endpoint are all acceptable and interchangeable. The interface must never
+hardcode which transport is behind an entry; only the deployment.json entry
+changes if the transport changes later. Two shapes are both valid:
+
+Single-endpoint providers (e.g. Formspree), where each form gets its own
+unique submit URL:
+
+    "forms": {
+      "model": { "title": "...", "submit": "https://formspree.io/f/xxxx", "fields": [...] }
+    }
+
+Shared-endpoint providers (e.g. Web3Forms), where the action URL is always
+the same and a public access key routes the mail instead:
+
+    "forms": {
+      "model": {
+        "title": "Become a Model",
+        "provider": "web3forms",
+        "endpoint": "https://api.web3forms.com/submit",
+        "accessKey": "<public key>",
+        "subject": "New Model Auctions application — Become a Model",
+        "webPage": "https://modelauctions.net/models/index.html",
+        "fields": [...]
+      }
+    }
+
+`webPage` (optional) points at the public, phone-accessible page that offers
+the same form outside the kiosk — see the Long-Term Modules note in the
+project brief about QR codes as permanent entry points. One access key may
+be reused across any number of pages and deployments; a form only needs its
+own key if it needs distinct settings (a different destination email,
+auto-reply, or spam rules) from the others.
 
 9. Selection and Persistence
 --------------------------------

@@ -25,12 +25,20 @@
   "forms": {
     "model": {
       "title": "Become a Model",
-      "submit": "https://formspree.io/f/REPLACE_ME_MODEL",
-      "fields": ["name", "email", "phone", "instagram", "measurements", "photo"]
+      "provider": "web3forms",
+      "endpoint": "https://api.web3forms.com/submit",
+      "accessKey": "dd5e7f84-83b0-49be-842e-94320ef6046b",
+      "subject": "New Model Auctions application — Become a Model",
+      "webPage": "https://modelauctions.net/models/index.html",
+      "fields": ["name", "email", "phone", "instagram", "measurements", "photoLink"]
     },
     "photographer": {
       "title": "Hire Photography",
-      "submit": "https://formspree.io/f/REPLACE_ME_PHOTOGRAPHER",
+      "provider": "web3forms",
+      "endpoint": "https://api.web3forms.com/submit",
+      "accessKey": "dd5e7f84-83b0-49be-842e-94320ef6046b",
+      "subject": "New Model Auctions inquiry — Hire Photography",
+      "webPage": "https://modelauctions.net/photographers/index.html",
       "fields": ["name", "email", "phone", "portfolioUrl", "dateNeeded"]
     }
   },
@@ -41,7 +49,7 @@
   },
 
   "contact": {
-    "email": "hello@modelauctions.net",
+    "email": "info@modelauctions.net",
     "phone": ""
   },
 
