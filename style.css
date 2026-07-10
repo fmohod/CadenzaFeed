@@ -977,7 +977,99 @@ main {
   animation: shimmer 1.4s infinite;
 }
 
-/* ── 4 · Latest Reporting (beat kicker on list items) ── */
+/* ── News ticker (below masthead) ── */
+.press-ticker {
+  display: flex;
+  align-items: stretch;
+  background: #111111;
+  color: #F6F2EB;
+  border-bottom: 2px solid #A07840;
+  overflow: hidden;
+}
+
+.ticker-label {
+  display: flex;
+  align-items: center;
+  background: #A07840;
+  color: #F6F2EB;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 0.95rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 7px 18px 6px;
+  flex-shrink: 0;
+  z-index: 1;
+}
+
+.ticker-viewport {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+
+.ticker-track {
+  display: inline-flex;
+  white-space: nowrap;
+  will-change: transform;
+  animation: ticker-scroll 40s linear infinite;
+}
+
+.press-ticker:hover .ticker-track { animation-play-state: paused; }
+
+@keyframes ticker-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.ticker-group {
+  display: inline-flex;
+  align-items: center;
+}
+
+.ticker-item {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 10px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #F6F2EB;
+}
+
+a.ticker-item:hover .ticker-text { color: #A07840; transition: color 0.2s; }
+
+.ticker-item time { color: #A07840; }
+
+.ticker-sep {
+  color: #555;
+  font-size: 0.5rem;
+  margin: 0 22px;
+  align-self: center;
+}
+
+/* ── 4 · Latest Reporting (beat kicker + thumbnail on list items) ── */
+.press-page .list-item {
+  grid-template-columns: 104px 1fr auto;
+  align-items: center;
+}
+
+.list-thumb {
+  aspect-ratio: 3 / 2;
+  overflow: hidden;
+  background: #DDD5C8;
+}
+
+.list-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.list-item:hover .list-thumb img { transform: scale(1.05); }
+
 .list-beat {
   display: inline-block;
   font-family: 'IBM Plex Mono', monospace;
@@ -1153,6 +1245,10 @@ main {
   .press-how-inner { padding: 36px 28px 40px; }
 }
 
+@media (max-width: 700px) {
+  .press-page .list-item { grid-template-columns: 84px 1fr; }
+}
+
 @media (max-width: 560px) {
   .press-hero { padding-top: 36px; }
   .press-hero-title { font-size: 2.4rem; }
@@ -1160,10 +1256,12 @@ main {
   .featured-body { padding: 24px 22px 22px; }
   .featured-body h3 { font-size: 1.2rem; }
   .progress-status { display: none; }
+  .ticker-label { font-size: 0.85rem; padding: 6px 12px 5px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .featured-story, .glance-tile, .progress-item { animation: none; opacity: 1; }
   .featured-skeleton, .glance-skeleton { animation: none; }
   .progress-dot { animation: none; }
+  .ticker-track { animation: none; }
 }
