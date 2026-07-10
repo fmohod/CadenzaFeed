@@ -8,8 +8,9 @@
 
     <event folder>\ticker\001.yaml     (numbered entries - a story can evolve)
     <event folder>\ticker.yaml         (single-entry shorthand)
+    <archive root>\ticker\*.yaml       (newsroom desk - manual/archive-wide entries)
 
-  Each entry is a flat YAML file:
+  Entry schema (flat YAML):
 
     headline: Houston Yogis returns with weekly wellness gathering
     status: active          # draft | scheduled | breaking | active | published | archived | hidden
@@ -19,34 +20,45 @@
     category: Wellness      # optional beat label
     link:                   # optional URL
 
-  The compiler has the editorial judgment built in:
-    - only status breaking / active / published is shown; everything else stays archived
-    - expired entries are silently dropped (no maintenance required)
-    - sort: priority (desc), then updated (desc); top $MaxItems make the wire
+  Editorial rules built in:
+    - only status breaking / active / published reaches the wire
+    - expired entries are dropped silently
+    - sort: priority (desc) then updated (desc); top $MaxItems make the wire
 
-  If -StateFile is given, the script keeps a scan log (file path -> modified stamp)
-  and reports NEW / UPDATED entry files since the previous run. Informational only -
-  the build is always a full idempotent rebuild; git decides whether to push.
+  -Review adds the APPROVAL DESK: after the scan, entries with status draft or
+  scheduled are listed (full headline shown inline). You can approve all, or
+  open any entry to see every field and set its status individually (approve /
+  publish / hide / archive). Status changes are written back to the archive
+  yaml files, then compilation continues with the new statuses. Never pass
+  -Review on scheduled/unattended runs - it prompts on the console.
+
+  If -StateFile is given, the script keeps a scan log and reports NEW / UPDATED
+  entry files since the previous run.
 
 .EXAMPLE
-  powershell -ExecutionPolicy Bypass -File compile-ticker.ps1 -SourceDir "F:\Media" -StateFile ticker-scan-state.json -CommitPush
+  # what update-ticker.bat option 1 runs (interactive sweep with approval desk)
+  powershell -ExecutionPolicy Bypass -File compile-ticker.ps1 -SourceDir "F:\Media" -StateFile ticker-scan-state.json -Review -CommitPush
 
-.NOTES
-  The live site only updates when ticker.json is committed and pushed (GitHub
-  Pages serves the repo, not your disk). Use -CommitPush for that.
+.EXAMPLE
+  # unattended sweep (Task Scheduler / scripts): no prompts
+  powershell -ExecutionPolicy Bypass -File compile-ticker.ps1 -SourceDir "F:\Media" -StateFile ticker-scan-state.json -CommitPush
 #>
 param(
   [Parameter(Mandatory = $true)]
   [string]$SourceDir,
 
-  [string]$OutFile = (Join-Path $PSScriptRoot 'ticker.json'),
+  [string]$OutFile = '',
 
   [string]$StateFile = '',
 
   [int]$MaxItems = 12,
 
+  [switch]$Review,
+
   [switch]$CommitPush
 )
+
+if (-not $OutFile) { $OutFile = Join-Path $PSScriptRoot 'ticker.json' }
 
 if (-not (Test-Path $SourceDir)) {
   Write-Error "Source folder not found: $SourceDir"
@@ -56,7 +68,7 @@ if (-not (Test-Path $SourceDir)) {
 $INCLUDE_STATUSES = @('breaking', 'active', 'published')
 $today = (Get-Date).ToString('yyyy-MM-dd')
 
-# previous scan state (path -> last-modified stamp)
+# ── scan state (path -> last-modified stamp) ─────────────────
 $prevState = @{}
 if ($StateFile -and (Test-Path $StateFile)) {
   try {
@@ -70,15 +82,13 @@ $newState = [ordered]@{}
 $newCount = 0
 $updCount = 0
 
-# one recursive pass for *.yaml, then keep only ticker entries:
-#   files inside a folder named "ticker", or files named "ticker.yaml"
+# ── scan: one recursive pass for *.yaml, keep ticker entries ─
+Write-Output "Scanning $SourceDir for ticker entries..."
 $files = @(Get-ChildItem -Path $SourceDir -Filter *.yaml -File -Recurse -ErrorAction SilentlyContinue |
   Where-Object { $_.Directory.Name -eq 'ticker' -or $_.BaseName -eq 'ticker' })
 
-$items    = New-Object System.Collections.Generic.List[object]
-$excluded = 0
-$expired  = 0
-$invalid  = 0
+$records = New-Object System.Collections.Generic.List[object]
+$invalid = 0
 
 foreach ($f in $files) {
 
@@ -94,7 +104,7 @@ foreach ($f in $files) {
     $newState[$f.FullName] = $stamp
   }
 
-  # flat YAML parse: "key: value" lines, comments (#) and blanks ignored
+  # flat YAML parse: "key: value" lines; comments (#) and blanks ignored
   $fields = @{}
   foreach ($line in Get-Content $f.FullName -Encoding UTF8) {
     $l = $line.Trim()
@@ -109,42 +119,146 @@ foreach ($f in $files) {
     }
   }
 
-  $headline = $fields['headline']
-  if (-not $headline) {
+  if (-not $fields['headline']) {
     Write-Warning "Skipping (no headline): $($f.FullName)"
     $invalid++
     continue
   }
 
   $status = if ($fields['status']) { $fields['status'].ToLower() } else { 'draft' }
-  if ($INCLUDE_STATUSES -notcontains $status) { $excluded++; continue }
-
-  if ($fields['expires'] -and $fields['expires'] -lt $today) { $expired++; continue }
 
   $priority = 40
   if ($fields['priority'] -match '^\d+$') { $priority = [int]$fields['priority'] }
 
   $updated = $fields['updated']
   if ($updated -notmatch '^\d{4}-\d{2}-\d{2}') { $updated = $f.LastWriteTime.ToString('yyyy-MM-dd') }
-  $updated = $updated.Substring(0, 10)   # tolerate full timestamps
+  $updated = $updated.Substring(0, 10)
 
-  $entry = [ordered]@{
-    date     = $updated
-    text     = $headline
-    priority = $priority
-    breaking = ($status -eq 'breaking')
-  }
-  if ($fields['category']) { $entry.category = $fields['category'] }
-  if ($fields['link'])     { $entry.link     = $fields['link'] }
-  $items.Add([pscustomobject]$entry)
+  $records.Add([pscustomobject]@{
+    File     = $f.FullName
+    Headline = $fields['headline']
+    Status   = $status
+    Priority = $priority
+    Updated  = $updated
+    Starts   = $fields['starts']
+    Expires  = $fields['expires']
+    Category = $fields['category']
+    Link     = $fields['link']
+  })
 }
 
 Write-Output "Scanned $($files.Count) ticker entr$(if ($files.Count -eq 1) {'y'} else {'ies'}): $newCount new, $updCount updated."
-Write-Output "On the wire: $($items.Count) (excluded by status: $excluded, expired: $expired, invalid: $invalid)"
 
 if ($StateFile) {
   $newState | ConvertTo-Json | Out-File -FilePath $StateFile -Encoding utf8
 }
+
+# ── approval desk ────────────────────────────────────────────
+function Set-TickerStatus {
+  param($Record, [string]$NewStatus)
+  $lines = @(Get-Content $Record.File -Encoding UTF8)
+  $found = $false
+  $out = foreach ($ln in $lines) {
+    if (-not $found -and $ln -match '^\s*status\s*:') { $found = $true; 'status: ' + $NewStatus }
+    else { $ln }
+  }
+  if (-not $found) { $out = @($out) + ('status: ' + $NewStatus) }
+  $out | Out-File -FilePath $Record.File -Encoding utf8
+  $Record.Status = $NewStatus
+}
+
+function Show-Val { param($v) if ($v) { $v } else { '(none)' } }
+
+# a scheduled entry WITH a start time is pre-approved (scheduling is the
+# approval); scheduled without one still needs the desk, like a draft
+function Test-Pending { param($r) ($r.Status -eq 'draft') -or ($r.Status -eq 'scheduled' -and -not $r.Starts) }
+
+$pending = @($records | Where-Object { Test-Pending $_ })
+
+if ($Review -and $pending.Count -gt 0) {
+  $changed = 0
+  while ($true) {
+    $pending = @($records | Where-Object { Test-Pending $_ })
+    Write-Output ''
+    Write-Output '  -------------------------------------------------------------'
+    Write-Output "  PENDING APPROVAL: $($pending.Count) entr$(if ($pending.Count -eq 1) {'y'} else {'ies'})"
+    Write-Output '  -------------------------------------------------------------'
+    if ($pending.Count -eq 0) { Write-Output '  (queue is clear)'; break }
+    for ($i = 0; $i -lt $pending.Count; $i++) {
+      $p = $pending[$i]
+      $cat = if ($p.Category) { $p.Category } else { '-' }
+      Write-Output ("  [{0}] {1,-9} {2}  {3,-12} {4}" -f ($i + 1), $p.Status, $p.Updated, $cat, $p.Headline)
+    }
+    Write-Output '  -------------------------------------------------------------'
+    Write-Output '  [#] open entry    [A] approve ALL and continue    [Enter] continue without them'
+    $choice = (Read-Host '  Choose').Trim()
+
+    if (-not $choice) { break }
+
+    if ($choice -match '^[Aa]$') {
+      foreach ($p in $pending) { Set-TickerStatus -Record $p -NewStatus 'active'; $changed++ }
+      Write-Output "  Approved $($pending.Count) entr$(if ($pending.Count -eq 1) {'y'} else {'ies'}) (status: active)."
+      break
+    }
+
+    if ($choice -match '^\d+$' -and [int]$choice -ge 1 -and [int]$choice -le $pending.Count) {
+      $p = $pending[[int]$choice - 1]
+      Write-Output ''
+      Write-Output "  File:     $($p.File)"
+      Write-Output "  Headline: $($p.Headline)"
+      Write-Output "  Status:   $($p.Status)"
+      Write-Output "  Priority: $($p.Priority)"
+      Write-Output "  Updated:  $($p.Updated)"
+      Write-Output "  Starts:   $(Show-Val $p.Starts)"
+      Write-Output "  Expires:  $(Show-Val $p.Expires)"
+      Write-Output "  Category: $(Show-Val $p.Category)"
+      Write-Output "  Link:     $(Show-Val $p.Link)"
+      Write-Output ''
+      Write-Output '  [A] approve (active)  [P] mark published  [H] hide  [R] archive  [Enter] back'
+      $act = (Read-Host '  Action').Trim()
+      switch -regex ($act) {
+        '^[Aa]$' { Set-TickerStatus -Record $p -NewStatus 'active';    $changed++; Write-Output '  -> active' }
+        '^[Pp]$' { Set-TickerStatus -Record $p -NewStatus 'published'; $changed++; Write-Output '  -> published' }
+        '^[Hh]$' { Set-TickerStatus -Record $p -NewStatus 'hidden';    $changed++; Write-Output '  -> hidden' }
+        '^[Rr]$' { Set-TickerStatus -Record $p -NewStatus 'archived';  $changed++; Write-Output '  -> archived' }
+        default  { }
+      }
+      continue
+    }
+
+    Write-Output '  (unrecognized choice)'
+  }
+  if ($changed -gt 0) { Write-Output "  Review complete: $changed status change$(if ($changed -ne 1) {'s'}) written to the archive." }
+} elseif ($pending.Count -gt 0) {
+  Write-Output "Pending approval (not on the wire): $($pending.Count) draft/scheduled entr$(if ($pending.Count -eq 1) {'y'} else {'ies'}) - run update-ticker.bat option 1 to review."
+}
+
+# ── filter, sort, write ──────────────────────────────────────
+$excluded = 0
+$expired  = 0
+$items    = New-Object System.Collections.Generic.List[object]
+
+foreach ($r in $records) {
+  # publishable: normal live statuses, plus scheduled entries with a start
+  # time (the website shows those only inside their start/expire window)
+  $isTimed = ($r.Status -eq 'scheduled' -and $r.Starts)
+  if (-not $isTimed -and $INCLUDE_STATUSES -notcontains $r.Status) { $excluded++; continue }
+  if ($r.Expires -and $r.Expires.Substring(0, 10) -lt $today)      { $expired++;  continue }
+
+  $entry = [ordered]@{
+    date     = $r.Updated
+    text     = $r.Headline
+    priority = $r.Priority
+    breaking = ($r.Status -eq 'breaking')
+  }
+  if ($r.Starts)   { $entry.starts   = $r.Starts }
+  if ($r.Expires)  { $entry.expires  = $r.Expires }
+  if ($r.Category) { $entry.category = $r.Category }
+  if ($r.Link)     { $entry.link     = $r.Link }
+  $items.Add([pscustomobject]$entry)
+}
+
+Write-Output "On the wire: $($items.Count) (excluded by status: $excluded, expired: $expired, invalid: $invalid)"
 
 if ($items.Count -eq 0) {
   Write-Warning "No publishable ticker entries found - ticker.json left unchanged."

@@ -297,7 +297,17 @@
         const res = await fetch('ticker.json');
         if (!res.ok) return;
         const data = await res.json();
-        const items = (data.items || []).slice(0, 12);
+
+        // Scheduled items carry starts/expires ("YYYY-MM-DD" or
+        // "YYYY-MM-DD HH:mm") and are shown only inside their window,
+        // by the visitor's clock — no republish needed on the day.
+        const now = new Date();
+        const asDate = (s, endOfDay) => new Date(
+          s.length > 10 ? s.replace(' ', 'T') : s + (endOfDay ? 'T23:59:59' : 'T00:00:00'));
+        const items = (data.items || []).filter(it =>
+          (!it.starts  || asDate(it.starts, false) <= now) &&
+          (!it.expires || now <= asDate(it.expires, true))
+        ).slice(0, 12);
         if (!items.length) return;
 
         const html = items.map(it => {
