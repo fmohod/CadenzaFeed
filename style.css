@@ -1042,6 +1042,15 @@ a.ticker-item:hover .ticker-text { color: #A07840; transition: color 0.2s; }
 
 .ticker-item time { color: #A07840; }
 
+.ticker-flag {
+  background: #A07840;
+  color: #F6F2EB;
+  font-size: 0.58rem;
+  letter-spacing: 0.14em;
+  padding: 2px 7px;
+  align-self: center;
+}
+
 .ticker-sep {
   color: #555;
   font-size: 0.5rem;

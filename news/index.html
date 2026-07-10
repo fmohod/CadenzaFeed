@@ -301,7 +301,8 @@
         if (!items.length) return;
 
         const html = items.map(it => {
-          const inner = `<time>${formatDate(it.date)}</time><span class="ticker-text">${it.text}</span>`;
+          const flag = it.breaking ? `<span class="ticker-flag">Breaking</span>` : '';
+          const inner = `<time>${formatDate(it.date)}</time>${flag}<span class="ticker-text">${it.text}</span>`;
           return it.link
             ? `<a href="${it.link}" class="ticker-item">${inner}</a>`
             : `<span class="ticker-item">${inner}</span>`;
