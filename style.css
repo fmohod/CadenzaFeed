@@ -786,3 +786,384 @@ main {
   .article-meta { font-size: 0.65rem; }
   .article-body { font-size: 1rem; }
 }
+
+
+/* ============================================================
+   PRESS FRONT PAGE  (/news)
+   The front door of Cadenza Arthouse Press: hero, featured
+   story, newsroom dashboard, reporting list, archive-in-
+   progress, how-we-work, support.
+   ============================================================ */
+
+.press-main {
+  max-width: 1024px;
+  margin: 0 auto;
+  padding: 0 24px 64px;
+}
+
+.press-main > section { margin-top: 56px; }
+
+/* ── 1 · Hero ── */
+.press-hero {
+  text-align: center;
+  padding-top: 52px;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.press-hero-kicker {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #888;
+  margin-bottom: 14px;
+}
+
+.press-hero-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 3.4rem;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  color: #111111;
+}
+
+.press-hero-tagline {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #A07840;
+  margin-top: 12px;
+}
+
+.press-hero-rule {
+  display: flex;
+  justify-content: center;
+  margin: 24px 0;
+}
+
+.press-hero-rule span {
+  width: 64px;
+  border-top: 2px solid #111111;
+}
+
+.press-hero-mission {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 1.02rem;
+  line-height: 1.85;
+  color: #333;
+}
+
+/* ── 2 · Featured story ── */
+.featured-story {
+  display: grid;
+  grid-template-columns: 3fr 2fr;
+  background: #FFFFFF;
+  border: 1px solid #DDD5C8;
+  opacity: 0;
+  animation: fadeUp 0.4s ease forwards;
+}
+
+.featured-image-link { display: block; }
+
+.featured-image {
+  height: 100%;
+  min-height: 300px;
+  overflow: hidden;
+  background: #DDD5C8;
+}
+
+.featured-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.featured-story:hover .featured-image img { transform: scale(1.03); }
+
+.featured-body {
+  padding: 32px 32px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.featured-meta {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.featured-beat {
+  background: #A07840;
+  color: #F6F2EB;
+  padding: 3px 8px;
+}
+
+.featured-meta time { color: #888; }
+
+.featured-body h3 {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 1.45rem;
+  font-weight: 700;
+  line-height: 1.3;
+  color: #111111;
+}
+
+.featured-body h3 a:hover { color: #A07840; transition: color 0.2s; }
+
+.featured-body p {
+  font-size: 0.92rem;
+  line-height: 1.65;
+  color: #444;
+  flex: 1;
+}
+
+.featured-skeleton {
+  height: 320px;
+  background: linear-gradient(90deg, #EDE9E1 25%, #E4DFD6 50%, #EDE9E1 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+}
+
+/* ── 3 · Newsroom at a Glance ── */
+.glance-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: #DDD5C8;
+  border: 1px solid #DDD5C8;
+}
+
+.glance-tile {
+  background: #FFFFFF;
+  padding: 26px 18px 22px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+  opacity: 0;
+  animation: fadeUp 0.4s ease forwards;
+}
+
+.glance-value {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2.6rem;
+  line-height: 1;
+  color: #111111;
+}
+
+.glance-value-small { font-size: 1.6rem; padding-top: 10px; }
+
+.glance-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #A07840;
+}
+
+.glance-skeleton {
+  height: 110px;
+  background: linear-gradient(90deg, #EDE9E1 25%, #E4DFD6 50%, #EDE9E1 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+}
+
+/* ── 4 · Latest Reporting (beat kicker on list items) ── */
+.list-beat {
+  display: inline-block;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #A07840;
+  margin-bottom: 3px;
+}
+
+/* ── 5 · Archive in Progress ── */
+.progress-list {
+  border-top: 1px solid #DDD5C8;
+}
+
+.progress-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid #DDD5C8;
+  opacity: 0;
+  animation: fadeUp 0.35s ease forwards;
+}
+
+.progress-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #A07840;
+  flex-shrink: 0;
+  animation: pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.35; }
+}
+
+.progress-body {
+  flex: 1;
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.progress-body h4 {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #111111;
+}
+
+.progress-beat {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #A07840;
+}
+
+.progress-status {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #888;
+  white-space: nowrap;
+}
+
+.progress-note {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.05em;
+  color: #999;
+  margin-top: 14px;
+  font-style: normal;
+}
+
+/* ── 6 · How We Work ── */
+.press-how {
+  background: #111111;
+  color: #F6F2EB;
+  border-top: 3px solid #A07840;
+}
+
+.press-how-inner {
+  padding: 44px 40px 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.press-how-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.6rem;
+  letter-spacing: 0.1em;
+  color: #F6F2EB;
+}
+
+.press-how-lede {
+  font-family: 'Libre Baskerville', serif;
+  font-style: italic;
+  font-size: 1rem;
+  line-height: 1.8;
+  color: #CCBFA8;
+  max-width: 640px;
+}
+
+.press-how-steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+  margin-top: 14px;
+}
+
+.how-step {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.how-step-num {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  color: #A07840;
+}
+
+.how-step h4 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.05rem;
+  letter-spacing: 0.08em;
+  color: #F6F2EB;
+}
+
+.how-step p {
+  font-size: 0.8rem;
+  line-height: 1.65;
+  color: #999;
+}
+
+/* ── 7 · Support ── */
+.press-support {
+  text-align: center;
+  max-width: 560px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.press-support-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.6rem;
+  letter-spacing: 0.08em;
+  color: #111111;
+}
+
+.press-support-copy {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 0.92rem;
+  line-height: 1.75;
+  color: #444;
+  margin: 12px 0 24px;
+}
+
+/* ── Press responsive ── */
+@media (max-width: 860px) {
+  .featured-story { grid-template-columns: 1fr; }
+  .featured-image { min-height: 0; aspect-ratio: 16 / 9; height: auto; }
+  .glance-grid { grid-template-columns: repeat(2, 1fr); }
+  .press-how-steps { grid-template-columns: 1fr; gap: 22px; }
+  .press-how-inner { padding: 36px 28px 40px; }
+}
+
+@media (max-width: 560px) {
+  .press-hero { padding-top: 36px; }
+  .press-hero-title { font-size: 2.4rem; }
+  .press-main > section { margin-top: 44px; }
+  .featured-body { padding: 24px 22px 22px; }
+  .featured-body h3 { font-size: 1.2rem; }
+  .progress-status { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .featured-story, .glance-tile, .progress-item { animation: none; opacity: 1; }
+  .featured-skeleton, .glance-skeleton { animation: none; }
+  .progress-dot { animation: none; }
+}

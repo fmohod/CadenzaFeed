@@ -1,0 +1,12 @@
+{
+  "_readme": "Hand-edited file read by /news. Update photographsPublished when you publish new photos. Add real numbers to extraStats as they become measurable (e.g. {\"label\": \"Interview Subjects\", \"value\": 126}). Keep inProgress honest — only stories actively being processed; remove items when published or shelved. Everything else on the dashboard (features, years, last updated) is computed live and never needs editing.",
+  "photographsPublished": 47,
+  "extraStats": [],
+  "inProgress": [
+    { "title": "Houston Yogis", "beat": "Wellness" },
+    { "title": "Black Market at The Shrine", "beat": "Markets" },
+    { "title": "Afrolatino Culture Sessions", "beat": "Music" },
+    { "title": "Community Cleanup", "beat": "Public Service" },
+    { "title": "Sound Healing Series", "beat": "Wellness" }
+  ]
+}

@@ -7,12 +7,13 @@
 <link rel="icon" href="/assets/favicon-32x32.png" type="image/png" sizes="32x32">
 <link rel="icon" href="/assets/favicon-192x192.png" type="image/png" sizes="192x192">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" sizes="180x180">
-  <title>Press Archive | Cadenza Arthouse</title>
+  <title>Cadenza Arthouse Press | Independent Journalism, Houston</title>
+  <meta name="description" content="The front door of Cadenza Arthouse Press — an independent newsroom documenting the people, movements, artists, and cultural events shaping Houston. Every story becomes a permanent archival record.">
   <link rel="stylesheet" href="../style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 </head>
-<body class="all-page">
+<body class="all-page press-page">
 
   <!-- ═══════════════════════════════════════════════════════
        MASTHEAD
@@ -63,27 +64,121 @@
   <!-- ═══════════════════════════════════════════════════════
        MAIN CONTENT
   ═══════════════════════════════════════════════════════ -->
-  <main class="all-main">
+  <main class="press-main">
 
-    <div class="all-header">
+    <!-- ── 1 · HERO ─────────────────────────────────────── -->
+    <section class="press-hero">
+      <p class="press-hero-kicker">Houston, Texas&nbsp;&nbsp;·&nbsp;&nbsp;Established 2017</p>
+      <h2 class="press-hero-title">Cadenza Arthouse Press</h2>
+      <p class="press-hero-tagline">Independent Journalism&nbsp;&nbsp;·&nbsp;&nbsp;Documentary Photography&nbsp;&nbsp;·&nbsp;&nbsp;Community History</p>
+      <div class="press-hero-rule"><span></span></div>
+      <p class="press-hero-mission">
+        Cadenza Arthouse documents the people, movements, artists, educators, musicians,
+        organizers, and cultural events shaping Houston. Every story begins with original
+        reporting and becomes a permanent historical record — photographs, interviews, and
+        research preserved in the Cadenza Arthouse Archive.
+      </p>
+    </section>
+
+    <!-- ── 2 · FEATURED STORY ───────────────────────────── -->
+    <section class="press-featured">
       <div class="section-label-bar">
-        <span class="section-label">Cadenza Arthouse Press</span>
-        <span class="section-label-sub">Independent Reporting &amp; Features</span>
+        <span class="section-label">Featured Story</span>
+        <span class="section-label-sub">From the Newsroom</span>
       </div>
-      <p class="all-subtitle" id="all-subtitle">Loading archive…</p>
-    </div>
+      <div id="featured-slot">
+        <div class="featured-skeleton"></div>
+      </div>
+    </section>
 
-    <div class="search-bar">
-      <input type="text" id="search-input" placeholder="Search the press archive…" autocomplete="off">
-    </div>
+    <!-- ── 3 · NEWSROOM AT A GLANCE ─────────────────────── -->
+    <section class="press-glance">
+      <div class="section-label-bar">
+        <span class="section-label">Newsroom at a Glance</span>
+        <span class="section-label-sub">A Living Archive</span>
+      </div>
+      <div class="glance-grid" id="glance-grid">
+        <div class="glance-skeleton"></div>
+        <div class="glance-skeleton"></div>
+        <div class="glance-skeleton"></div>
+        <div class="glance-skeleton"></div>
+      </div>
+    </section>
 
-    <div class="article-list" id="article-list">
-      <div class="list-skeleton"></div>
-      <div class="list-skeleton"></div>
-      <div class="list-skeleton"></div>
-      <div class="list-skeleton"></div>
-      <div class="list-skeleton"></div>
-    </div>
+    <!-- ── 4 · LATEST REPORTING ─────────────────────────── -->
+    <section class="press-latest">
+      <div class="section-label-bar">
+        <span class="section-label">Latest Reporting</span>
+        <span class="section-label-sub" id="all-subtitle">Loading archive…</span>
+      </div>
+
+      <div class="search-bar">
+        <input type="text" id="search-input" placeholder="Search the press archive…" autocomplete="off">
+      </div>
+
+      <div class="article-list" id="article-list">
+        <div class="list-skeleton"></div>
+        <div class="list-skeleton"></div>
+        <div class="list-skeleton"></div>
+        <div class="list-skeleton"></div>
+        <div class="list-skeleton"></div>
+      </div>
+    </section>
+
+    <!-- ── 5 · ARCHIVE IN PROGRESS ──────────────────────── -->
+    <section class="press-progress" id="progress-section" hidden>
+      <div class="section-label-bar">
+        <span class="section-label">Archive in Progress</span>
+        <span class="section-label-sub">Currently Processing</span>
+      </div>
+      <div class="progress-list" id="progress-list"></div>
+      <p class="progress-note">Stories in active documentation. No publish dates promised — the archive moves at the speed of verification.</p>
+    </section>
+
+    <!-- ── 6 · HOW WE WORK ──────────────────────────────── -->
+    <section class="press-how">
+      <div class="press-how-inner">
+        <h3 class="press-how-title">How We Work</h3>
+        <p class="press-how-lede">
+          Every published article is only one part of the archive. Behind each story are
+          photographs, interviews, audio recordings, research, and verified documentation
+          preserved for future generations.
+        </p>
+        <div class="press-how-steps">
+          <div class="how-step">
+            <span class="how-step-num">01</span>
+            <h4>Original Reporting</h4>
+            <p>Stories are documented in person — on the ground, in the room, with the people who make Houston's culture.</p>
+          </div>
+          <div class="how-step">
+            <span class="how-step-num">02</span>
+            <h4>Documentary Evidence</h4>
+            <p>Photography, interviews, and recordings are gathered and verified before a story is published.</p>
+          </div>
+          <div class="how-step">
+            <span class="how-step-num">03</span>
+            <h4>Permanent Preservation</h4>
+            <p>Each article becomes a record in the Cadenza Arthouse Archive — institutional memory, not a feed that scrolls away.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 7 · SUPPORT ──────────────────────────────────── -->
+    <section class="press-support">
+      <h3 class="press-support-title">Support Independent Journalism</h3>
+      <p class="press-support-copy">
+        Cadenza Arthouse is self-funded, self-hosted, and tracker-free.
+        Reader support keeps the reporting independent and the archive growing.
+      </p>
+      <a href="../support.html" class="cta-button">
+        <span>Support the Archive</span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="5" y1="12" x2="19" y2="12"/>
+          <polyline points="12,5 19,12 12,19"/>
+        </svg>
+      </a>
+    </section>
 
   </main>
 
@@ -113,6 +208,7 @@
 
     const BASE_URL = 'https://cadenzaarthouse.com';
     const API_BASE = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/`;
+    const PLACEHOLDER = `${BASE_URL}/assets/placeholder.jpg`;
 
     let allArticles = [];
 
@@ -142,21 +238,100 @@
                    || doc.querySelector('p')?.textContent?.trim().slice(0, 120) + '…'
                    || '';
         const date  = doc.querySelector('meta[name="date"]')?.content || '';
+        const beat  = doc.querySelector('meta[property="article:section"]')?.content || '';
 
-        return { folder, title, desc, date, url };
+        return { folder, title, desc, date, beat, url };
       } catch {
-        return { folder, title: `Article ${folder}`, desc: '', date: '', url: `${BASE_URL}/${folder}/` };
+        return { folder, title: `Article ${folder}`, desc: '', date: '', beat: '', url: `${BASE_URL}/${folder}/` };
       }
     }
 
-    function formatDate(dateStr) {
+    // Thumb: check jpg → png → placeholder (only needed for the featured story)
+    async function resolveThumb(folder) {
+      for (const ext of ['jpg', 'png']) {
+        try {
+          const r = await fetch(`${BASE_URL}/${folder}/thumb.${ext}`, { method: 'HEAD' });
+          if (r.ok) return `${BASE_URL}/${folder}/thumb.${ext}`;
+        } catch {}
+      }
+      return PLACEHOLDER;
+    }
+
+    function formatDate(dateStr, style = 'short') {
       if (!dateStr) return '';
       try {
         return new Date(dateStr + 'T00:00:00').toLocaleDateString('en-US',
-          { year: 'numeric', month: 'short', day: 'numeric' });
+          { year: 'numeric', month: style === 'long' ? 'long' : 'short', day: 'numeric' });
       } catch { return dateStr; }
     }
 
+    // ── Featured story ──────────────────────────────────────
+    async function renderFeatured(meta) {
+      const slot = document.getElementById('featured-slot');
+      const thumb = await resolveThumb(meta.folder);
+      slot.innerHTML = `
+        <article class="featured-story">
+          <a href="${meta.url}" class="featured-image-link">
+            <div class="featured-image">
+              <img src="${thumb}" alt="${meta.title}">
+            </div>
+          </a>
+          <div class="featured-body">
+            <div class="featured-meta">
+              ${meta.beat ? `<span class="featured-beat">${meta.beat}</span>` : ''}
+              ${meta.date ? `<time>${formatDate(meta.date, 'long')}</time>` : ''}
+            </div>
+            <h3><a href="${meta.url}">${meta.title}</a></h3>
+            ${meta.desc ? `<p>${meta.desc}</p>` : ''}
+            <a href="${meta.url}" class="read-link">Read the Story →</a>
+          </div>
+        </article>`;
+    }
+
+    // ── Newsroom at a Glance ─────────────────────────────────
+    function renderGlance(articles, stats) {
+      const dates = articles.map(a => a.date).filter(Boolean).sort();
+      const since = dates.length ? dates[0].slice(0, 4) : '2017';
+      const latest = dates.length ? dates[dates.length - 1] : '';
+
+      const tiles = [
+        { value: articles.length, label: 'Published Features' },
+        { value: since, label: 'Documenting Since' },
+      ];
+      if (stats?.photographsPublished) {
+        tiles.push({ value: stats.photographsPublished.toLocaleString('en-US'), label: 'Photographs Published' });
+      }
+      for (const extra of stats?.extraStats || []) {
+        if (extra.label && extra.value) tiles.push({ value: extra.value.toLocaleString ? extra.value.toLocaleString('en-US') : extra.value, label: extra.label });
+      }
+      if (latest) tiles.push({ value: formatDate(latest), label: 'Latest Story', small: true });
+
+      document.getElementById('glance-grid').innerHTML = tiles.map((t, i) => `
+        <div class="glance-tile" style="animation-delay:${i * 0.08}s">
+          <span class="glance-value${t.small ? ' glance-value-small' : ''}">${t.value}</span>
+          <span class="glance-label">${t.label}</span>
+        </div>
+      `).join('');
+    }
+
+    // ── Archive in Progress ──────────────────────────────────
+    function renderProgress(stats) {
+      const items = stats?.inProgress || [];
+      if (!items.length) return;
+      document.getElementById('progress-list').innerHTML = items.map((s, i) => `
+        <div class="progress-item" style="animation-delay:${i * 0.06}s">
+          <span class="progress-dot"></span>
+          <div class="progress-body">
+            <h4>${s.title}</h4>
+            ${s.beat ? `<span class="progress-beat">${s.beat}</span>` : ''}
+          </div>
+          <span class="progress-status">Archive in progress</span>
+        </div>
+      `).join('');
+      document.getElementById('progress-section').hidden = false;
+    }
+
+    // ── Latest Reporting list ────────────────────────────────
     function renderList(articles) {
       const list = document.getElementById('article-list');
       if (articles.length === 0) {
@@ -167,6 +342,7 @@
         <a href="${a.url}" class="list-item" style="animation-delay:${Math.min(i, 20) * 0.04}s">
           <div class="list-num">${String(allArticles.indexOf(a) + 1).padStart(2, '0')}</div>
           <div class="list-body">
+            ${a.beat ? `<span class="list-beat">${a.beat}</span>` : ''}
             <h3>${a.title}</h3>
             ${a.desc ? `<p>${a.desc}</p>` : ''}
           </div>
@@ -182,16 +358,24 @@
       const q = e.target.value.toLowerCase().trim();
       if (!q) { renderList(allArticles); return; }
       renderList(allArticles.filter(a =>
-        a.title.toLowerCase().includes(q) || a.desc.toLowerCase().includes(q)
+        a.title.toLowerCase().includes(q) ||
+        a.desc.toLowerCase().includes(q) ||
+        a.beat.toLowerCase().includes(q)
       ));
     });
 
     async function init() {
       const list = document.getElementById('article-list');
+
+      // Hand-edited stats + editorial calendar (optional — page works without it)
+      const statsPromise = fetch('press-stats.json')
+        .then(r => r.ok ? r.json() : null)
+        .catch(() => null);
+
       try {
         const folders = await getArticleFolders();
         document.getElementById('all-subtitle').textContent =
-          `${folders.length} article${folders.length !== 1 ? 's' : ''} in the press archive`;
+          `${folders.length} Feature${folders.length !== 1 ? 's' : ''} · Searchable`;
 
         const metas = [];
         for (let i = 0; i < folders.length; i += 5) {
@@ -205,8 +389,15 @@
         // (folder number ≠ publish date order)
         allArticles.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
         renderList(allArticles);
+
+        const stats = await statsPromise;
+        renderFeatured(allArticles[0]);
+        renderGlance(allArticles, stats);
+        renderProgress(stats);
       } catch (err) {
         list.innerHTML = `<div class="error-state"><p>⚠ Could not load articles. Check your GITHUB_USER and GITHUB_REPO config.</p></div>`;
+        document.getElementById('featured-slot').innerHTML = '';
+        document.getElementById('glance-grid').innerHTML = '';
         console.error(err);
       }
     }
