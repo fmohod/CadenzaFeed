@@ -25,9 +25,9 @@ REM      open one to edit any field or delete it.
 REM
 REM  [5] Live ticker status: everything on the website wire right
 REM      now (LIVE / WAITING / ENDED), with actions that write
-REM      through to the archive sources - change an item's end
-REM      time, make it indefinite, remove it from the site, or
-REM      delete a desk entry - then recompile + push.
+REM      through to the archive sources - edit a headline, change
+REM      an item's end time, make it indefinite, remove it from
+REM      the site, or delete a desk entry - then recompile + push.
 REM
 REM  Safe to run repeatedly - it only pushes when the wire
 REM  actually changed. Scheduled/scripted runs can skip the menu:

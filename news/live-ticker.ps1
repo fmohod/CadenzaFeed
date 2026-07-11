@@ -17,6 +17,8 @@
   survive). After changes you are offered a compile + push so the site
   updates immediately.
 
+    [H] edit headline - retype it; the correction is written to the archive
+        source yaml, so every future compile carries the fixed wording
     [E] change the end - new date/time, or "-" for INDEFINITE (never expires)
     [X] remove from site - sets the source entry status: hidden (the file
         stays in the archive as a record)
@@ -132,10 +134,25 @@ while ($true) {
   if (-not $srcOk) { continue }
 
   Write-Output ''
-  $menu = '  [E] change end (or indefinite)    [X] remove from site'
+  $menu = '  [H] edit headline    [E] change end (or indefinite)    [X] remove from site'
   if ($isDesk) { $menu += '    [D] delete file' }
   Write-Output ($menu + '    [Enter] back')
   $act = (Read-Host '  Action').Trim()
+
+  if ($act -match '^[Hh]$') {
+    Write-Output "  Current:  $($it.text)"
+    Write-Output '  Type the corrected headline (8-15 words, public-facing). Enter = cancel.'
+    $v = (Read-Host '  New headline').Trim()
+    if ($v) {
+      Set-SourceField -Path $src -Key 'headline' -Value $v
+      $it.text = $v
+      Write-Output '  -> headline updated in the archive source'
+      $dirty = $true
+    } else {
+      Write-Output '  Unchanged.'
+    }
+    continue
+  }
 
   if ($act -match '^[Ee]$') {
     while ($true) {

@@ -113,8 +113,10 @@ foreach ($f in $files) {
       # capture both groups before any further regex test clobbers $Matches
       $k = $Matches[1].ToLower()
       $v = $Matches[2].Trim()
+      # a value that is nothing but a comment means "empty"
+      if ($v.StartsWith('#')) { $v = '' }
       # strip an inline comment unless the value is a URL or quoted
-      if ($v -notmatch '^["'']' -and $v -notmatch '://') { $v = ($v -split '\s+#', 2)[0].Trim() }
+      elseif ($v -notmatch '^["'']' -and $v -notmatch '://') { $v = ($v -split '\s+#', 2)[0].Trim() }
       $fields[$k] = $v.Trim('"').Trim("'")
     }
   }
