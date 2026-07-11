@@ -23,6 +23,12 @@ REM
 REM  [4] Queue manager: list every desk entry (F:\Media\ticker\),
 REM      open one to edit any field or delete it.
 REM
+REM  [5] Live ticker status: everything on the website wire right
+REM      now (LIVE / WAITING / ENDED), with actions that write
+REM      through to the archive sources - change an item's end
+REM      time, make it indefinite, remove it from the site, or
+REM      delete a desk entry - then recompile + push.
+REM
 REM  Safe to run repeatedly - it only pushes when the wire
 REM  actually changed. Scheduled/scripted runs can skip the menu:
 REM      update-ticker.bat sweep
@@ -40,10 +46,12 @@ echo    [1] Push latest ticker archive updates  (scan F:\Media)
 echo    [2] Write a single ticker entry myself  (manual mode)
 echo    [3] Schedule a ticker entry             (start + end time)
 echo    [4] Edit or delete queued entries       (desk queue)
+echo    [5] Live ticker status                  (manage what's on the site)
 echo    [Q] Quit
 echo.
-choice /c 1234Q /n /m "  Choose: "
-if errorlevel 5 goto :eof
+choice /c 12345Q /n /m "  Choose: "
+if errorlevel 6 goto :eof
+if errorlevel 5 goto livewire
 if errorlevel 4 goto managequeue
 if errorlevel 3 goto schedule
 if errorlevel 2 goto manual
@@ -75,6 +83,10 @@ goto done
 
 :managequeue
 powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0schedule-ticker.ps1" -Manage
+goto done
+
+:livewire
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0live-ticker.ps1"
 goto done
 
 :done

@@ -1,2 +1,3 @@
-# local operational state (ticker scan log) — regenerated on every run
+# local operational state (ticker scan log + live-item source map) — regenerated on every run
 news/ticker-scan-state.json
+news/ticker-sources.json
