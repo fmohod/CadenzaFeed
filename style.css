@@ -977,7 +977,7 @@ main {
   animation: shimmer 1.4s infinite;
 }
 
-/* ── News ticker (below masthead) ── */
+/* ── News ticker (inside the sticky masthead, so it stays on screen) ── */
 .press-ticker {
   display: flex;
   align-items: stretch;
@@ -985,7 +985,15 @@ main {
   color: #F6F2EB;
   border-bottom: 2px solid #A07840;
   overflow: hidden;
+  /* Drag/swipe to scrub. pan-y keeps vertical page scrolling with the
+     browser while horizontal gestures come to us as pointermove. */
+  touch-action: pan-y;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
 }
+
+.press-ticker.is-dragging { cursor: grabbing; }
 
 .ticker-label {
   display: flex;
@@ -1008,18 +1016,12 @@ main {
   align-items: center;
 }
 
+/* Motion is JS-driven (requestAnimationFrame sets translateX) so a drag can
+   scrub it and hand the position back to the scroll on release. */
 .ticker-track {
   display: inline-flex;
   white-space: nowrap;
   will-change: transform;
-  animation: ticker-scroll 40s linear infinite;
-}
-
-.press-ticker:hover .ticker-track { animation-play-state: paused; }
-
-@keyframes ticker-scroll {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }
 }
 
 .ticker-group {
@@ -1272,5 +1274,6 @@ a.ticker-item:hover .ticker-text { color: #A07840; transition: color 0.2s; }
   .featured-story, .glance-tile, .progress-item { animation: none; opacity: 1; }
   .featured-skeleton, .glance-skeleton { animation: none; }
   .progress-dot { animation: none; }
-  .ticker-track { animation: none; }
+  /* The ticker's auto-scroll is disabled in JS under reduced motion; it can
+     still be dragged by hand. */
 }

@@ -59,18 +59,21 @@
       <div class="masthead-bottom-rule"></div>
 
     </div>
-  </header>
 
-  <!-- ═══════════════════════════════════════════════════════
-       NEWS TICKER — reads news/ticker.json (hand-edited or
-       compiled from archive markdown by compile-ticker.ps1)
-  ═══════════════════════════════════════════════════════ -->
-  <div class="press-ticker" id="press-ticker" hidden>
-    <span class="ticker-label">Latest</span>
-    <div class="ticker-viewport">
-      <div class="ticker-track" id="ticker-track"></div>
+    <!-- ═══════════════════════════════════════════════════════
+         NEWS TICKER — reads news/ticker.json, compiled from the
+         archive by CAMT (run.bat option 8). Lives INSIDE the
+         masthead so it stays on screen with it while scrolling.
+         Drag/swipe it to scrub; it resumes on release.
+    ═══════════════════════════════════════════════════════ -->
+    <div class="press-ticker" id="press-ticker" hidden>
+      <span class="ticker-label">Latest</span>
+      <div class="ticker-viewport">
+        <div class="ticker-track" id="ticker-track"></div>
+      </div>
     </div>
-  </div>
+
+  </header>
 
   <!-- ═══════════════════════════════════════════════════════
        MAIN CONTENT
@@ -318,19 +321,92 @@
             : `<span class="ticker-item">${inner}</span>`;
         }).join('<span class="ticker-sep">◆</span>');
 
-        // Two identical groups make the -50% translate loop seamless
+        // One group = the whole wire once. Measure it, then append copies until
+        // the track is wider than the screen, so wrapping by exactly one group
+        // width is never visible — in either drag direction.
         const track = document.getElementById('ticker-track');
-        track.innerHTML =
-          `<div class="ticker-group">${html}<span class="ticker-sep">◆</span></div>` +
-          `<div class="ticker-group" aria-hidden="true">${html}<span class="ticker-sep">◆</span></div>`;
+        const group = `<div class="ticker-group">${html}<span class="ticker-sep">◆</span></div>`;
+        track.innerHTML = group;
 
-        document.getElementById('press-ticker').hidden = false;
+        document.getElementById('press-ticker').hidden = false;   // unhide before measuring
 
-        // Scroll speed proportional to content length (~90px/sec).
-        // Measured after unhiding so offsetWidth is real.
-        const w = track.firstElementChild.offsetWidth;
-        if (w) track.style.animationDuration = `${Math.max(20, Math.round(w / 90))}s`;
+        const groupW = track.firstElementChild.offsetWidth;
+        if (!groupW) return;
+
+        const vw = window.innerWidth || document.documentElement.clientWidth || 1280;
+        const copies = Math.max(2, Math.ceil((vw * 2) / groupW) + 1);
+        const filler = group.replace('class="ticker-group"', 'class="ticker-group" aria-hidden="true"');
+        track.innerHTML = group + filler.repeat(copies - 1);
+
+        driveTicker(track, groupW);
       } catch { /* no ticker file — bar stays hidden */ }
+    }
+
+    // Auto-scrolls at a steady ~90px/sec, pauses on hover, and can be
+    // dragged/swiped to scrub back and forward — on release the scroll picks up
+    // from wherever it was let go.
+    function driveTicker(track, groupW) {
+      const bar = document.getElementById('press-ticker');
+      const SPEED = 90;   // px per second
+      const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      let offset = 0, hovering = false, dragging = false;
+      let startX = 0, startOffset = 0, moved = 0, last = null;
+
+      // Keep offset within one group width in BOTH directions, so dragging
+      // forward past the start wraps as cleanly as the auto-scroll does.
+      function wrap() {
+        while (offset <= -groupW) offset += groupW;
+        while (offset > 0) offset -= groupW;
+      }
+
+      function frame(t) {
+        if (last === null) last = t;
+        const dt = (t - last) / 1000;
+        last = t;
+        if (!hovering && !dragging && !still) offset -= SPEED * dt;
+        wrap();
+        track.style.transform = `translateX(${offset}px)`;
+        requestAnimationFrame(frame);
+      }
+      requestAnimationFrame(frame);
+
+      // Hover pause makes links easy to click on desktop.
+      bar.addEventListener('mouseenter', () => { hovering = true; });
+      bar.addEventListener('mouseleave', () => { hovering = false; });
+
+      // Pointer events cover mouse, touch and pen with one path.
+      bar.addEventListener('pointerdown', e => {
+        dragging = true;
+        moved = 0;
+        startX = e.clientX;
+        startOffset = offset;
+        try { bar.setPointerCapture(e.pointerId); } catch {}
+        bar.classList.add('is-dragging');
+      });
+
+      bar.addEventListener('pointermove', e => {
+        if (!dragging) return;
+        const dx = e.clientX - startX;
+        moved = Math.max(moved, Math.abs(dx));
+        offset = startOffset + dx;
+      });
+
+      function endDrag(e) {
+        if (!dragging) return;
+        dragging = false;
+        bar.classList.remove('is-dragging');
+        try { bar.releasePointerCapture(e.pointerId); } catch {}
+      }
+      bar.addEventListener('pointerup', endDrag);
+      // Vertical page scrolling cancels the gesture — that's how pan-y keeps
+      // the page scrollable through the ticker.
+      bar.addEventListener('pointercancel', endDrag);
+
+      // A swipe that travelled is a scrub, not a click on the story link.
+      bar.addEventListener('click', e => {
+        if (moved > 6) { e.preventDefault(); e.stopPropagation(); }
+      }, true);
     }
 
     // ── Featured story ──────────────────────────────────────
