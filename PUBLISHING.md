@@ -122,6 +122,20 @@ footer) is unchanged from any existing article — copy it from the most recent
 folder. **The article prose goes inside `<div class="article-body">`.** The game's
 terminal reader extracts that container, so keep the prose there.
 
+### 2a. Standard footer — the methodology note (every article)
+
+Every article ends with two things inside `.article-body`, after the prose:
+
+1. A small **italic credit/dateline** line (event, date, venue, photo credit; note any
+   details that remain unconfirmed at publication).
+2. The standard **"About this coverage"** methodology note — identical on every piece.
+   It signals firsthand, independent reporting and distinguishes the archive from
+   auto-generated content. Paste it verbatim (adjust the reporter name only if needed):
+
+```html
+<p style="font-size:0.8rem;color:#777;"><em>About this coverage.</em> Cadenza Arthouse reporting is based on firsthand attendance and original photography by Frankie Mohammed, supported by official event materials, archival records, and verified public information. Details that could not be independently confirmed are identified as such.</p>
+```
+
 ---
 
 ## 3. Field reference
@@ -195,6 +209,7 @@ consistent with slugs (use the same `george-jackson` everywhere).
 - [ ] Slugs are kebab-case and reuse existing ones where they exist.
 - [ ] `thumb.jpg` (or `.png`) present; photos in `images/`.
 - [ ] Prose is inside `<div class="article-body">`.
+- [ ] Italic credit/dateline line + the standard **"About this coverage"** footer are present (§2a).
 - [ ] Want it website-only? Set `game-record` to `false`.
 
 ---
