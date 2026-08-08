@@ -29,6 +29,13 @@ article without the GAME META BLOCK.
   explicitly asked.
 - The homepage, archive, RSS, and game **auto-discover** article folders and images —
   you don't register new articles anywhere by hand.
-- The deeper canonical schema (Archive Record spec, entity/quest model, ID
-  conventions) lives in the separate **DevNotes** repo and is not present here.
-  `PUBLISHING.md` is the self-contained, practical reference for this repo.
+- The deeper canonical schemas are not present here, and as of 2026-08-07 they sit in
+  two places: **`ARCHIVE_RECORD_SPEC.md` is in CAMT**
+  (`F:\Apps\Cadenza Arthouse Media Tools\`) because journalism now depends on it — it is
+  the contract `game/engine/record.js` implements — while the quest model, game layers
+  and ID conventions stay parked in **DevNotes**. `PUBLISHING.md` remains the
+  self-contained, practical reference for this repo.
+- **A change to the record spec must be mirrored in `game/engine/record.js` in the same
+  session**, and vice versa. That pair has already drifted once: the spec defines a
+  `body` block type of `image`, the builder omits `<img>` from its selector, and zero
+  image blocks exist across twelve published articles.
