@@ -216,8 +216,16 @@ consistent with slugs (use the same `george-jackson` everywhere).
 
 ## 6. Where the deeper schema lives
 
-This guide is the practical "how." The full canonical spec — the Archive Record
-model, entity registry, quest format, ID conventions — lives in the **DevNotes**
-repo (`ARCHIVE_RECORD_SPEC.md`, `GAME_METADATA_SCHEMA.md`, `RULES.md`), which is
-**not** part of this repo. When in doubt about *why* a field exists, that's the
-reference. For day-to-day publishing, this file is all you need.
+This guide is the practical "how." The canonical specs are elsewhere, and as of
+2026-08-07 they are in **two** places rather than one:
+
+| Spec | Lives in | Governs |
+|---|---|---|
+| `ARCHIVE_RECORD_SPEC.md` | **CAMT** (`F:\Apps\Cadenza Arthouse Media Tools\`) | the Archive Record model — what `game/engine/record.js` builds from these pages |
+| `GAME_METADATA_SCHEMA.md`, `RULES.md`, the GDD | **DevNotes** | quest format, game layers, world rules |
+
+The Archive Record spec moved to CAMT because journalism now depends on it — it
+is the contract CAMT will consume when it starts generating articles instead of
+hand-authored HTML. Neither repo is part of this one. When in doubt about *why* a
+field exists, those are the references. For day-to-day publishing, this file is
+all you need.

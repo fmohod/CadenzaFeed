@@ -1,5 +1,8 @@
 // ARCHIVE RECORD SERVICES
-// Implements the contract in DevNotes/03_Technical_Reference/ARCHIVE_RECORD_SPEC.md
+// Implements the contract in ARCHIVE_RECORD_SPEC.md, which lives in CAMT:
+//   F:\Apps\Cadenza Arthouse Media Tools\ARCHIVE_RECORD_SPEC.md
+// (moved there 2026-08-07 from DevNotes; the spec is unchanged, but journalism
+//  now depends on it and it sits beside the code that will generate articles)
 // (Schema Version 1, FROZEN). These are generic services with many consumers —
 // never single-purpose loaders (RULES.md #2).
 //
