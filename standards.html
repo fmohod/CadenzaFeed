@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="How Cadenza Arthouse sources, verifies, attributes, labels and corrects its reporting — the working editorial standards behind the archive.">
+  <link rel="icon" href="/assets/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/assets/favicon-32x32.png" type="image/png" sizes="32x32">
+  <link rel="icon" href="/assets/favicon-192x192.png" type="image/png" sizes="192x192">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" sizes="180x180">
+  <title>Editorial Standards | Cadenza Arthouse</title>
+  <link rel="canonical" href="https://cadenzaarthouse.com/standards.html">
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <style>
+    /* ── About page scoped styles ───────────────────────────
+       Editorial rebuild. Reuses site fonts/palette from root
+       style.css but defines its own structure since this page
+       is one-off, not a repeatable article template. */
+
+    .about-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 64px 24px 100px;
+    }
+
+    .about-kicker {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: #A07840;
+      text-align: center;
+      margin: 0 0 14px;
+    }
+
+    .about-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(2.4rem, 6vw, 3.6rem);
+      letter-spacing: 0.02em;
+      text-align: center;
+      color: #111111;
+      margin: 0 0 40px;
+    }
+
+    /* Opening mission statement — larger, more generous than body copy */
+    .mission-open {
+      font-family: 'Libre Baskerville', serif;
+      font-size: 1.28rem;
+      line-height: 1.75;
+      color: #111111;
+      margin: 0 0 26px;
+    }
+
+    .mission-open:first-of-type {
+      font-size: 1.42rem;
+      font-weight: 700;
+    }
+
+    .about-section p {
+      font-family: 'Libre Baskerville', serif;
+      font-size: 1.08rem;
+      line-height: 1.75;
+      color: #222222;
+      margin: 0 0 22px;
+    }
+
+    .section-divider {
+      border: none;
+      border-top: 1px solid rgba(17,17,17,0.14);
+      margin: 64px 0 48px;
+    }
+
+    .about-h2 {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.78rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #A07840;
+      margin: 0 0 28px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid rgba(160,120,64,0.3);
+    }
+
+    /* Featured pull quote, between Mission and What We Publish */
+    .pull-quote {
+      font-family: 'Libre Baskerville', serif;
+      font-style: italic;
+      font-size: clamp(1.5rem, 3.4vw, 2rem);
+      line-height: 1.5;
+      text-align: center;
+      color: #111111;
+      max-width: 600px;
+      margin: 48px auto 64px;
+      position: relative;
+    }
+    .pull-quote::before,
+    .pull-quote::after {
+      content: "";
+      display: block;
+      width: 40px;
+      height: 2px;
+      background: #A07840;
+      margin: 0 auto 18px;
+    }
+    .pull-quote::after { margin: 18px auto 0; }
+
+    .publish-list {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 26px;
+      font-family: 'Libre Baskerville', serif;
+      font-size: 1.08rem;
+      color: #222222;
+      columns: 2;
+      column-gap: 32px;
+    }
+    .publish-list li {
+      padding: 7px 0 7px 18px;
+      position: relative;
+      border-bottom: 1px solid rgba(17,17,17,0.08);
+    }
+    .publish-list li::before {
+      content: "—";
+      position: absolute;
+      left: 0;
+      color: #A07840;
+    }
+
+    /* Editorial Values — 2-column grid of 5 */
+    .values-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 36px 40px;
+    }
+    .value-item h3 {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #111111;
+      margin: 0 0 10px;
+    }
+    .value-item h3::before {
+      content: "";
+      display: inline-block;
+      width: 16px;
+      height: 1px;
+      background: #A07840;
+      margin-right: 10px;
+      vertical-align: middle;
+    }
+    .value-item p {
+      font-family: 'Libre Baskerville', serif;
+      font-size: 1rem;
+      line-height: 1.65;
+      color: #333333;
+      margin: 0;
+    }
+
+    /* Editorial Direction — founder section */
+    .founder-row {
+      display: grid;
+      grid-template-columns: 140px 1fr;
+      gap: 28px;
+      align-items: start;
+      margin-bottom: 8px;
+    }
+    .founder-portrait {
+      width: 140px;
+      height: 170px;
+      object-fit: cover;
+      filter: grayscale(1) contrast(1.05);
+      border: 1px solid rgba(17,17,17,0.12);
+    }
+    .founder-caption {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.08em;
+      color: #555555;
+      margin-top: 10px;
+      line-height: 1.5;
+    }
+    .founder-caption strong {
+      display: block;
+      color: #111111;
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      margin-bottom: 2px;
+    }
+    .founder-text p {
+      font-family: 'Libre Baskerville', serif;
+      font-size: 1.08rem;
+      line-height: 1.75;
+      color: #222222;
+      margin: 0 0 22px;
+    }
+
+    /* Archive emphasis line */
+    .archive-emphasis {
+      font-family: 'Libre Baskerville', serif;
+      font-style: italic;
+      font-size: 1.15rem;
+      color: #111111;
+      text-align: center;
+      margin: 34px 0;
+    }
+
+    /* Closing statement — distinguished, not a boxed blockquote */
+    .closing-statement {
+      font-family: 'Libre Baskerville', serif;
+      font-size: 1.2rem;
+      line-height: 1.7;
+      text-align: center;
+      color: #111111;
+      max-width: 580px;
+      margin: 0 auto 36px;
+    }
+
+    .about-cta { text-align: center; margin-top: 8px; }
+
+    @media (max-width: 600px) {
+      .about-wrap { padding: 44px 20px 70px; }
+      .publish-list { columns: 1; }
+      .values-grid { grid-template-columns: 1fr; }
+      .founder-row { grid-template-columns: 100px 1fr; }
+      .founder-portrait { width: 100px; height: 124px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="masthead">
+    <div class="masthead-inner">
+
+      <div class="masthead-top-rule"></div>
+
+      <div class="masthead-flag">
+        <div class="masthead-flag-left">
+          <span class="masthead-est">Established 2017</span>
+          <span class="masthead-dot">·</span>
+          <span class="masthead-loc">Houston, Texas</span>
+        </div>
+        <div class="masthead-flag-center">
+          <a href="index.html" class="masthead-logo-link">
+            <img src="assets/logo.png" alt="Cadenza Arthouse" class="masthead-logo">
+          </a>
+          <div class="masthead-wordmark">
+            <h1 class="masthead-title">Cadenza Arthouse</h1>
+            <p class="masthead-tagline">Independent Media&nbsp;&nbsp;·&nbsp;&nbsp;Photography&nbsp;&nbsp;·&nbsp;&nbsp;Cultural Archive</p>
+          </div>
+        </div>
+        <div class="masthead-flag-right">
+          <span class="masthead-date" id="live-date"></span>
+        </div>
+      </div>
+
+      <div class="masthead-rule-double">
+        <div class="rule-thick"></div>
+        <div class="rule-thin"></div>
+      </div>
+
+      <nav class="masthead-nav">
+        <a href="index.html">Home</a>
+        <a href="news/index.html">Press Archive</a>
+        <a href="#" class="nav-dim">Galleries</a>
+        <a href="about.html" class="active">About</a>
+        <a href="support.html">Support</a>
+      </nav>
+
+      <div class="masthead-bottom-rule"></div>
+
+    </div>
+  </header>
+
+  <main class="about-wrap">
+
+    <p class="about-kicker">Cadenza Arthouse</p>
+    <h2 class="about-title">Editorial Standards</h2>
+
+    <section class="about-section">
+      <p>This page describes how Cadenza Arthouse reports, sources, and corrects
+      its work. It is the practical companion to our <a href="about.html">editorial
+      values</a> &mdash; values say what we care about; this says what we actually do
+      before a piece is published.</p>
+      <p>We publish it because a reader has no way to judge a small independent
+      outlet except by what it commits to in the open, and because a standard nobody
+      can read is not a standard.</p>
+    </section>
+
+    <hr class="section-divider">
+
+    <section class="about-section">
+      <h2 class="about-h2">Sourcing and attribution</h2>
+      <p>Every claim that can be checked names its source in the story itself, not
+      only in our files. When we report a figure somebody else counted, a
+      characterisation somebody else made, or anything a reader might reasonably
+      want to verify, we say where it came from.</p>
+      <p>How much corroboration a claim needs depends on what it costs to be wrong.
+      An uncontested public fact needs one reliable source. A statistic or a toll
+      needs a recognised monitor or primary body, named in the text. A claim that
+      could damage somebody needs two independent sources, or a primary document,
+      and the step below.</p>
+      <p>Where we cite our own earlier reporting, we say so. Quoting ourselves
+      without attribution would manufacture a second source out of one.</p>
+    </section>
+
+    <hr class="section-divider">
+
+    <section class="about-section">
+      <h2 class="about-h2">Fairness</h2>
+      <p>When we make a specific allegation about a person or organisation who can
+      be reached, we contact them for comment before publishing, and we tell you
+      what happened &mdash; including when there was no reply.</p>
+      <p>We are a small newsroom and we say plainly what that means: we will not
+      pretend to have sought comment from a government or a distant institution we
+      could not realistically reach. In those cases we attribute the claim to the
+      body that documented it and leave the reader able to check it.</p>
+      <p>Where something material could not be established, the story says so
+      rather than smoothing over it.</p>
+    </section>
+
+    <hr class="section-divider">
+
+    <section class="about-section">
+      <h2 class="about-h2">Quotes</h2>
+      <p>Quotations come from recordings, transcribed at publication quality and
+      checked against the tape by ear before print. We do not tidy grammar inside
+      quotation marks, merge two separate answers into one quote, or trim a sentence
+      in a way that changes its sense. Where words are cut, you will see an
+      ellipsis.</p>
+      <p>Where the question shapes the answer, we tell you what the question
+      was.</p>
+    </section>
+
+    <hr class="section-divider">
+
+    <section class="about-section">
+      <h2 class="about-h2">Names</h2>
+      <p>We use the spelling a person uses for themselves &mdash; their own book,
+      byline, or organisation &mdash; over a flyer, a caption, or a social media
+      post, even when the other spelling is more common.</p>
+      <p>We do not publish a name we have not confirmed. Where someone appears in
+      our photographs or coverage and their name is not established, they are
+      described by role rather than named incorrectly.</p>
+    </section>
+
+    <hr class="section-divider">
+
+    <section class="about-section">
+      <h2 class="about-h2">Telling you what you are reading</h2>
+      <p>Every piece is labelled by kind: news, analysis, opinion, review, or
+      sponsored. Reporting and argument are different things and you are entitled to
+      know which one is in front of you.</p>
+      <p>This matters here for a specific reason. Our founder also makes creative,
+      spiritual, and comedic work under his own name. That work is real and we are
+      not hiding it &mdash; but it is not journalism, it does not appear as
+      journalism, and the reporting does not carry its opinions.</p>
+    </section>
+
+    <hr class="section-divider">
+
+    <section class="about-section">
+      <h2 class="about-h2">Photography</h2>
+      <p>Our photographs are documentary. We do not stage news scenes, and we do not
+      alter the content of an image beyond ordinary adjustments of exposure, colour,
+      and cropping that do not change what happened.</p>
+      <p>Photographs carry written descriptions so that readers using a screen
+      reader get the same account of the picture as everyone else. Those
+      descriptions are held to the same standard as any other published text,
+      including on names.</p>
+    </section>
+
+    <hr class="section-divider">
+
+    <section class="about-section">
+      <h2 class="about-h2">Corrections</h2>
+      <p>When we get something wrong, we correct it in the open. A correction is a
+      dated note on the story saying what was wrong and what is right &mdash; not a
+      quiet edit. We correct with the same prominence as the error: a mistake in a
+      headline is not fixed in a footnote.</p>
+      <p>We keep the record of what we originally said. An archive that erases its
+      own mistakes cannot be checked by anyone, including us.</p>
+      <p>If you believe something we published is wrong, tell us:
+      <a href="mailto:operations@cadenzaarthouse.com">operations@cadenzaarthouse.com</a>.
+      If it concerns you personally and we can reach you, we will tell you what we
+      changed.</p>
+    </section>
+
+    <hr class="section-divider">
+
+    <section class="about-section">
+      <h2 class="about-h2">The archive behind the stories</h2>
+      <p>Cadenza Arthouse keeps a permanent working archive &mdash; photographs,
+      recordings, transcripts, documents and research notes &mdash; behind
+      everything it publishes. Each published claim traces back to something in it,
+      with a date attached.</p>
+      <p>Most of that archive is not public, and much of it never will be: it holds
+      material about private people who did not ask to be written about. What we
+      publish is the part that has cleared that decision.</p>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-rule"></div>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <img src="assets/logo.png" alt="Cadenza Arthouse" class="footer-logo">
+        <span class="footer-wordmark">Cadenza Arthouse</span>
+      </div>
+      <p class="footer-mission">Independent media platform documenting culture, art, and community. Est. 2017, Houston, Texas.</p>
+      <p class="footer-legal">Self-hosted. No trackers. Just words.&nbsp;&nbsp;·&nbsp;&nbsp;© 2026 Cadenza Arthouse. All Rights Reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('live-date').textContent =
+      new Date().toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+  </script>
+
+</body>
+</html>
