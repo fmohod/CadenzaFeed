@@ -599,7 +599,7 @@ Settings may eventually display certification labels.
 
 Example:
 
-    Official Cadenza Interface
+    Official Cadenza Arthouse Interface
     Community Interface
     Experimental Interface
 

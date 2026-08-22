@@ -46,7 +46,7 @@ dynamically from `images/` — you don't list them anywhere.
 <meta name="description" content="{{ONE-OR-TWO SENTENCE SUMMARY}}">
 <meta name="article-id" content="{{NNNN}}">
 
-<!-- ── Cadenza Archive · game layer (read by /game) ── -->
+<!-- ── Cadenza Arthouse Archive · game layer (read by /game) ── -->
 <!-- REQUIRED for the article to appear in the game -->
 <meta name="game-record"       content="true">
 <meta name="game-era"          content="{{YYYY}}">

@@ -287,7 +287,7 @@ nav { display: flex; flex-direction: column; gap: 0.5rem; }
     text-shadow: var(--text-glow);
 }
 
-/* --- HOME LOGO --- (tint the shared Cadenza mark to the active theme colour) */
+/* --- HOME LOGO --- (tint the shared Cadenza Arthouse mark to the active theme colour) */
 .system-logo {
     max-width: 120px;
     height: auto;

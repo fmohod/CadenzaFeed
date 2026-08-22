@@ -20,5 +20,5 @@ settings.
 
 ## Boot logo
 
-This pack does not override `bootLogo`, so CAIN OS falls back to the shared Cadenza
+This pack does not override `bootLogo`, so CAIN OS falls back to the shared Cadenza Arthouse
 mark, tinted by the OS. A future revision may ship a pack-local boot mark.
