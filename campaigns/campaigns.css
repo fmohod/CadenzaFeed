@@ -1,0 +1,148 @@
+/* ============================================================
+   CADENZA ARTHOUSE — campaigns/campaigns.css
+   Styles for the Campaigns section. style.css still supplies the
+   masthead, type and footer; this file only adds what a campaign
+   page needs: the goal/progress block, the give tiers, the ledger.
+   Palette matches style.css: off-white #F6F2EB · ink #111111 ·
+   bronze #A07840.
+   ============================================================ */
+
+.cmp-wrap { max-width: 760px; margin: 0 auto; padding: 0 24px; }
+.cmp-wide { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+
+/* ── Section label (mirrors .section-label-bar on the homepage) ── */
+.cmp-section-bar {
+  max-width: 1120px; margin: 36px auto 0; padding: 0 24px;
+  display: flex; align-items: baseline; justify-content: space-between; gap: 16px;
+  border-bottom: 2px solid #111111; padding-bottom: 8px;
+}
+.cmp-section-bar .lbl {
+  font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; letter-spacing: 0.06em;
+}
+.cmp-section-bar .sub {
+  font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; letter-spacing: 0.08em;
+  text-transform: uppercase; color: #555;
+}
+
+/* ── Campaign page header ── */
+.cmp-kicker {
+  font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; letter-spacing: 0.1em;
+  text-transform: uppercase; color: #A07840; margin: 44px 0 14px;
+}
+.cmp-kicker a { color: inherit; border-bottom: 1px solid rgba(160,120,64,0.4); }
+.cmp-title {
+  font-family: 'Bebas Neue', sans-serif; font-size: clamp(2.6rem, 6vw, 4.4rem);
+  line-height: 0.98; letter-spacing: 0.01em; margin: 0 0 16px;
+}
+.cmp-lede { font-size: 1.15rem; line-height: 1.6; color: #333; margin: 0 0 26px; }
+.cmp-meta {
+  display: flex; flex-wrap: wrap; gap: 10px 22px;
+  font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; letter-spacing: 0.06em;
+  text-transform: uppercase; color: #555; padding: 12px 0; border-top: 1px solid #111; border-bottom: 1px solid rgba(17,17,17,0.2);
+  margin-bottom: 30px;
+}
+.cmp-type {
+  display: inline-block; padding: 2px 8px; border: 1px solid #A07840; color: #A07840;
+  border-radius: 2px;
+}
+
+/* ── Goal / progress block ── */
+.cmp-goal {
+  border: 1px solid #111111; padding: 22px 24px 20px; margin: 0 0 34px; background: #fff;
+}
+.cmp-goal-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.cmp-raised { font-family: 'Bebas Neue', sans-serif; font-size: 3rem; line-height: 1; }
+.cmp-raised small {
+  font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; letter-spacing: 0.08em;
+  text-transform: uppercase; color: #555; margin-left: 8px;
+}
+.cmp-units {
+  font-family: 'IBM Plex Mono', monospace; font-size: 0.78rem; letter-spacing: 0.06em;
+  text-transform: uppercase; color: #111;
+}
+.cmp-bar { height: 14px; border: 1px solid #111111; background: #F6F2EB; margin: 14px 0 10px; position: relative; }
+.cmp-bar > span { display: block; height: 100%; background: #A07840; width: 0; transition: width .8s ease; }
+.cmp-bar-ticks { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(10, 1fr); pointer-events: none; }
+.cmp-bar-ticks i { border-right: 1px solid rgba(17,17,17,0.25); }
+.cmp-bar-ticks i:last-child { border-right: 0; }
+.cmp-goal-foot {
+  display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+  font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; letter-spacing: 0.06em; color: #555;
+}
+.cmp-status { text-transform: uppercase; }
+.cmp-status.funded { color: #A07840; font-weight: 500; }
+
+/* ── Give tiers ── */
+.cmp-give { margin: 0 0 40px; }
+.cmp-give h2 {
+  font-family: 'Bebas Neue', sans-serif; font-size: 1.9rem; letter-spacing: 0.03em; margin: 0 0 6px;
+}
+.cmp-give p.note { font-size: 0.92rem; color: #555; margin: 0 0 16px; }
+.cmp-tiers { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.cmp-tier {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+  padding: 18px 10px 14px; border: 1px solid #111111; background: #fff; text-align: center;
+  transition: background .15s, color .15s;
+}
+.cmp-tier .amt { font-family: 'Bebas Neue', sans-serif; font-size: 2.2rem; line-height: 1; }
+.cmp-tier .lbl { font-family: 'IBM Plex Mono', monospace; font-size: 0.64rem; letter-spacing: 0.08em; text-transform: uppercase; color: #555; }
+.cmp-tier:hover, .cmp-tier:focus-visible { background: #111111; color: #F6F2EB; }
+.cmp-tier:hover .lbl, .cmp-tier:focus-visible .lbl { color: #cfc8bc; }
+.cmp-tier.featured { border-color: #A07840; box-shadow: 0 0 0 1px #A07840 inset; }
+.cmp-tier.featured .lbl { color: #A07840; }
+.cmp-reassure {
+  font-family: 'IBM Plex Mono', monospace; font-size: 0.66rem; letter-spacing: 0.06em;
+  text-transform: uppercase; color: #666; text-align: center; margin: 14px 0 0;
+}
+
+/* ── Story body (inherits .article-body type) ── */
+.cmp-story { margin-bottom: 40px; }
+.cmp-story h2 {
+  font-family: 'Bebas Neue', sans-serif; font-size: 1.9rem; letter-spacing: 0.03em; margin: 34px 0 10px;
+}
+.cmp-story p { font-size: 1.05rem; line-height: 1.75; margin: 0 0 18px; }
+.cmp-story blockquote {
+  margin: 22px 0; padding: 4px 0 4px 20px; border-left: 3px solid #A07840; font-style: italic; color: #333;
+}
+.cmp-story blockquote p { margin: 0; }
+.cmp-story ul, .cmp-story ol { margin: 0 0 18px 22px; font-size: 1.02rem; line-height: 1.7; }
+.cmp-story li { margin-bottom: 6px; }
+
+/* ── Ledger / outcomes ── */
+.cmp-ledger { border-top: 2px solid #111; padding-top: 16px; margin-bottom: 40px; }
+.cmp-ledger h2 { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; letter-spacing: 0.03em; margin: 0 0 10px; }
+.cmp-ledger table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+.cmp-ledger th, .cmp-ledger td { text-align: left; padding: 8px 6px; border-bottom: 1px solid rgba(17,17,17,0.15); vertical-align: top; }
+.cmp-ledger th { font-family: 'IBM Plex Mono', monospace; font-size: 0.66rem; letter-spacing: 0.08em; text-transform: uppercase; color: #555; }
+.cmp-ledger .empty { color: #666; font-style: italic; font-size: 0.95rem; }
+
+/* ── Thank-you state (?thanks=1 after Square redirects back) ── */
+.cmp-thanks {
+  display: none; border: 1px solid #A07840; background: #fff; padding: 18px 22px; margin: 30px 0 0;
+}
+.cmp-thanks.show { display: block; }
+.cmp-thanks h2 { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; letter-spacing: 0.03em; margin: 0 0 6px; color: #A07840; }
+.cmp-thanks p { margin: 0; font-size: 1rem; line-height: 1.6; }
+
+/* ── Campaign cards on the section index ── */
+.cmp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 28px; margin: 30px 0 60px; }
+.cmp-card { border: 1px solid #111111; background: #fff; display: flex; flex-direction: column; }
+.cmp-card img { width: 100%; aspect-ratio: 1200 / 630; object-fit: cover; border-bottom: 1px solid #111; }
+.cmp-card-body { padding: 18px 20px 20px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+.cmp-card .k { font-family: 'IBM Plex Mono', monospace; font-size: 0.64rem; letter-spacing: 0.1em; text-transform: uppercase; color: #A07840; }
+.cmp-card h2 { font-family: 'Bebas Neue', sans-serif; font-size: 1.9rem; line-height: 1; letter-spacing: 0.02em; margin: 0; }
+.cmp-card p { font-size: 0.95rem; line-height: 1.55; color: #333; margin: 0; flex: 1; }
+.cmp-card .cmp-bar { margin: 8px 0 6px; height: 10px; }
+.cmp-card .row { display: flex; justify-content: space-between; font-family: 'IBM Plex Mono', monospace; font-size: 0.66rem; letter-spacing: 0.06em; text-transform: uppercase; color: #555; }
+.cmp-card .go { align-self: flex-start; margin-top: 6px; font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; border-bottom: 1px solid #111; }
+.cmp-empty { padding: 60px 0; text-align: center; color: #666; font-style: italic; }
+
+/* ── About the section (index page) ── */
+.cmp-about { max-width: 760px; margin: 0 auto 50px; padding: 0 24px; font-size: 1.02rem; line-height: 1.7; color: #333; }
+.cmp-about h2 { font-family: 'Bebas Neue', sans-serif; font-size: 1.7rem; letter-spacing: 0.03em; margin: 26px 0 8px; color: #111; }
+
+@media (max-width: 720px) {
+  .cmp-tiers { grid-template-columns: repeat(2, 1fr); }
+  .cmp-raised { font-size: 2.4rem; }
+  .cmp-section-bar { flex-direction: column; gap: 4px; }
+}

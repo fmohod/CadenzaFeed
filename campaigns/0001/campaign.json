@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "id": "0001",
+  "title": "Ten flutes. Ten kids who can take one home.",
+  "summary": "A beginner flute class at a Houston middle school has instruments for two hours a day and none at night. $1,000 buys ten student flutes that Cadenza Arthouse owns and lends out, so a kid practises at home this term and hands the flute to the next kid when they move on.",
+  "author": "Frankie Mohammed",
+  "status": "active",
+  "created": "2026-09-02",
+  "closes": null,
+  "goal": {
+    "amount_cents": 100000,
+    "currency": "USD"
+  },
+  "objective": {
+    "label": "flute",
+    "count": 10
+  },
+  "progress": {
+    "raised_cents": 0,
+    "successful_contributions": 0,
+    "as_of": "2026-09-03T02:19:05Z",
+    "source": "manual"
+  },
+  "funding": {
+    "provider": "square",
+    "tiers": [
+      {
+        "label": "$25",
+        "description": "A quarter of a flute",
+        "amount_cents": 2500,
+        "url": "https://square.link/u/i7Prmax2",
+        "square_link_id": "4EU56FGQB746UXQR"
+      },
+      {
+        "label": "$50",
+        "description": "Half a flute",
+        "amount_cents": 5000,
+        "url": "https://square.link/u/ClLACgM3",
+        "square_link_id": "P73HEBFWYTJ3YWTO"
+      },
+      {
+        "label": "$100",
+        "description": "One flute",
+        "amount_cents": 10000,
+        "url": "https://square.link/u/270LLl9G",
+        "square_link_id": "OJAOH2QWYZYF4Y56"
+      },
+      {
+        "label": "$250",
+        "description": "Two and a half flutes",
+        "amount_cents": 25000,
+        "url": "https://square.link/u/vk5ywE8w",
+        "square_link_id": "BIJEIS53Z6IMWLKO"
+      }
+    ]
+  },
+  "beneficiary": {
+    "program": "Cadenza Arthouse Instrument Library"
+  },
+  "outcomes": []
+}

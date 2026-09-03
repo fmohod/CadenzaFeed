@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="index, follow">
+<title>Campaigns | Cadenza Arthouse</title>
+<meta name="description" content="Stories you can fund directly. Each Cadenza Arthouse campaign is a concrete objective, a first-person account of why it matters, and a Square link that puts money on it.">
+<link rel="canonical" href="https://cadenzaarthouse.com/campaigns/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Cadenza Arthouse">
+<meta property="og:title" content="Campaigns | Cadenza Arthouse">
+<meta property="og:description" content="Stories you can fund directly. Each campaign is a concrete objective, a first-person account of why it matters, and a Square link that puts money on it.">
+<meta property="og:url" content="https://cadenzaarthouse.com/campaigns/">
+<meta property="og:image" content="https://cadenzaarthouse.com/campaigns/0001/thumb.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/assets/favicon.ico" type="image/x-icon">
+<link rel="icon" href="/assets/favicon-32x32.png" type="image/png" sizes="32x32">
+<link rel="icon" href="/assets/favicon-192x192.png" type="image/png" sizes="192x192">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" sizes="180x180">
+<link rel="stylesheet" href="../style.css">
+<link rel="stylesheet" href="campaigns.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- MASTHEAD (uniform site header) -->
+<header class="masthead">
+  <div class="masthead-inner">
+    <div class="masthead-top-rule"></div>
+    <div class="masthead-flag">
+      <div class="masthead-flag-left">
+        <span class="masthead-est">Established 2017</span>
+        <span class="masthead-dot">·</span>
+        <span class="masthead-loc">Houston, Texas</span>
+      </div>
+      <div class="masthead-flag-center">
+        <a href="../index.html" class="masthead-logo-link">
+          <img src="../assets/logo.png" alt="Cadenza Arthouse" class="masthead-logo">
+        </a>
+        <div class="masthead-wordmark">
+          <span class="masthead-title">Cadenza Arthouse</span>
+          <p class="masthead-tagline">Independent Media&nbsp;&nbsp;·&nbsp;&nbsp;Photography&nbsp;&nbsp;·&nbsp;&nbsp;Cultural Archive</p>
+        </div>
+      </div>
+      <div class="masthead-flag-right">
+        <span class="masthead-date" id="live-date"></span>
+      </div>
+    </div>
+    <div class="masthead-rule-double">
+      <div class="rule-thick"></div>
+      <div class="rule-thin"></div>
+    </div>
+    <nav class="masthead-nav">
+      <a href="../index.html">Home</a>
+      <a href="../news/index.html">Press Archive</a>
+      <a href="#" class="nav-dim">Galleries</a>
+      <a href="../about.html">About</a>
+      <a href="../support.html">Support</a>
+      <a href="index.html" class="active">Campaigns</a>
+    </nav>
+    <div class="masthead-bottom-rule"></div>
+  </div>
+</header>
+<script>(function(){var d=document.getElementById('live-date');if(d){d.textContent=new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});}})();</script>
+
+<main>
+  <div class="cmp-section-bar">
+    <span class="lbl">Campaigns</span>
+    <span class="sub">Stories you can fund directly</span>
+  </div>
+
+  <div class="cmp-wide">
+    <div class="cmp-grid" id="cmp-grid">
+      <!-- Campaign cards are discovered from campaigns/NNNN/campaign.json at load. -->
+      <!-- No-JS fallback: the first campaign, linked plainly. -->
+      <noscript>
+        <a class="cmp-card" href="0001/">
+          <img src="0001/thumb.jpg" alt="Campaign 0001 — Cadenza Arthouse Instrument Library">
+          <div class="cmp-card-body">
+            <span class="k">Campaign 0001</span>
+            <h2>Ten flutes. Ten kids who can take one home.</h2>
+            <span class="go">Read the campaign →</span>
+          </div>
+        </a>
+      </noscript>
+    </div>
+  </div>
+
+  <section class="cmp-about">
+    <h2>What a campaign is</h2>
+    <p>A campaign is a story with a number on it. Cadenza Arthouse publishes reporting; a campaign is the piece where the publication itself says <em>this specific thing should exist, here is why, and here is what it costs</em> — and gives you a way to put money on it without leaving the page.</p>
+    <h2>How the money moves</h2>
+    <p>Every button on a campaign page is a Square checkout link owned by Cadenza Arthouse. Square processes the card; nothing about you is stored here. Progress figures on each page are maintained by Cadenza Arthouse from Square's records and dated, so you can see when they were last brought up to date. When a campaign buys something, the purchase is recorded on the campaign's own page, and what happens to it afterwards is appended there too.</p>
+    <h2>What a campaign is not</h2>
+    <p>Not a charity registration, and not a platform. Contributions are gifts to Cadenza Arthouse, a Houston company, in support of a stated objective. They are not tax-deductible unless a page says otherwise. Questions: <a href="mailto:operations@cadenzaarthouse.com">operations@cadenzaarthouse.com</a>.</p>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-rule"></div>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <img src="../assets/logo.png" alt="Cadenza Arthouse" class="footer-logo">
+      <span class="footer-wordmark">Cadenza Arthouse</span>
+    </div>
+    <p class="footer-mission">Independent media platform documenting culture, art, and community. Est. 2017, Houston, Texas.</p>
+    <p class="footer-legal">Self-hosted. No trackers. Just words.&nbsp;&nbsp;·&nbsp;&nbsp;© 2026 Cadenza Arthouse. All Rights Reserved.</p>
+  </div>
+</footer>
+
+<script>
+(async function () {
+  // Discovers campaigns/NNNN/ folders through the GitHub contents API, the same
+  // way the homepage discovers article folders, then reads each campaign.json
+  // (the canonical record — see CAMPAIGNS.md) to build the cards.
+  const GITHUB_USER = 'fmohod', GITHUB_REPO = 'CadenzaFeed';
+  const grid = document.getElementById('cmp-grid');
+  const money = c => '$' + Math.round(c / 100).toLocaleString('en-US');
+
+  async function folders() {
+    try {
+      const r = await fetch(`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/campaigns`);
+      if (!r.ok) throw new Error('api');
+      const j = await r.json();
+      return j.filter(f => f.type === 'dir' && /^\d{4}$/.test(f.name)).map(f => f.name).sort().reverse();
+    } catch (e) {
+      // API unavailable or rate-limited: probe sequentially from 0001 until a miss.
+      const out = [];
+      for (let i = 1; i < 50; i++) {
+        const id = String(i).padStart(4, '0');
+        try { const r = await fetch(`${id}/campaign.json`, { method: 'HEAD' }); if (!r.ok) break; out.push(id); }
+        catch { break; }
+      }
+      return out.reverse();
+    }
+  }
+
+  function card(c) {
+    const pct = c.goal.amount_cents ? Math.min(100, Math.round(100 * c.progress.raised_cents / c.goal.amount_cents)) : 0;
+    const status = c.status === 'funded' ? 'Funded' : c.status === 'closed' ? 'Closed' : 'Active';
+    const units = c.objective && c.objective.count
+      ? `${Math.min(c.objective.count, Math.floor(c.progress.raised_cents / (c.goal.amount_cents / c.objective.count)))} of ${c.objective.count} ${c.objective.label}${c.objective.count === 1 ? '' : 's'}`
+      : '';
+    return `
+      <a class="cmp-card" href="${c.id}/">
+        <img src="${c.id}/thumb.jpg" alt="${c.title.replace(/"/g, '&quot;')}" loading="lazy">
+        <div class="cmp-card-body">
+          <span class="k">Campaign ${c.id} · ${status}</span>
+          <h2>${c.title}</h2>
+          <p>${c.summary}</p>
+          <div class="cmp-bar"><span style="width:${pct}%"></span></div>
+          <div class="row"><span>${money(c.progress.raised_cents)} of ${money(c.goal.amount_cents)}</span><span>${units || pct + '%'}</span></div>
+          <span class="go">Read the campaign →</span>
+        </div>
+      </a>`;
+  }
+
+  const ids = await folders();
+  const recs = [];
+  for (const id of ids) {
+    try { const r = await fetch(`${id}/campaign.json`, { cache: 'no-cache' }); if (r.ok) recs.push(await r.json()); } catch {}
+  }
+  if (!recs.length) { grid.innerHTML = '<p class="cmp-empty">No campaigns are open right now.</p>'; return; }
+  // Active first, then funded, then closed; newest first within each.
+  const rank = { active: 0, funded: 1, closed: 2 };
+  recs.sort((a, b) => (rank[a.status] ?? 3) - (rank[b.status] ?? 3) || b.id.localeCompare(a.id));
+  grid.innerHTML = recs.map(card).join('');
+})();
+</script>
+</body>
+</html>
