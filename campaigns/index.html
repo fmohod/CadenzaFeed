@@ -138,12 +138,10 @@
   }
 
   function card(c) {
-    const external = (c.funding && Array.isArray(c.funding.external)) ? c.funding.external.reduce((n, e) => n + (e.raised_cents || 0), 0) : 0;
-    const raised = c.progress.raised_cents + external;
-    const pct = c.goal.amount_cents ? Math.min(100, Math.round(100 * raised / c.goal.amount_cents)) : 0;
+    const pct = c.goal.amount_cents ? Math.min(100, Math.round(100 * c.progress.raised_cents / c.goal.amount_cents)) : 0;
     const status = c.status === 'funded' ? 'Funded' : c.status === 'closed' ? 'Closed' : 'Active';
     const units = c.objective && c.objective.count
-      ? `${Math.min(c.objective.count, Math.floor(raised / (c.goal.amount_cents / c.objective.count)))} of ${c.objective.count} ${c.objective.label}${c.objective.count === 1 ? '' : 's'}`
+      ? `${Math.min(c.objective.count, Math.floor(c.progress.raised_cents / (c.goal.amount_cents / c.objective.count)))} of ${c.objective.count} ${c.objective.label}${c.objective.count === 1 ? '' : 's'}`
       : '';
     return `
       <a class="cmp-card" href="${c.id}/">
@@ -153,7 +151,7 @@
           <h2>${c.title}</h2>
           <p>${c.summary}</p>
           <div class="cmp-bar"><span style="width:${pct}%"></span></div>
-          <div class="row"><span>${money(raised)} of ${money(c.goal.amount_cents)}</span><span>${units || pct + '%'}</span></div>
+          <div class="row"><span>${money(c.progress.raised_cents)} of ${money(c.goal.amount_cents)}</span><span>${units || pct + '%'}</span></div>
           <span class="go">Read the campaign →</span>
         </div>
       </a>`;

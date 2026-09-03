@@ -56,7 +56,7 @@ of any financial or progress value** — the page renders those from the record 
 because a stranger must be able to pay with scripts off; each must equal the `url` of a tier in
 the record, and the ADR-0011 manager's repo scan is what catches a mismatch.
 
-## 3. `campaign.json` — the record (schema_version 2)
+## 3. `campaign.json` — the record (schema_version 1)
 
 ```json
 {
@@ -83,19 +83,6 @@ the record, and the ADR-0011 manager's repo scan is what catches a mismatch.
 }
 ```
 
-Schema v2 (2026-09-03) adds one optional block inside `funding`, nothing else changed:
-
-```json
-  "funding": {
-    "provider": "square",
-    "tiers": [ … ],
-    "external": [
-      { "provider": "gofundme", "url": "https://www.gofundme.com/f/<slug>", "title": "…",
-        "raised_cents": 0, "as_of": "2026-09-03T17:25:00Z", "source": "manual" }
-    ]
-  }
-```
-
 | Field | Required | Consumer | Notes |
 |---|---|---|---|
 | `schema_version` | yes | everything | Integer. **Additive-only**: fields are added, never renamed, removed or repurposed. Bump when a field is added. |
@@ -114,7 +101,6 @@ Schema v2 (2026-09-03) adds one optional block inside `funding`, nothing else ch
 | `progress.source` | yes | CAMT | `manual` (a person copied it from Square) or `square_ingest` (CAMT reconciled it). Flipping this value is the whole of the V1→V2 change; no field is renamed. |
 | `funding.provider` | yes | CAMT | `square`. A campaign has one provider. |
 | `funding.tiers[]` | yes | page buttons, CAMT, `jobs/square_links.py` | `label` (the amount as shown), `description` (what the amount means, in words), `amount_cents`, `url`, `square_link_id`. `url` is `https://square.link/u/<code>` with no tracking parameters — the `<code>` is the identity the ADR-0011 registry is keyed on, so the manager's repo scan finds it. `square_link_id` is Square's own payment-link id, kept so the V2 ingest can match orders to a tier without parsing URLs. **A `url` whose code is not in the registry with `tested: true` may not be published.** |
-| `funding.external[]` | no (v2) | page, index, CAMT | **Mirrors of the same campaign on another platform** — today a personal gofundme.com fundraiser. `provider`, `url`, `title`, `raised_cents`, `as_of`, `source` (`manual` \| `gofundme_poll`). The page and the index **add every `external[].raised_cents` to `progress.raised_cents`** for the figure they show; `progress.raised_cents` itself stays Square-only, so the two sources never blur. A mirror never carries a give button on our page — it is a link, and the buttons stay Square. Personal GoFundMe fundraisers have **no API**; the figure is copied by hand, or later read by CAMT from GoFundMe's public counts feed as a convenience that is never the truth. |
 | `beneficiary.program` | yes | CAMT | Which Cadenza Arthouse program receives the outcome. Free text today; becomes a registry pointer when programs are minted. |
 | `outcomes[]` | yes (may be empty) | page ledger, CAMT | Append-only. Each entry: `{ "date": "YYYY-MM-DD", "type": "purchase" \| "loan" \| "return" \| "gift", "quantity": 10, "unit": "flute", "note": "…" }`. **Never edit or delete an entry; append a correcting one.** Loan tracking beyond this list is not V1. |
 
@@ -176,11 +162,8 @@ same call the homepage uses for articles), falling back to probing `0001/campaig
 
 1. Open the Square dashboard, find payments against the campaign's links (their names begin
    `Campaign NNNN ·`).
-2. Edit `campaign.json`: `progress.raised_cents`, `progress.successful_contributions`,
-   `progress.as_of` (UTC now). Leave `source: manual`.
-2a. If the campaign has a GoFundMe mirror, open that page too and set its
-   `funding.external[].raised_cents` and `as_of` separately. Do **not** fold GoFundMe money
-   into `progress.raised_cents`; the page sums them itself.
+2. Edit `campaign.json`: `progress.raised_cents`, `progress.contributions`, `progress.as_of`
+   (UTC now). Leave `source: manual`.
 3. If the goal is met, set `status: funded` (still accepting) — or `closed` when it should stop.
 4. When the money buys something, **append** to `outcomes[]`.
 5. Validate — `py -3.11 -c "import json;json.load(open('campaign.json',encoding='utf-8'))"` —
@@ -195,7 +178,6 @@ write to; it does not change shape when that happens.
 
 - [ ] Folder is the next sequential 4-digit number; `id` matches it.
 - [ ] `campaign.json` parses; `schema_version` present; every required field filled.
-- [ ] Any GoFundMe (or other) mirror is in `funding.external[]` and linked from the page as a link, not a button.
 - [ ] `thumb.jpg` present, 1200×630.
 - [ ] Meta line declares the type of work; author and start date present.
 - [ ] Give tiers above the story; every `href` is in `funding.tiers[]` and equal to it.

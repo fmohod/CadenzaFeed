@@ -142,7 +142,6 @@
       <a class="cmp-tier" href="https://square.link/u/vk5ywE8w"><span class="amt">$250</span><span class="lbl">two and a half</span></a>
     </div>
     <p class="cmp-reassure">Secure checkout by Square &nbsp;·&nbsp; No account needed &nbsp;·&nbsp; Questions? operations@cadenzaarthouse.com</p>
-    <p class="cmp-external" id="cmp-external">Prefer GoFundMe? The same campaign is there too: <a href="https://www.gofundme.com/f/help-my-students-bring-flutes-home" rel="noopener">Help My Students Bring Flutes Home</a>. Gifts made there are added to the figure above by hand, dated.</p>
   </section>
 
   <div class="cmp-story">
@@ -242,8 +241,7 @@
   try { const r = await fetch('campaign.json', { cache: 'no-cache' }); if (!r.ok) throw new Error(r.status); c = await r.json(); }
   catch { document.getElementById('cmp-units').textContent = 'Progress figures are unavailable right now.'; return; }
 
-  const external = (c.funding && Array.isArray(c.funding.external)) ? c.funding.external.reduce((n, e) => n + (e.raised_cents || 0), 0) : 0;
-  const goal = c.goal.amount_cents, raised = c.progress.raised_cents + external;
+  const goal = c.goal.amount_cents, raised = c.progress.raised_cents;
   const pct = goal ? Math.min(100, Math.round(100 * raised / goal)) : 0;
   document.getElementById('cmp-raised').textContent = money(raised);
   document.getElementById('cmp-goal').textContent = money(goal);
