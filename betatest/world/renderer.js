@@ -150,6 +150,6 @@ class Renderer {
         for (const s of space.spawns.values()) label(s.x, s.y, s.id);
         ctx.fillStyle = '#fff';
         ctx.font = '12px monospace';
-        ctx.fillText(`${space.id}  (${player.x},${player.y}) ${player.facing}  zoom ${this.zoom}`, 8, this.canvas.height - 10);
+        ctx.fillText(`${space.id}  (${player.x},${player.y}) ${player.facing}  zoom ${this.zoom}  ${this.devNote || ''}`, 8, this.canvas.height - 10);
     }
 }

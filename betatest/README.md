@@ -63,11 +63,23 @@ Three invariants of the seam, frozen 2026-09-03 (Machine Head's review of `baee3
   tilemap (rows of single-character codes; the vocabulary is in `world/space.js`), plus
   `spawns[]`, `exits[]`, `interactables[]` and `npcs[]` placements — every one with a
   stable local id (`spawn:…`, `exit:…`, `terminal:…`, `examine:…`).
-- A **Place** (in `content/world.json`) is a real-world anchor: `slug`, `entity_id`,
-  `coordinates`, and the space it opens. A place points at a space; a space never knows
-  the registry exists. **Coordinates anchor a place to reality; they never define
+- A **Place** is a real registry entity and **nothing here authors one.** Owner ruling
+  2026-09-03: *"always talking about real places … no double work making locations for
+  the game come from somewhere else."* `content/places.json` is written by CAMT
+  (`jobs/publish.py`, target `places`, from `core.world_places`) and holds every active
+  location entity at `publication: public`: `entity_id`, `slug`/`slugs`, `name`/`aliases`,
+  `coordinates`, `address`, `verification`, and `parent`/`kind` when the registry records
+  them (the declared hierarchy: region → campus → building → room/zone; physical /
+  virtual / hybrid). Never hand-edit it; edit the archive. A location's `notes` never
+  travel.
+- **Bindings** in `content/world.json` are the join: `{ place: <slug>, space: <id> }`.
+  A Space with no binding is fiction and is labelled `canon: fiction`. A Space never
+  knows the registry exists. **Coordinates anchor a place to reality; they never define
   playable geometry.**
-- A **Neighborhood** groups spaces and carries an approximate anchor for orientation.
+- A **Neighborhood** groups spaces and carries an approximate anchor for orientation,
+  until a region node exists in the registry to bind it to.
+- The first in-world consumer of `places.json` is the city map on the office wall
+  (`examine:city-map`, `list: "places"`): it lists the public places by name.
 - An **NPC** (`content/npcs/<id>.json`, `id: "npc:<slug>"`) has a name, a sprite colour
   and an ordered `dialogue[]` list; the first entry whose `if` conditions all hold wins.
   Predicates today: `talked_to`, `visited`, `terminal_opened`. Unknown predicates never

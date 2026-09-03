@@ -3,13 +3,17 @@
 // crash on missing content): a bad file is a warning in the console and a hole
 // in the world, never a blank page.
 //
-//   content/world.json          the manifest: start, neighborhoods, places, spaces[], npcs[]
+//   content/world.json          the manifest: start, neighborhoods, places_file, bindings, spaces[], npcs[]
+//   content/places.json         WRITTEN BY CAMT (jobs/publish.py, target "places") from the archive
+//                               registry: every location entity at publication: public. Never hand-edited.
 //   content/spaces/<id>.json    a playable Space (tilemap + spawns + exits + interactables + npc placements)
 //   content/npcs/<id>.json      an NPC definition (name, sprite, conditional dialogue)
 //
-// A Place (real-world anchor: slug, entity_id, coordinates) POINTS AT a Space; a
-// Space never knows the registry exists. Coordinates anchor a place to reality;
-// they never define playable geometry (Machine Head, 2026-09-03).
+// A Place (registry entity: slug, entity_id, coordinates, parent, kind) is bound
+// to a Space by the manifest; a Space never knows the registry exists.
+// Coordinates anchor a place to reality; they never define playable geometry
+// (Machine Head, 2026-09-03). One source of places, the registry — the owner's
+// ruling the same day: real places only, authored once.
 class ContentLoader {
     static async load(manifestPath = 'content/world.json') {
         const content = {
@@ -33,12 +37,33 @@ class ContentLoader {
             if (n && n.slug) content.neighborhoods.set(n.slug, n);
             else warn('neighborhood without slug skipped');
         }
-        for (const p of manifest.places || []) {
-            if (p && p.slug && p.space) content.places.set(p.slug, p);
-            else warn('place without slug/space skipped');
-        }
 
         const base = manifestPath.replace(/[^/]*$/, '');
+
+        // Places come from ONE source: the registry, via CAMT's publish job
+        // (places.json). Nothing here authors a place; a missing or malformed
+        // file means a world with no places, reported, never a crash.
+        content.placesMeta = null;
+        if (manifest.places_file) {
+            const pj = await ContentLoader._json(`${base}${manifest.places_file}`);
+            if (!pj || pj.schema !== 1 || !Array.isArray(pj.places)) {
+                warn(`places file ${manifest.places_file} missing or wrong schema; the world has no places`);
+            } else {
+                content.placesMeta = { generated: pj._generated || null, publication: pj.publication || null, count: pj.places.length };
+                for (const p of pj.places) {
+                    if (p && p.slug && p.entity_id) content.places.set(p.slug, p);
+                    else warn('place without slug/entity_id skipped');
+                }
+            }
+        }
+        // The join: which Space represents which Place. Authored here, by slug
+        // (an address the registry owns, ADR-0002), never inside a Space.
+        content.bindings = new Map();
+        for (const b of manifest.bindings || []) {
+            if (!b || !b.place || !b.space) { warn('binding without place/space skipped'); continue; }
+            if (!content.places.has(b.place)) { warn(`binding to unknown or unpublished place ${b.place} skipped`); continue; }
+            content.bindings.set(b.space, b.place);
+        }
         const spaceLoads = (manifest.spaces || []).map(async (file) => {
             const data = await ContentLoader._json(`${base}spaces/${file}.json`);
             const err = ContentLoader.validateSpace(data);
@@ -62,8 +87,8 @@ class ContentLoader {
                 if (!content.npcs.has(np.id)) warn(`${id} places unknown npc ${np.id}`);
             }
         }
-        for (const [slug, place] of content.places) {
-            if (!content.spaces.has(place.space)) warn(`place ${slug} points at unknown space ${place.space}`);
+        for (const [spaceId] of content.bindings) {
+            if (!content.spaces.has(spaceId)) warn(`binding names unknown space ${spaceId}`);
         }
         return content;
     }

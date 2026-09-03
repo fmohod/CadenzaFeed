@@ -58,6 +58,8 @@ class WorldEngine {
             return false;
         });
         document.getElementById('dev-badge').hidden = !this.dev;
+        const pm = this.content.placesMeta;
+        this.renderer.devNote = pm ? `places: ${pm.count} public from the registry (${pm.generated || 'undated'})` : 'places: none (no places.json)';
 
         this._running = true;
         this._frameQueued = false;
@@ -222,6 +224,16 @@ class WorldEngine {
             return;
         }
         if (t.kind === 'examine') {
+            // An examine may read the registry's places instead of fixed text:
+            // the first consumer of places.json inside the world.
+            if (t.item.list === 'places') {
+                const names = [...this.content.places.values()].map(p => p.name).filter(Boolean);
+                const lines = names.length
+                    ? [t.item.text || 'A map of the city, pins on the places the archive can name in public:', ...names.map(n => `• ${n}`)]
+                    : ['A map of the city. No pins yet.'];
+                this.dialogue.show(t.item.label || '', lines);
+                return;
+            }
             this.dialogue.show(t.item.label || '', t.item.text || ['Nothing to see.']);
             return;
         }
