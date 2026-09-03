@@ -1,0 +1,14 @@
+{
+  "schema": 1,
+  "id": "npc:test-001",
+  "name": "Test NPC",
+  "canon": "developer-test",
+  "sprite": { "color": "#7fb3d5" },
+  "_note": "Deliberately boring, on purpose: the first NPC proves the machinery before any real person or animal is represented. Real people need the owner's per-person consent; a friend's animal needs the friend's recorded yes.",
+  "dialogue": [
+    { "if": { "terminal_opened": true, "talked_to": "npc:test-001" }, "lines": ["You've been at that terminal.", "Everything in there happened out here first."] },
+    { "if": { "terminal_opened": true }, "lines": ["So you found the archive.", "Come back and tell me what you read."] },
+    { "if": { "talked_to": "npc:test-001" }, "lines": ["Still here.", "There's a computer in the office. Try it."] },
+    { "lines": ["Hey.", "You looking for something?", "This block is quiet today. Try the office."] }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "id": "space:corner-store",
+  "name": "Corner Store",
+  "kind": "interior",
+  "theme": "interior",
+  "canon": "fiction",
+  "neighborhood": "third-ward",
+  "map": [
+    "WWWWwWWWWwWW",
+    "W#########.W",
+    "W..........W",
+    "W..CCCC....W",
+    "W..........W",
+    "W.........#W",
+    "W#.........D",
+    "WWWWWWWWWWWW"
+  ],
+  "spawns": [
+    { "id": "spawn:default", "x": 9, "y": 6, "facing": "left" },
+    { "id": "spawn:from-street", "x": 10, "y": 6, "facing": "left" }
+  ],
+  "exits": [
+    { "id": "exit:door", "x": 11, "y": 6, "label": "Door", "to": { "space": "space:community-block", "spawn": "spawn:from-store" } }
+  ],
+  "interactables": [
+    { "id": "examine:counter", "type": "examine", "x": 4, "y": 3, "label": "Counter", "marker": false, "text": ["Nobody is behind the counter yet.", "A bell sits next to the register. You leave it alone."] },
+    { "id": "examine:shelf", "type": "examine", "x": 5, "y": 1, "label": "Shelf", "marker": false, "text": ["Canned goods, hot sauce, a row of candles."] }
+  ],
+  "npcs": []
+}

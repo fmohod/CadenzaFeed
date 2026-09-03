@@ -1,0 +1,164 @@
+/* The world shell. Loaded AFTER css/terminal.css so the game owns everything
+   outside #cain-overlay; inside the overlay CAIN's own rules apply untouched. */
+
+body.world-shell,
+body.world-shell[class*="pack-"] {
+    background: #0d0b08;
+    color: #F6F2EB;
+    font-family: 'IBM Plex Mono', 'Share Tech Mono', monospace;
+    font-size: 14px;
+    overflow: hidden;
+    margin: 0;
+    -webkit-user-select: none;
+    user-select: none;
+    touch-action: none;
+}
+
+#world-canvas {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    display: block;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    background: #0d0b08;
+}
+
+/* HUD */
+#hud {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 10px 12px;
+    pointer-events: none;
+    z-index: 5;
+    text-shadow: 0 1px 2px #000, 0 0 6px rgba(0,0,0,0.8);
+    letter-spacing: 0.5px;
+}
+#hud-space {
+    font-family: 'VT323', monospace;
+    font-size: 22px;
+    color: #F6F2EB;
+}
+#hud-hint {
+    font-size: 12px;
+    color: #A07840;
+    text-transform: uppercase;
+}
+
+/* Dialogue box — sits over the bottom of the map, never over the controls. */
+#dialogue {
+    position: fixed;
+    left: 50%;
+    bottom: 18px;
+    transform: translateX(-50%);
+    width: min(720px, calc(100vw - 24px));
+    background: rgba(13, 11, 8, 0.94);
+    border: 2px solid #A07840;
+    box-shadow: 0 0 0 2px #0d0b08, 0 8px 30px rgba(0,0,0,0.6);
+    padding: 14px 18px 22px;
+    z-index: 6;
+    font-size: 16px;
+    line-height: 1.45;
+}
+#dialogue-speaker {
+    font-family: 'VT323', monospace;
+    font-size: 20px;
+    color: #A07840;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+}
+#dialogue-text { color: #F6F2EB; min-height: 1.45em; white-space: pre-wrap; }
+#dialogue-more {
+    position: absolute;
+    right: 12px; bottom: 6px;
+    color: #A07840;
+    font-size: 12px;
+    animation: dlg-bob 0.9s ease-in-out infinite;
+}
+@keyframes dlg-bob { 50% { transform: translateY(2px); opacity: 0.5; } }
+
+/* Touch controls (shown only on coarse pointers, or with ?touch) */
+#touch {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 7;
+}
+#touch-dpad {
+    position: absolute;
+    left: 16px; bottom: 16px;
+    width: 150px; height: 150px;
+    display: grid;
+    grid-template-columns: 50px 50px 50px;
+    grid-template-rows: 50px 50px 50px;
+    grid-template-areas: ". up ." "left . right" ". down .";
+}
+#touch-dpad .tbtn[data-act="UP"]    { grid-area: up; }
+#touch-dpad .tbtn[data-act="LEFT"]  { grid-area: left; }
+#touch-dpad .tbtn[data-act="RIGHT"] { grid-area: right; }
+#touch-dpad .tbtn[data-act="DOWN"]  { grid-area: down; }
+#touch-actions {
+    position: absolute;
+    right: 16px; bottom: 24px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-end;
+}
+.tbtn {
+    pointer-events: auto;
+    width: 50px; height: 50px;
+    border: 2px solid rgba(246, 242, 235, 0.55);
+    border-radius: 8px;
+    background: rgba(13, 11, 8, 0.55);
+    color: #F6F2EB;
+    font-family: 'VT323', monospace;
+    font-size: 22px;
+    -webkit-tap-highlight-color: transparent;
+}
+.tbtn:active, .tbtn.held { background: rgba(160, 120, 64, 0.75); border-color: #A07840; }
+.tbtn-a, .tbtn-b { width: 62px; height: 62px; border-radius: 50%; font-size: 26px; }
+.tbtn-a { border-color: #A07840; }
+
+#dev-badge {
+    position: fixed;
+    top: 10px; left: 50%;
+    transform: translateX(-50%);
+    background: #8a3a2a;
+    color: #fff;
+    padding: 2px 8px;
+    font-size: 11px;
+    letter-spacing: 2px;
+    z-index: 8;
+}
+
+#fatal[hidden], #dialogue[hidden], #touch[hidden], #dev-badge[hidden], #cain-overlay[hidden] { display: none; }
+#fatal {
+    position: fixed;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: 32px;
+    background: #0d0b08;
+    color: #F6F2EB;
+    z-index: 9;
+    white-space: pre-wrap;
+    text-align: center;
+    line-height: 1.6;
+}
+
+/* The in-world computer. CAIN renders inside; its stylesheet styles it. */
+#cain-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 20;
+    background: var(--bg-color, #050505);
+    color: var(--text-color, #20C20E);
+    font-family: var(--font-main, 'Share Tech Mono', monospace);
+    font-size: 18px;
+    overflow: hidden;
+}
+#cain-overlay #cain-os-display { position: absolute; inset: 0; overflow: hidden; }

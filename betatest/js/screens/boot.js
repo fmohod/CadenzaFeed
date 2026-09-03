@@ -22,9 +22,12 @@ const BootScreen = {
             <p class="blink">LOADING...</p>
         `;
 
+        // Boot is not a screen to come back to: REPLACE it with Home rather than
+        // stacking Home on top, so BACK at Home is the root (a no-op standalone,
+        // "power off" when hosted inside the world).
         this.bootTimer = setTimeout(() => {
             if (typeof CAIN_Audio !== 'undefined' && typeof CAIN_Audio.bootUp === 'function') CAIN_Audio.bootUp();
-            os.push(HomeScreen);
+            os.resetTo(HomeScreen);
         }, 2000);
     },
 
@@ -40,7 +43,7 @@ const BootScreen = {
     onKey: function(e) {
         if (e.key === 'Enter' || e.key === ' ') {
             clearTimeout(this.bootTimer);
-            document.getElementById('cain-os-display').osRef.push(HomeScreen);
+            document.getElementById('cain-os-display').osRef.resetTo(HomeScreen);
         }
     }
 };

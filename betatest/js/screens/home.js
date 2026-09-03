@@ -85,7 +85,11 @@ const HomeScreen = {
                 break;
             case 'open-link': {
                 const url = CAIN_Deployment.getLink(item.target);
-                if (url) window.location.href = url;
+                if (!url) break;
+                // Hosted inside the world (an in-game computer): a link must not
+                // navigate the game away from itself. Open it beside the game.
+                if (os.host) window.open(url, '_blank', 'noopener');
+                else window.location.href = url;
                 break;
             }
             case 'open-form':

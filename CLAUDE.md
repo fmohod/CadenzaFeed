@@ -1,9 +1,15 @@
 # CLAUDE.md — Cadenza Arthouse archive repo
 
 This repository is the **Cadenza Arthouse archive**: a static site (GitHub Pages +
-Cloudflare, no build step) at cadenzaarthouse.com, plus a game at `/game/` that
-reads the same archive. Articles are sequential numbered folders (`0001/`, `0002/`,
-…), each with an `index.html`, a `thumb`, and an `images/` folder.
+Cloudflare, no build step) at cadenzaarthouse.com, plus a game that reads the same
+archive. Articles are sequential numbered folders (`0001/`, `0002/`, …), each with an
+`index.html`, a `thumb`, and an `images/` folder.
+
+**The game lives in `/betatest/` (owner's ruling, 2026-09-03).** `betatest/README.md` is
+its contract: the world shell (V0, the Houston Sandbox) and CAIN, the archive terminal,
+which the world mounts as the in-game computer and `betatest/terminal.html` boots on its
+own. `/game/` is the V1 proof of concept and is not live; it is kept only because
+`game/engine/record.js` is the canonical Archive Record builder everything still loads.
 
 ## The one rule that matters when adding or editing an article
 

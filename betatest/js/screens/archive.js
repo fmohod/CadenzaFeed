@@ -47,8 +47,13 @@ const ArchiveListScreen = {
             });
         }
         
-        // Tell the OS to re-scan the new buttons
+        // Tell the OS to re-scan the new buttons, then land on the first record
+        // (or the one we were on) rather than the footer's BACK item, which was
+        // the only selectable thing on screen while the list was still loading.
         os.focus.scan(os.container);
+        const remembered = this.state.focusedId && listContainer.querySelector(`[data-id="${this.state.focusedId}"]`);
+        const first = remembered || listContainer.querySelector('[data-selectable]');
+        if (first) os.focus.setFocus(first);
     },
 
     onSuspend: function() {

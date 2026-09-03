@@ -1,0 +1,20 @@
+{
+  "schema": 1,
+  "_note": "The world manifest. Spaces are playable geometry; places are real-world anchors that POINT AT spaces. Coordinates anchor a place to reality and never define playable geometry. Real places carry a registry slug and, when known, entity_id; nothing here may name a place the archive holds as internal_only.",
+  "start": { "space": "space:archive-office", "spawn": "spawn:default" },
+  "neighborhoods": [
+    {
+      "slug": "third-ward",
+      "name": "Third Ward",
+      "region": "houston",
+      "anchor": { "lat": 29.724, "lon": -95.36, "precision": "neighborhood", "note": "approximate centroid, for orientation only" },
+      "spaces": ["space:community-block", "space:archive-office", "space:corner-store"]
+    }
+  ],
+  "places": [
+    { "slug": "archive-office", "name": "The Archive Office", "canon": "fiction", "entity_id": null, "coordinates": null, "neighborhood": "third-ward", "space": "space:archive-office" },
+    { "slug": "corner-store", "name": "Corner Store", "canon": "fiction", "entity_id": null, "coordinates": null, "neighborhood": "third-ward", "space": "space:corner-store" }
+  ],
+  "spaces": ["archive-office", "community-block", "corner-store"],
+  "npcs": ["test-001"]
+}
