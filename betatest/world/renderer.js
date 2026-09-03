@@ -100,6 +100,9 @@ class Renderer {
             case 'C': ctx.fillStyle = '#3b2f24'; ctx.fillRect(sx, sy, ts, ts); ctx.fillStyle = '#8a7a5a'; ctx.fillRect(sx, sy + 2 * u, ts, 4 * u); ctx.fillStyle = '#6a5a40'; ctx.fillRect(sx, sy + 6 * u, ts, u); break;
             case 'P': ctx.fillStyle = '#3b2f24'; ctx.fillRect(sx, sy, ts, ts); ctx.fillStyle = '#7a5a3a'; ctx.fillRect(sx + u / 2, sy + 4 * u, ts - u, 3 * u); ctx.fillStyle = '#1a1a1a'; ctx.fillRect(sx + 1.5 * u, sy + u, 5 * u, 3.5 * u); ctx.fillStyle = (Math.floor(this.frame / 30) % 2) ? '#20C20E' : '#178f0a'; ctx.fillRect(sx + 2 * u, sy + 1.5 * u, 4 * u, 2.5 * u); break;
             case 'Z': ctx.fillStyle = '#3b2f24'; ctx.fillRect(sx, sy, ts, ts); ctx.fillStyle = '#5a3a5a'; ctx.fillRect(sx + u / 2, sy + u, ts - u, 6 * u); ctx.fillStyle = '#e8e0d0'; ctx.fillRect(sx + u, sy + 1.5 * u, 2.5 * u, 2 * u); break;
+            case 'p': ctx.fillStyle = checker ? '#9a958a' : '#948f83'; ctx.fillRect(sx, sy, ts, ts); ctx.fillStyle = 'rgba(0,0,0,0.08)'; ctx.fillRect(sx, sy, ts, u / 3); ctx.fillRect(sx, sy, u / 3, ts); break;
+            case 'g': ctx.fillStyle = '#2f5a2c'; ctx.fillRect(sx, sy, ts, ts); ctx.fillStyle = '#c9436a'; ctx.fillRect(sx + 1.5 * u, sy + 2 * u, u, u); ctx.fillStyle = '#e0c040'; ctx.fillRect(sx + 5 * u, sy + 4.5 * u, u, u); ctx.fillStyle = '#3f7a3a'; ctx.fillRect(sx + 3 * u, sy + 6 * u, u, u); break;
+            case '~': ctx.fillStyle = '#2c5f8a'; ctx.fillRect(sx, sy, ts, ts); ctx.fillStyle = (Math.floor((this.frame / 20) + x + y) % 3 === 0) ? '#3a76a8' : '#2c5f8a'; ctx.fillRect(sx + u, sy + 3 * u, 3 * u, u / 2); ctx.fillRect(sx + 4 * u, sy + 6 * u, 2.5 * u, u / 2); break;
             case 'X': default: ctx.fillStyle = '#0d0b08'; ctx.fillRect(sx, sy, ts, ts); break;
         }
     }

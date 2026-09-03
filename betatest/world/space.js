@@ -2,13 +2,14 @@
 //
 // Tile codes (shared vocabulary; a space may extend `passable`):
 //   .  floor           W  wall           w  window (in a wall)   D  door (passable)
-//   R  road            -  road centre    S  sidewalk             G  grass
-//   T  tree            F  fence          B  building face        X  void
+//   R  road            -  road centre    S  sidewalk/path        G  grass
+//   p  paved plaza     g  garden bed     ~  water                T  tree
+//   F  fence           B  building face  X  void
 //   =  desk/table      #  shelf          C  counter              P  computer
 //   Z  bed             M  rug
 // Passability is a property of the code, not of the picture: the renderer may
 // draw a tile however it likes; walkability comes from this table only.
-const DEFAULT_PASSABLE = new Set(['.', 'D', 'S', 'R', '-', 'G', 'M']);
+const DEFAULT_PASSABLE = new Set(['.', 'D', 'S', 'R', '-', 'G', 'M', 'p']);
 
 const FACING_DELTA = {
     up: { dx: 0, dy: -1 }, down: { dx: 0, dy: 1 }, left: { dx: -1, dy: 0 }, right: { dx: 1, dy: 0 },

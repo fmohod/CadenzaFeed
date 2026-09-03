@@ -30,11 +30,13 @@
   "spawns": [
     { "id": "spawn:default", "x": 3, "y": 14, "facing": "down" },
     { "id": "spawn:from-office", "x": 3, "y": 14, "facing": "down" },
-    { "id": "spawn:from-store", "x": 15, "y": 14, "facing": "down" }
+    { "id": "spawn:from-store", "x": 15, "y": 14, "facing": "down" },
+    { "id": "spawn:from-downtown", "x": 22, "y": 10, "facing": "up" }
   ],
   "exits": [
     { "id": "exit:office-door", "x": 3, "y": 13, "label": "The Archive Office", "to": { "space": "space:archive-office", "spawn": "spawn:from-street" } },
-    { "id": "exit:store-door", "x": 15, "y": 13, "label": "Corner Store", "to": { "space": "space:corner-store", "spawn": "spawn:from-street" } }
+    { "id": "exit:store-door", "x": 15, "y": 13, "label": "Corner Store", "to": { "space": "space:corner-store", "spawn": "spawn:from-street" } },
+    { "id": "exit:bus-stop", "x": 22, "y": 9, "trigger": "interact", "label": "Bus to Discovery Green", "to": { "space": "space:discovery-green", "spawn": "spawn:from-block" } }
   ],
   "interactables": [
     { "id": "examine:flyer-pole", "type": "examine", "x": 8, "y": 10, "label": "Flyer on a pole", "text": ["A flyer, sun-faded, stapled over older flyers.", "Whatever it announced has already happened."] },

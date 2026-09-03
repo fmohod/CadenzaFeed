@@ -9,10 +9,19 @@
       "region": "houston",
       "anchor": { "lat": 29.724, "lon": -95.36, "precision": "neighborhood", "note": "approximate centroid, for orientation only; becomes a registry region node when one is minted" },
       "spaces": ["space:community-block", "space:archive-office", "space:corner-store"]
+    },
+    {
+      "slug": "downtown",
+      "name": "Downtown",
+      "region": "houston",
+      "anchor": { "lat": 29.7529, "lon": -95.3596, "precision": "neighborhood", "note": "anchored on Discovery Green; becomes a registry region node when one is minted" },
+      "spaces": ["space:discovery-green"]
     }
   ],
   "places_file": "places.json",
-  "bindings": [],
-  "spaces": ["archive-office", "community-block", "corner-store"],
+  "bindings": [
+    { "place": "discovery-green", "space": "space:discovery-green" }
+  ],
+  "spaces": ["archive-office", "community-block", "corner-store", "discovery-green"],
   "npcs": ["test-001"]
 }

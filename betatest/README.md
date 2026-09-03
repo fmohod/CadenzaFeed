@@ -80,6 +80,27 @@ Three invariants of the seam, frozen 2026-09-03 (Machine Head's review of `baee3
   until a region node exists in the registry to bind it to.
 - The first in-world consumer of `places.json` is the city map on the office wall
   (`examine:city-map`, `list: "places"`): it lists the public places by name.
+
+## Real places from OpenStreetMap geometry
+
+The first real area is **Discovery Green** (owner's pick, 2026-09-03). Its space is
+**generated, not drawn**:
+
+1. `content/geo/<slug>.osm.json` — vendored OpenStreetMap data (park boundary, water,
+   gardens, paths, buildings, tree rows, named features), fetched once by a session and
+   committed with attribution. **© OpenStreetMap contributors, ODbL.** The attribution
+   travels in the file and in the generated space's `source` block; keep it.
+2. `tools/space_from_osm.py <slug>` — offline and deterministic. Projects the boundary to
+   a 5 m tile grid, rasterises roads, the park, water (`~`), garden beds (`g`), paths,
+   buildings, tree rows, and turns every named OSM node inside the park into an
+   `examine:` point. Writes `content/spaces/<slug>.json`. Never hand-edit the map: edit
+   the geometry or the generator and rerun.
+3. `world.json` binds the space to its registry place by slug
+   (`discovery-green` → `space:discovery-green`), and the space is `canon: documentary`.
+
+Coordinates still anchor; the map is a rasterisation and is free to be wrong in the ways
+a game needs (tile size, simplification, no interiors). Neighborhood `downtown` is
+hand-authored until a region node exists in the registry.
 - An **NPC** (`content/npcs/<id>.json`, `id: "npc:<slug>"`) has a name, a sprite colour
   and an ordered `dialogue[]` list; the first entry whose `if` conditions all hold wins.
   Predicates today: `talked_to`, `visited`, `terminal_opened`. Unknown predicates never
