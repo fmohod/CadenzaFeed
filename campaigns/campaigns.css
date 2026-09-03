@@ -95,6 +95,11 @@
   text-transform: uppercase; color: #666; text-align: center; margin: 14px 0 0;
 }
 
+.cmp-external {
+  font-size: 0.92rem; color: #555; text-align: center; margin: 12px 0 0; line-height: 1.6;
+}
+.cmp-external a { border-bottom: 1px solid #A07840; color: #111; }
+
 /* ── Story body (inherits .article-body type) ── */
 .cmp-story { margin-bottom: 40px; }
 .cmp-story h2 {
