@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (InputRouter.touchWanted()) {
         const touch = document.getElementById('touch');
         touch.hidden = false;
+        document.body.classList.add('has-touch');
         input.bindTouch(touch);
     }
 

@@ -44,6 +44,19 @@ translates: `open({sourceId})` / `close()` on one side, `terminal.opened` /
 INTERACT, BACK — and routes them to exactly one owner: `world` or `terminal`. The other
 owner receives nothing. The engine never learns which device produced an action.
 
+Three invariants of the seam, frozen 2026-09-03 (Machine Head's review of `baee316`):
+
+1. **TerminalHost owns all input into the terminal while it is open. CAIN never listens
+   above its own display surface.** No CAIN screen may add a `document` or `window`
+   listener; the host feeds `handleKey()` and `handleClick()` and nothing else does.
+2. **When CAIN gains a text-entry control, focus moves into the control and normal
+   browser text input takes precedence** over action translation. Today no such control
+   exists; the router already passes unmapped keys through untouched. Do not solve this
+   early; do not violate it when the day comes.
+3. **Transient UI state is never part of player state.** The save holds `space`, `x`,
+   `y`, `facing` and `events[]`. It never holds a CAIN screen, CAIN focus, an open menu,
+   a dialogue box or the overlay. A reload while CAIN is open boots the world cleanly.
+
 ## Content model
 
 - A **Space** (`content/spaces/<id>.json`, `id: "space:<slug>"`) is playable geometry: a
@@ -113,6 +126,17 @@ real keyboard and a real phone is still the owner's to do** (CAMT `AGENTS.md` ru
     no NPC.
 12. Offline: with the server stopped after one load, the page and CAIN still load from
     the service worker (`sw.js`, network-first, cache fallback).
+13. Refresh at every state: reload in the office, on the street, mid-dialogue, in the
+    store and **with CAIN open** — each time the world boots cleanly at the saved tile
+    with no overlay reconstructed.
+14. Viewports: desktop, phone portrait, phone landscape — the canvas fills the usable
+    viewport, the d-pad and A/B stay clear of the dialogue box, no page scroll.
+
+**Updating the game.** `sw.js` is network-first, so an online visit always gets the new
+files, and the `?v=` query on a script tag is its version. Bump it when a file changes;
+bump the `CACHE` name in `sw.js` when the shape of the cache should be discarded. The
+first failure Machine Head predicts on a real phone is a stale cached script; if that
+happens, that is the fix, not abandoning offline.
 
 ## Not in V0 (deliberately)
 

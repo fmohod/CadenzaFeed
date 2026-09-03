@@ -81,6 +81,16 @@ body.world-shell[class*="pack-"] {
 }
 @keyframes dlg-bob { 50% { transform: translateY(2px); opacity: 0.5; } }
 
+/* With touch controls the bottom of the screen belongs to the thumbs, so the
+   dialogue sits under the HUD instead. It may cover the map; it must never cover
+   the controls (DevNotes, "Items to work on"). */
+body.has-touch #dialogue {
+    top: 44px;
+    bottom: auto;
+    width: min(720px, calc(100vw - 24px));
+}
+body.has-touch #hud-hint { display: none; }
+
 /* Touch controls (shown only on coarse pointers, or with ?touch) */
 #touch {
     position: fixed;

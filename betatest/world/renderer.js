@@ -40,6 +40,10 @@ class Renderer {
         const { space, player, dev, target } = scene;
         const ctx = this.ctx;
         this.frame++;
+        // A rotation or a viewport change that never fired `resize` (it happens
+        // under emulation and in some in-app browsers) would otherwise leave the
+        // canvas stretched. Cheap to check every frame; resize only when needed.
+        if (this.canvas.width !== window.innerWidth || this.canvas.height !== window.innerHeight) this._resize();
         ctx.fillStyle = '#0d0b08';
         ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         if (!space) return;
