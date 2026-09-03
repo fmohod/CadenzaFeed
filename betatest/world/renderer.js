@@ -74,7 +74,56 @@ class Renderer {
         figures.push({ y: player.py, draw: () => this.drawFigure(ctx, player.px * ts - cam.x, player.py * ts - cam.y, ts, player.facing, '#F6F2EB', player.moving) });
         figures.sort((a, b) => a.y - b.y).forEach(f => f.draw());
 
+        // The real sky over the real place: sun first, then what is falling out of it.
+        if (scene.daylight && scene.daylight.tint) {
+            const [r, g, b, a] = scene.daylight.tint;
+            ctx.fillStyle = `rgba(${r},${g},${b},${space.kind === 'interior' ? a * 0.45 : a})`;
+            ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        }
+        if (scene.weather && space.kind !== 'interior') this.drawWeather(ctx, scene.weather);
+
         if (dev) this.drawDev(ctx, space, cam, ts, x0, y0, x1, y1, player);
+    }
+
+    // Real weather, drawn over the world: a tint for the sky, streaks for rain,
+    // haze for fog, a flash now and then for a storm. Screen space, so it does
+    // not care about the camera.
+    drawWeather(ctx, w) {
+        const W = this.canvas.width, H = this.canvas.height;
+        const f = this.frame;
+        if (w.kind === 'cloudy') { ctx.fillStyle = `rgba(60, 65, 80, ${0.08 + 0.12 * w.intensity})`; ctx.fillRect(0, 0, W, H); }
+        if (w.kind === 'fog') {
+            ctx.fillStyle = 'rgba(205, 205, 215, 0.38)'; ctx.fillRect(0, 0, W, H);
+            const drift = (f * 0.4) % W;
+            ctx.fillStyle = 'rgba(230, 230, 235, 0.12)';
+            for (let i = 0; i < 4; i++) ctx.fillRect(((drift + i * W / 4) % W) - W / 8, (i * 97) % H, W / 4, 40);
+        }
+        if (w.kind === 'drizzle' || w.kind === 'rain' || w.kind === 'storm') {
+            ctx.fillStyle = `rgba(20, 30, 60, ${0.18 + 0.2 * w.intensity})`; ctx.fillRect(0, 0, W, H);
+            const n = Math.floor(60 + 260 * w.intensity);
+            ctx.strokeStyle = 'rgba(200, 215, 240, 0.55)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            const speed = 14 + 10 * w.intensity;
+            for (let i = 0; i < n; i++) {
+                // deterministic pseudo-random per streak, animated by frame
+                const sx = ((i * 7919) % W + f * 1.3) % W;
+                const sy = ((i * 104729) % H + f * speed) % H;
+                ctx.moveTo(sx, sy); ctx.lineTo(sx - 3, sy + 10 + 8 * w.intensity);
+            }
+            ctx.stroke();
+            if (w.kind === 'storm' && f % 160 < 3) { ctx.fillStyle = 'rgba(255,255,255,0.22)'; ctx.fillRect(0, 0, W, H); }
+        }
+        if (w.kind === 'snow') {
+            ctx.fillStyle = 'rgba(200, 205, 220, 0.18)'; ctx.fillRect(0, 0, W, H);
+            ctx.fillStyle = 'rgba(255,255,255,0.85)';
+            const n = Math.floor(80 + 120 * w.intensity);
+            for (let i = 0; i < n; i++) {
+                const sx = ((i * 7919) % W + Math.sin((f + i) / 30) * 12 + f * 0.3) % W;
+                const sy = ((i * 104729) % H + f * 1.6) % H;
+                ctx.fillRect(sx, sy, 2, 2);
+            }
+        }
     }
 
     drawTile(ctx, space, x, y, sx, sy, ts) {
@@ -153,6 +202,6 @@ class Renderer {
         for (const s of space.spawns.values()) label(s.x, s.y, s.id);
         ctx.fillStyle = '#fff';
         ctx.font = '12px monospace';
-        ctx.fillText(`${space.id}  (${player.x},${player.y}) ${player.facing}  zoom ${this.zoom}  ${this.devNote || ''}`, 8, this.canvas.height - 10);
+        ctx.fillText(`${space.id}  (${player.x},${player.y}) ${player.facing}  zoom ${this.zoom}  ${this.devNote || ''}  ${this.weatherNote || ''}`, 8, this.canvas.height - 10);
     }
 }

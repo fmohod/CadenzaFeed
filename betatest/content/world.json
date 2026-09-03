@@ -1,27 +1,58 @@
 {
   "schema": 1,
-  "_note": "The world manifest. Spaces are playable geometry (content/spaces/). PLACES ARE NOT AUTHORED HERE: content/places.json is written by CAMT's publish job from the archive registry (only publication: public entities), so a place in the game is always a real registry entity and nobody authors locations twice (owner ruling 2026-09-03). `bindings` is the join: which Space represents which Place, by registry slug. A Space with no binding is fiction and is labelled so.",
-  "start": { "space": "space:archive-office", "spawn": "spawn:default" },
+  "_note": "The world manifest. Spaces are playable geometry (content/spaces/). PLACES ARE NOT AUTHORED HERE: content/places.json is written by CAMT's publish job from the archive registry (only publication: public entities), so a place in the game is always a real registry entity and nobody authors locations twice (owner ruling 2026-09-03). `bindings` is the join: which Space represents which Place, by registry slug. A Space with no binding is fiction and is labelled so. Each neighborhood carries `timezone` (IANA) so the game's clock reads the place's own time.",
+  "start": {
+    "space": "space:archive-office",
+    "spawn": "spawn:default"
+  },
   "neighborhoods": [
     {
       "slug": "third-ward",
       "name": "Third Ward",
       "region": "houston",
-      "anchor": { "lat": 29.724, "lon": -95.36, "precision": "neighborhood", "note": "approximate centroid, for orientation only; becomes a registry region node when one is minted" },
-      "spaces": ["space:community-block", "space:archive-office", "space:corner-store"]
+      "anchor": {
+        "lat": 29.724,
+        "lon": -95.36,
+        "precision": "neighborhood",
+        "note": "approximate centroid, for orientation only; becomes a registry region node when one is minted"
+      },
+      "spaces": [
+        "space:community-block",
+        "space:archive-office",
+        "space:corner-store"
+      ],
+      "timezone": "America/Chicago"
     },
     {
       "slug": "downtown",
       "name": "Downtown",
       "region": "houston",
-      "anchor": { "lat": 29.7529, "lon": -95.3596, "precision": "neighborhood", "note": "anchored on Discovery Green; becomes a registry region node when one is minted" },
-      "spaces": ["space:discovery-green"]
+      "anchor": {
+        "lat": 29.7529,
+        "lon": -95.3596,
+        "precision": "neighborhood",
+        "note": "anchored on Discovery Green; becomes a registry region node when one is minted"
+      },
+      "spaces": [
+        "space:discovery-green"
+      ],
+      "timezone": "America/Chicago"
     }
   ],
   "places_file": "places.json",
   "bindings": [
-    { "place": "discovery-green", "space": "space:discovery-green" }
+    {
+      "place": "discovery-green",
+      "space": "space:discovery-green"
+    }
   ],
-  "spaces": ["archive-office", "community-block", "corner-store", "discovery-green"],
-  "npcs": ["test-001"]
+  "spaces": [
+    "archive-office",
+    "community-block",
+    "corner-store",
+    "discovery-green"
+  ],
+  "npcs": [
+    "test-001"
+  ]
 }

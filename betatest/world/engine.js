@@ -22,6 +22,11 @@ class WorldEngine {
         this.flags = { visited: new Set(), talked: new Set(), terminalOpened: false };
         this.tween = null;      // { fromX, fromY, toX, toY, t }
         this.tapQueue = [];     // directions tapped but not yet walked
+        this.weather = new WeatherService({ override: new URLSearchParams(location.search).get('weather') });
+        this.weatherNow = null; // the current space's real weather, or null
+        this.daylightNow = null; // the real sun over the current space, or null
+        this.timeOverride = new URLSearchParams(location.search).get('time');
+        this.hudWeather = document.getElementById('hud-weather');
         this.paused = false;    // true while the terminal owns the screen
         this.dev = new URLSearchParams(location.search).has('dev');
         this._last = 0;
@@ -103,12 +108,68 @@ class WorldEngine {
         Object.assign(this.player, { space: spaceId, x, y, facing, px: x, py: y, moving: false });
         this.hudSpace.textContent = space.name;
         this.bus.emit('LocationChanged', { space: spaceId });
+        this.updateWeather(space, data);
         if (!this.flags.visited.has(spaceId)) {
             this.flags.visited.add(spaceId);
             this.save.record('SpaceEntered', spaceId);
         }
         if (!silent) this.persist();
         return true;
+    }
+
+    // Where on Earth is this space? A generated space carries its own anchor
+    // (top-left corner + metres per tile → centre); a hand-authored exterior
+    // borrows its neighborhood's anchor; an interior has no sky.
+    spaceCoords(space, data, allowInterior = false) {
+        if (space.kind === 'interior' && !allowInterior) return null;
+        const a = data.anchor;
+        if (a && typeof a.lat_max === 'number' && typeof a.lon_min === 'number' && a.metres_per_tile) {
+            const lat = a.lat_max - (space.height / 2) * a.metres_per_tile / 110574;
+            const lon = a.lon_min + (space.width / 2) * a.metres_per_tile / (111320 * Math.cos(a.lat_max * Math.PI / 180));
+            return { lat, lon, from: 'space anchor' };
+        }
+        const n = data.neighborhood && this.content.neighborhoods.get(data.neighborhood);
+        if (n && n.anchor && typeof n.anchor.lat === 'number') return { lat: n.anchor.lat, lon: n.anchor.lon, from: `neighborhood ${n.slug}` };
+        return null;
+    }
+
+    // The place's clock: its neighborhood's time zone (data), else the browser's.
+    spaceTimeZone(data) {
+        const n = data.neighborhood && this.content.neighborhoods.get(data.neighborhood);
+        return (n && n.timezone) || null;
+    }
+
+    // Sun and sky are recomputed every 30 s; the weather is asked once per space
+    // (and cached ten minutes), because the sun moves on its own and the rain does not.
+    async updateWeather(space, data) {
+        this.weatherNow = null;
+        this.daylightNow = null;
+        this.hudWeather.textContent = '';
+        const c = this.spaceCoords(space, data, true);
+        if (!c) return;
+        const tz = this.spaceTimeZone(data);
+        const tickSun = () => {
+            if (this.space !== space) return;
+            this.daylightNow = Daylight.now(c.lat, c.lon, tz, this.timeOverride);
+            this.refreshHud(space);
+        };
+        clearInterval(this._sunTimer);
+        this._sunTimer = setInterval(tickSun, 30000);
+        tickSun();
+        if (space.kind === 'interior') return; // a clock indoors, but no sky
+        const w = await this.weather.get(c.lat, c.lon);
+        if (this.space !== space) return; // moved on while the request was out
+        this.weatherNow = w;
+        this.renderer.weatherNote = w ? `weather: ${w.kind} (${w.source}, ${c.from})` : 'weather: unavailable';
+        this.refreshHud(space);
+    }
+
+    refreshHud(space) {
+        const d = this.daylightNow, w = this.weatherNow;
+        const parts = [];
+        if (d) parts.push(`${d.clock}${d.test ? ' (test)' : ''}, ${d.phase}`);
+        if (w) parts.push(WeatherService.describe(w, null));
+        this.hudWeather.textContent = parts.length ? `Now at ${space.name}: ${parts.join(' · ')}` : '';
     }
 
     useExit(exit) {
@@ -130,6 +191,8 @@ class WorldEngine {
             space: this.space,
             player: this.player,
             dev: this.dev,
+            weather: this.weatherNow,
+            daylight: this.daylightNow,
             target: this.dialogue.open || this.paused ? null : this.facingTarget(),
         });
         if (!document.hidden) this._scheduleFrame();

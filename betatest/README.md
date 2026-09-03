@@ -171,6 +171,34 @@ bump the `CACHE` name in `sw.js` when the shape of the cache should be discarded
 first failure Machine Head predicts on a real phone is a stale cached script; if that
 happens, that is the fix, not abandoning offline.
 
+## A real clock at real places
+
+Owner, 2026-09-03: *"give the game a real clock to match the real world clock so that the
+scene and ambiance change to match actual daylight, dusk, night."* `world/daylight.js`
+computes the sun's altitude over the space's coordinates for the current instant (the
+standard low-precision solar position; arithmetic, offline, no service) and names the
+phase: day above 6°, golden hour, dusk, twilight, night below −12°. The renderer tints the
+scene by phase (interiors at half strength: a window, not a sky), recomputed every 30 s.
+Each neighborhood carries an IANA `timezone` so the HUD shows the place's own clock.
+`?time=HH:MM` (local at the place) overrides for testing.
+
+## Real weather at real places
+
+Owner, 2026-09-03: *"if i load the game right now it should match the weather of the
+location in the game to what's happening IRL."* `world/weather.js` asks
+[Open-Meteo](https://open-meteo.com) (free, no key; **"Weather data by Open-Meteo.com",
+CC BY 4.0**) for the current conditions at the space's anchor: a generated space's own
+centre, else its neighborhood's anchor; interiors have no sky. The renderer draws rain,
+drizzle, storm (with lightning), fog, snow, cloud and night; the HUD says what it is doing
+and where the reading is for. `?weather=rain|storm|drizzle|fog|snow|cloudy|night|clear`
+overrides for testing.
+
+Three honest limits. It runs in the visitor's browser and reveals the public place's
+coordinates, never the visitor's. It is **not a CAMT sensor**: CAMT's own weather sensing
+is a parked entry in CAMT `FUTURE_IDEAS.md` (a local station first, because an API goes
+quiet in the storm it exists to warn about). And it fails soft: no network means no
+overlay and the dev line says `weather: unavailable`, never "clear".
+
 ## Not in V0 (deliberately)
 
 Quests, story, eras, records placed in the world, real NPC identities, the CAMT export

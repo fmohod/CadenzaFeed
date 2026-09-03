@@ -43,6 +43,11 @@ body.world-shell[class*="pack-"] {
     font-size: 22px;
     color: #F6F2EB;
 }
+#hud-weather {
+    font-size: 12px;
+    color: #c9b48a;
+    margin-top: 2px;
+}
 #hud-hint {
     font-size: 12px;
     color: #A07840;
