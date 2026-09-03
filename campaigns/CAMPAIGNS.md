@@ -9,7 +9,7 @@ campaign (0001, the Cadenza Arthouse Instrument Library).
 > **Cadenza Arthouse is Frankie Mohammed's company. He owns it.** The business is named
 > **"Cadenza Arthouse" — always both words**, never "Cadenza" alone. A client or a venue is a
 > *field on a record*, never the identity of the work: a campaign page never names a client
-> school, district, venue or organisation in a heading, and names one in the body only when the
+> school, district, venue or organization in a heading, and names one in the body only when the
 > campaign is genuinely about it. Full statement: `F:\README.md`.
 
 ---
@@ -132,7 +132,7 @@ back at the campaign page with that parameter.
   education program's `internal_only` gate is untouched by campaigns (arts program rulings
   R2, R6–R8; CAS §9.13).
 - **A client, district or venue as identity** — not in the kicker, headline, or a heading, and
-  not in the body unless the campaign is genuinely about that organisation and CAS §12.3
+  not in the body unless the campaign is genuinely about that organization and CAS §12.3
   (seeking comment) has been satisfied for any claim that could damage it.
 - **The bare word "Cadenza."**
 - **A photograph from an archive event whose `publication` is `internal_only`.** The share
