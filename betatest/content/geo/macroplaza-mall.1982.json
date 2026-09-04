@@ -1,0 +1,66 @@
+{
+ "_readme": "Era overlay for the macroplaza-mall space: what was different in March 1982, the month the mall opened as Pasadena Town Square Mall. Read by tools/space_from_osm.py --era=1982 together with macroplaza-mall.osm.json (today's geometry). Everything here carries its source; nothing is invented. canon: archive-reconstruction — the archive itself begins in 1999, so this is a reconstruction from published histories, not from our own record.",
+ "era": "1982",
+ "date": "1982-03-01",
+ "date_precision": "month",
+ "valid": {
+  "from": "1982-03-01",
+  "to": "1982-03-31"
+ },
+ "label": "Grand opening, March 1982",
+ "name": "Pasadena Town Square Mall",
+ "canon": "archive-reconstruction",
+ "style": {
+  "tint": [
+   150,
+   110,
+   50,
+   0.16
+  ],
+  "grain": 0.5
+ },
+ "note": "The year is established (1982); the exact grand-opening day is NOT on record in any source reached on 2026-09-03 — Wikipedia's text says 'March 1962' but describes a sale 'a little more than a year after opening' that took place in 1983, so its year is a typo for 1982. When a dated source (a Houston Chronicle or Pasadena Citizen page) names the day, set `date` and `date_precision: day` here and regenerate.",
+ "sources": [
+  {
+   "url": "https://www.deadmalls.com/malls/pasadena_town_square.html",
+   "accessed": "2026-09-03",
+   "supports": "opened 1982; anchors Foley's, Palais Royal, Joske's (later Dillard's); 1980s stores",
+   "quote": "Pasadena Town Square opened in 1982 in Houston's blue-collar, southeast suburb of Pasadena."
+  },
+  {
+   "url": "https://en.wikipedia.org/wiki/Macroplaza_Mall",
+   "accessed": "2026-09-03",
+   "supports": "developer Federated Stores Realty, attached to an existing Foley's; anchors; JMB sale; renamings 2016 and 2018; its '1962' is inconsistent with its own 1983 sale sentence",
+   "quote": "Developed by Federated Stores Realty ... and attached to an existing Foley's Department store, it opened in March 1962 [sic]."
+  },
+  {
+   "url": "https://houstonhistoricretail.com/2021/09/29/marcoplaza-polo-or-what-happened-to-pasadena-town-square-mall/",
+   "accessed": "2026-09-03",
+   "supports": "1982 opening (via search summary; page itself returned 403 to this session)"
+  }
+ ],
+ "rename": [
+  {
+   "type": "way",
+   "id": 610071904,
+   "name": "Pasadena Town Square Mall",
+   "source": "deadmalls.com; Wikipedia"
+  }
+ ],
+ "remove": [],
+ "examine": [
+  {
+   "id": "examine:grand-opening-directory",
+   "lat": 29.6945675,
+   "lon": -95.1994003,
+   "label": "Mall directory, 1982",
+   "text": [
+    "PASADENA TOWN SQUARE MALL — opened March 1982.",
+    "Anchors: Foley's, Joske's, Palais Royal.",
+    "Some of the stores of the decade: Walgreens, Sound Warehouse, Chess King, Spencer Gifts, B. Dalton, Waldenbooks, Casual Corner, Circus World.",
+    "Where each one stood inside the mall is not on record. This directory is a reconstruction from published histories."
+   ],
+   "source": "deadmalls.com (accessed 2026-09-03); Wikipedia (accessed 2026-09-03)"
+  }
+ ]
+}

@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "_note": "The world manifest. Spaces are playable geometry (content/spaces/). PLACES ARE NOT AUTHORED HERE: content/places.json is written by CAMT's publish job from the archive registry (only publication: public entities), so a place in the game is always a real registry entity and nobody authors locations twice (owner ruling 2026-09-03). `bindings` is the join: which Space represents which Place, by registry slug. A Space with no binding is fiction and is labelled so. Each neighborhood carries `timezone` (IANA) so the game's clock reads the place's own time. `bindings[].era` is RESERVED for the time-travel layer (owner, 2026-09-03: versions of the same place in different periods, as in Chrono Trigger): one place, several spaces, one per era; unset means the present.",
+  "_note": "The world manifest. Spaces are playable geometry (content/spaces/). PLACES ARE NOT AUTHORED HERE: content/places.json is written by CAMT's publish job from the archive registry (only publication: public entities), so a place in the game is always a real registry entity and nobody authors locations twice (owner ruling 2026-09-03). `bindings` is the join: which Space represents which Place, by registry slug. A Space with no binding is fiction and is labelled so. Each neighborhood carries `timezone` (IANA) so the game's clock reads the place's own time. TIME: a binding is a point or span on the timeline. `era` is 'present' (unset) or an ISO date; `valid: {from, to}` is the span that space stands for. One place may bind several spaces, one per time. The bus stop lists places whose binding covers the date the player is standing in, so two places that both existed on a date can be travelled between (owner, 2026-09-03: 'locations exist accurately on a timeline').",
   "start": {
     "space": "space:archive-office",
     "spawn": "spawn:default"
@@ -64,7 +64,9 @@
         "note": "anchored on Strawberry Park; a separate city, not a Houston neighborhood; becomes a registry region node when one is minted"
       },
       "spaces": [
-        "space:strawberry-park"
+        "space:strawberry-park",
+        "space:macroplaza-mall",
+        "space:macroplaza-mall-1982"
       ],
       "timezone": "America/Chicago"
     }
@@ -82,6 +84,19 @@
     {
       "place": "strawberry-park",
       "space": "space:strawberry-park"
+    },
+    {
+      "place": "macroplaza-mall",
+      "space": "space:macroplaza-mall"
+    },
+    {
+      "place": "macroplaza-mall",
+      "space": "space:macroplaza-mall-1982",
+      "era": "1982-03-01",
+      "valid": {
+        "from": "1982-03-01",
+        "to": "1982-03-31"
+      }
     }
   ],
   "spaces": [
@@ -90,7 +105,9 @@
     "corner-store",
     "discovery-green",
     "eleanor-tinsley-park",
-    "strawberry-park"
+    "strawberry-park",
+    "macroplaza-mall",
+    "macroplaza-mall-1982"
   ],
   "npcs": [
     "test-001"

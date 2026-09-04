@@ -19,6 +19,7 @@ class WorldEngine {
 
         this.space = null;
         this.player = { space: null, x: 0, y: 0, facing: 'down', px: 0, py: 0, moving: false };
+        this.state = { era: 'present' };   // the time the player is in; part of the save
         this.flags = { visited: new Set(), talked: new Set(), terminalOpened: false };
         this.tween = null;      // { fromX, fromY, toX, toY, t }
         this.tapQueue = [];     // directions tapped but not yet walked
@@ -43,6 +44,7 @@ class WorldEngine {
 
         const saved = this.save.load();
         this.flags = this.save.replay();
+        if (saved && saved.player && saved.player.era) this.state.era = saved.player.era;
 
         let placed = false;
         if (saved && saved.player && this.content.spaces.has(saved.player.space)) {
@@ -106,7 +108,8 @@ class WorldEngine {
         this.tween = null;
         this.tapQueue = [];
         Object.assign(this.player, { space: spaceId, x, y, facing, px: x, py: y, moving: false });
-        this.hudSpace.textContent = space.name;
+        this.state.era = data.era || this.state.era || 'present';
+        this.hudSpace.textContent = space.name + (space.era && space.era !== 'present' ? `  ·  ${space.eraLabel || space.era}` : '');
         this.bus.emit('LocationChanged', { space: spaceId });
         this.updateWeather(space, data);
         if (!this.flags.visited.has(spaceId)) {
@@ -133,6 +136,17 @@ class WorldEngine {
         return null;
     }
 
+    // Is this binding standing on the timeline where the player is? The present
+    // is its own point; a dated era matches a binding whose valid range covers
+    // that date (or whose era is exactly that date). This is what lets two places
+    // that both existed on a date be reached from each other (owner, 2026-09-03).
+    bindingActive(b, era) {
+        const e = era || 'present';
+        if (e === 'present') return (b.era || 'present') === 'present';
+        if (b.valid && b.valid.from && b.valid.to) return b.valid.from <= e && e <= b.valid.to;
+        return b.era === e;
+    }
+
     // The place's clock: its neighborhood's time zone (data), else the browser's.
     spaceTimeZone(data) {
         const n = data.neighborhood && this.content.neighborhoods.get(data.neighborhood);
@@ -148,16 +162,21 @@ class WorldEngine {
         const c = this.spaceCoords(space, data, true);
         if (!c) return;
         const tz = this.spaceTimeZone(data);
+        const eraDate = data.era_date || null;     // a dated era: that day's sun, at this hour
         const tickSun = () => {
             if (this.space !== space) return;
-            this.daylightNow = Daylight.now(c.lat, c.lon, tz, this.timeOverride);
+            this.daylightNow = Daylight.now(c.lat, c.lon, tz, this.timeOverride, eraDate);
             this.refreshHud(space);
         };
         clearInterval(this._sunTimer);
         this._sunTimer = setInterval(tickSun, 30000);
         tickSun();
         if (space.kind === 'interior') return; // a clock indoors, but no sky
-        const w = await this.weather.get(c.lat, c.lon);
+        // A dated era gets THAT day's weather from the archive feed (ERA5, hourly,
+        // 1940 onward), at the hour the player is standing in.
+        const w = eraDate
+            ? await this.weather.historical(c.lat, c.lon, eraDate, tz)
+            : await this.weather.get(c.lat, c.lon);
         if (this.space !== space) return; // moved on while the request was out
         this.weatherNow = w;
         this.renderer.weatherNote = w ? `weather: ${w.kind} (${w.source}, ${c.from})` : 'weather: unavailable';
@@ -167,6 +186,7 @@ class WorldEngine {
     refreshHud(space) {
         const d = this.daylightNow, w = this.weatherNow;
         const parts = [];
+        if (space.era && space.era !== 'present') parts.push(space.eraLabel || space.era);
         if (d) parts.push(`${d.clock}${d.test ? ' (test)' : ''}, ${d.phase}`);
         if (w) parts.push(WeatherService.describe(w, null));
         this.hudWeather.textContent = parts.length ? `Now at ${space.name}: ${parts.join(' · ')}` : '';
@@ -193,6 +213,7 @@ class WorldEngine {
             dev: this.dev,
             weather: this.weatherNow,
             daylight: this.daylightNow,
+            eraStyle: this.space && this.space.eraStyle,
             target: this.dialogue.open || this.paused ? null : this.facingTarget(),
         });
         if (!document.hidden) this._scheduleFrame();
@@ -303,17 +324,45 @@ class WorldEngine {
             return;
         }
         if (t.kind === 'exit') { this.useExit(t.exit); return; }
+        if (t.kind === 'timegate') {
+            // Chrono Trigger's gate: the same place in another era. Eras come
+            // from the bindings of THIS place; you arrive on the same tile.
+            const here = this.content.bindings.get(this.space.id);
+            const opts = [];
+            for (const b of this.content.bindingList) {
+                if (here && b.place === here.place && b.space !== this.space.id && this.content.spaces.has(b.space)) {
+                    const sp = this.content.spaces.get(b.space);
+                    opts.push({ label: sp.era_label || b.era || 'Now', value: b.space, era: b.era || 'present' });
+                }
+            }
+            if (!opts.length) { this.dialogue.show(t.item.label || 'Gate', ['The gate is dark. No other time of this place is on record.']); return; }
+            opts.sort((a, b) => (a.era === 'present' ? '9999' : a.era).localeCompare(b.era === 'present' ? '9999' : b.era));
+            opts.push({ label: 'Stay in this time', value: null });
+            this.dialogue.choose(t.item.label || 'Gate', opts, (spaceId) => {
+                if (!spaceId) return;
+                const picked = opts.find(o => o.value === spaceId);
+                this.state.era = picked.era;
+                this.save.record('EraChanged', picked.era, { at: spaceId });
+                const p = this.player;
+                const target = new Space(this.content.spaces.get(spaceId), this.content.npcs);
+                const at = target.inBounds(p.x, p.y) && target.walkable(p.x, p.y) ? { x: p.x, y: p.y, facing: p.facing } : null;
+                this.enter(spaceId, 'spawn:default', at);
+            });
+            return;
+        }
         if (t.kind === 'travel') {
-            // A bus stop: every real place that has a playable space, from the
-            // registry export and the bindings — never a hard-wired list.
+            // A bus stop: every real place that has a playable space in the
+            // CURRENT era, from the registry export and the bindings — never a
+            // hard-wired list.
             const options = [];
             const hub = this.content.manifest.hub;
             if (hub && hub.space !== this.space.id && this.content.spaces.has(hub.space)) options.push({ label: hub.label || hub.space, value: hub.space, spawn: hub.spawn });
-            for (const [spaceId, placeSlug] of this.content.bindings) {
-                if (spaceId === this.space.id) continue;
-                const place = this.content.places.get(placeSlug);
-                const sp = this.content.spaces.get(spaceId);
-                if (place && sp) options.push({ label: place.name, value: spaceId });
+            for (const b of this.content.bindingList) {
+                if (b.space === this.space.id) continue;
+                if (!this.bindingActive(b, this.state.era)) continue;
+                const place = this.content.places.get(b.place);
+                const sp = this.content.spaces.get(b.space);
+                if (place && sp) options.push({ label: place.name, value: b.space });
             }
             if (!options.length) { this.dialogue.show(t.item.label || 'Bus stop', ['No buses today.']); return; }
             options.push({ label: 'Stay here', value: null });
@@ -328,7 +377,7 @@ class WorldEngine {
     }
 
     persist() {
-        this.save.checkpoint(this.player);
+        this.save.checkpoint({ ...this.player, era: this.state.era });
         this.save.flush();
     }
 }

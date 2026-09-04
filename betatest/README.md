@@ -208,6 +208,30 @@ generated park has a bus stop back. The dialogue box gained a menu mode for this
 (`DialogueBox.choose`: UP/DOWN, INTERACT picks, BACK cancels), which is the first piece
 of the options menu below.
 
+## Time: places on a timeline
+
+Owner, 2026-09-03: versions of the same place in different periods, as in Chrono Trigger,
+so that *"locations exist accurately on a timeline, later on if two locations exist at a
+certain time you can possibly travel between them."* The model:
+
+- A binding is a point or span on the timeline: `era` is `present` (unset) or an ISO
+  date, and `valid: {from, to}` is the span the space stands for. One place binds several
+  spaces, one per time. `bindings[].era` is no longer reserved; it is live.
+- The player's time is player state (`state.era`, saved). The **bus stop** lists places
+  whose binding covers that date, so two places that both existed then can be reached
+  from each other. The **gate** (`type: "timegate"`, one tile from every generated bus
+  stop) lists the other times of *this* place and drops you on the same tile.
+- A dated space gets **that day's sun** at the current hour (`Daylight.onDate`) and
+  **that day's weather** from Open-Meteo's archive (ERA5 reanalysis, hourly, 1940 on),
+  labelled as reanalysis, never as a reading. The renderer adds an era tint and grain.
+- A past version is generated from today's geometry plus an **era overlay**
+  (`content/geo/<slug>.<era>.json`: `remove`, `rename`, `examine`, `date`,
+  `date_precision`, `valid`, `sources`), `canon: archive-reconstruction`. Every entry
+  carries its source. The first: **Pasadena Town Square Mall, March 1982**, the month it
+  opened; the grand-opening *day* is not on record in any source reached, so the era is
+  dated at month precision and the overlay says so. Set the day in one field when a
+  dated source names it.
+
 ## Roadmap the owner has stated (2026-09-03) — recorded, not built
 
 - **Input devices and an options menu.** VR headset controllers, mouse, keyboard, touch,
@@ -216,13 +240,9 @@ of the options menu below.
   producer of the six actions, so a new device is a new binder, not a new game. What is
   missing is a settings screen to choose and configure them; CAIN's Display Settings is
   the pattern. VR also needs a renderer that is not this canvas; the engine does not care.
-- **Time travel.** Versions of the same place in different periods, as in Chrono Trigger.
-  The model is ready for it: a Place is one registry entity, a Space is one rendering of
-  it, and `bindings[].era` is reserved so one place can bind several spaces, one per era
-  (unset means the present). The generator can take historical geometry the same way it
-  takes today's. What is missing is the era switch, the content, and the rules for what
-  the archive says was there. `ARCHITECTURE_PRINCIPLES.md` 8 (eras, not dates) still
-  binds.
+- **Time travel** is built in its first form (see *Time*, above); what remains is content
+  for more times and places, historical geometry where today's is wrong, and the rules
+  for what the archive itself says was there once its own record (1999 on) is reached.
 
 ## Not in V0 (deliberately)
 

@@ -2,7 +2,7 @@
 //
 //   {
 //     "schema": 1,
-//     "player": { "space": "space:archive-office", "x": 5, "y": 4, "facing": "down" },
+//     "player": { "space": "space:archive-office", "x": 5, "y": 4, "facing": "down", "era": "present" },
 //     "events": [ { "t": 1725390000000, "type": "SpaceEntered", "id": "space:archive-office" }, ... ]
 //   }
 //
@@ -40,7 +40,7 @@ class SaveLog {
     }
 
     checkpoint(player) {
-        this.data.player = { space: player.space, x: player.x, y: player.y, facing: player.facing };
+        this.data.player = { space: player.space, x: player.x, y: player.y, facing: player.facing, era: player.era || 'present' };
     }
 
     flush() {

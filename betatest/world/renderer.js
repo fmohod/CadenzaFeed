@@ -74,6 +74,22 @@ class Renderer {
         figures.push({ y: player.py, draw: () => this.drawFigure(ctx, player.px * ts - cam.x, player.py * ts - cam.y, ts, player.facing, '#F6F2EB', player.moving) });
         figures.sort((a, b) => a.y - b.y).forEach(f => f.draw());
 
+        // Another era reads as another era: a tint and a little grain, presentation only.
+        if (scene.eraStyle && scene.eraStyle.tint) {
+            const [r, g, b, a] = scene.eraStyle.tint;
+            ctx.fillStyle = `rgba(${r},${g},${b},${a})`;
+            ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+            const grain = scene.eraStyle.grain || 0;
+            if (grain > 0) {
+                ctx.fillStyle = 'rgba(0,0,0,0.12)';
+                const n = Math.floor(400 * grain);
+                for (let i = 0; i < n; i++) {
+                    const gx = ((i * 7919) + this.frame * 37) % this.canvas.width;
+                    const gy = ((i * 104729) + this.frame * 91) % this.canvas.height;
+                    ctx.fillRect(gx, gy, 2, 2);
+                }
+            }
+        }
         // The real sky over the real place: sun first, then what is falling out of it.
         if (scene.daylight && scene.daylight.tint) {
             const [r, g, b, a] = scene.daylight.tint;
@@ -158,6 +174,15 @@ class Renderer {
 
     drawInteractable(ctx, item, sx, sy, ts) {
         const u = ts / 8;
+        if (item.type === 'timegate') {
+            // a gate: a ring that pulses
+            const r = 3 * u + Math.sin(this.frame / 12) * 0.4 * u;
+            ctx.strokeStyle = 'rgba(120,200,255,0.9)'; ctx.lineWidth = Math.max(2, u / 2);
+            ctx.beginPath(); ctx.arc(sx + ts / 2, sy + ts / 2, r, 0, Math.PI * 2); ctx.stroke();
+            ctx.strokeStyle = 'rgba(255,255,255,0.5)'; ctx.lineWidth = 1;
+            ctx.beginPath(); ctx.arc(sx + ts / 2, sy + ts / 2, r * 0.6, 0, Math.PI * 2); ctx.stroke();
+            return;
+        }
         if (item.type === 'travel') {
             // a bus-stop sign: pole and a small blue plate
             ctx.fillStyle = '#4a3320'; ctx.fillRect(sx + 3.7 * u, sy + 2 * u, 0.6 * u, 5.5 * u);

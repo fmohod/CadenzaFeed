@@ -22,6 +22,9 @@ class Space {
         this.kind = data.kind || 'exterior';
         this.theme = data.theme || (this.kind === 'interior' ? 'interior' : 'street');
         this.canon = data.canon || 'fiction';
+        this.era = data.era || 'present';
+        this.eraLabel = data.era_label || null;
+        this.eraStyle = data.era_style || null;   // { tint: [r,g,b,a], grain: 0..1 } — presentation only
         this.map = data.map;
         this.width = data.map[0].length;
         this.height = data.map.length;

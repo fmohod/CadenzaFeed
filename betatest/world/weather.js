@@ -78,12 +78,49 @@ class WeatherService {
         }
     }
 
+    // What the weather WAS at this place on a date in the past, at the hour the
+    // player is standing in now. Open-Meteo's archive (ERA5 reanalysis, hourly,
+    // 1940 onward) — a model of the past, not a station reading, and said so
+    // in `source`. Same fail-soft rule: null on any error.
+    async historical(lat, lon, isoDate, timeZone) {
+        if (this.override) return WeatherService.fromOverride(this.override);
+        const key = `${isoDate}@${lat.toFixed(3)},${lon.toFixed(3)}`;
+        const hit = this.cache.get(key);
+        if (hit && Date.now() - hit.at < this.ttlMs) return hit.weather;
+        try {
+            const tz = timeZone || 'auto';
+            const url = `https://archive-api.open-meteo.com/v1/archive?latitude=${lat.toFixed(4)}&longitude=${lon.toFixed(4)}` +
+                        `&start_date=${isoDate}&end_date=${isoDate}&hourly=weather_code,is_day,precipitation,temperature_2m&timezone=${encodeURIComponent(tz)}`;
+            const res = await fetch(url, { cache: 'no-store' });
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const data = await res.json();
+            const h = data.hourly || {};
+            const hourNow = Number(new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: false, timeZone: timeZone || undefined }).format(new Date())) % 24;
+            const i = Math.min(hourNow, (h.time || []).length - 1);
+            if (i < 0) throw new Error('no hourly rows');
+            const weather = {
+                ...WeatherService.classify(h.weather_code[i], h.is_day ? h.is_day[i] : 1),
+                precipitationMm: h.precipitation ? h.precipitation[i] : null,
+                temperatureC: h.temperature_2m ? h.temperature_2m[i] : null,
+                observedAt: h.time[i],
+                source: 'open-meteo-archive',
+                fetchedAt: Date.now(),
+            };
+            this.cache.set(key, { at: Date.now(), weather });
+            return weather;
+        } catch (e) {
+            console.info('[weather] archive unavailable:', e.message);
+            return null;
+        }
+    }
+
     static describe(w, placeName = null) {
         if (!w) return '';
         const words = { clear: 'clear', cloudy: 'cloudy', fog: 'fog', drizzle: 'drizzle', rain: 'rain', storm: 'thunderstorm', snow: 'snow' };
         let s = words[w.kind] || w.kind;
         if (typeof w.temperatureC === 'number') s += `, ${Math.round(w.temperatureC * 9 / 5 + 32)}°F`;
         if (w.source === 'override') s += ' (test)';
+        if (w.source === 'open-meteo-archive') s += ' (that day, reanalysis)';
         return placeName ? `Now at ${placeName}: ${s}` : s;
     }
 }

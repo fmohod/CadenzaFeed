@@ -56,13 +56,18 @@ class ContentLoader {
                 }
             }
         }
-        // The join: which Space represents which Place. Authored here, by slug
-        // (an address the registry owns, ADR-0002), never inside a Space.
+        // The join: which Space represents which Place, in which era. Authored
+        // here, by slug (an address the registry owns, ADR-0002), never inside a
+        // Space. One place may bind several spaces, one per era; no era means
+        // the present. bindings: space → { place, era }; bindingList: all of them.
         content.bindings = new Map();
+        content.bindingList = [];
         for (const b of manifest.bindings || []) {
             if (!b || !b.place || !b.space) { warn('binding without place/space skipped'); continue; }
             if (!content.places.has(b.place)) { warn(`binding to unknown or unpublished place ${b.place} skipped`); continue; }
-            content.bindings.set(b.space, b.place);
+            const entry = { place: b.place, space: b.space, era: b.era || 'present', valid: b.valid || null };
+            content.bindings.set(b.space, entry);
+            content.bindingList.push(entry);
         }
         const spaceLoads = (manifest.spaces || []).map(async (file) => {
             const data = await ContentLoader._json(`${base}spaces/${file}.json`);

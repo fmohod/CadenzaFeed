@@ -57,10 +57,22 @@ class Daylight {
         return new Date(target.getTime() + offsetMs);
     }
 
-    static now(lat, lon, timeZone, override = null) {
-        const date = Daylight.overrideDate(override, timeZone) || new Date();
+    // The same clock reading on another calendar day at the place: today's
+    // HH:MM:SS on that date, in that zone. What a dated era shows.
+    static onDate(isoDate, timeZone, base = new Date()) {
+        const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(isoDate || '');
+        if (!m) return null;
+        const localNow = new Date(base.toLocaleString('en-US', { timeZone: timeZone || undefined }));
+        const offsetMs = base.getTime() - localNow.getTime();
+        const target = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]), localNow.getHours(), localNow.getMinutes(), localNow.getSeconds());
+        return new Date(target.getTime() + offsetMs);
+    }
+
+    static now(lat, lon, timeZone, override = null, eraDate = null) {
+        const base = Daylight.overrideDate(override, timeZone) || new Date();
+        const date = (eraDate && Daylight.onDate(eraDate, timeZone, base)) || base;
         const alt = Daylight.sunAltitude(lat, lon, date);
         const p = Daylight.phase(alt);
-        return { ...p, altitude: alt, clock: Daylight.localTime(date, timeZone), date, test: !!override };
+        return { ...p, altitude: alt, clock: Daylight.localTime(date, timeZone), date, test: !!override, eraDate: eraDate || null };
     }
 }
