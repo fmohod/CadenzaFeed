@@ -25,6 +25,7 @@ class DialogueBox {
     }
 
     show(speaker, lines, onClose = null) {
+        this.mode = 'lines';
         this.lines = Array.isArray(lines) ? lines.slice() : [String(lines)];
         this.index = 0;
         this.onClose = onClose;
@@ -35,9 +36,35 @@ class DialogueBox {
         this._page();
     }
 
-    // INTERACT: next line, or close on the last one.
+    // A menu in the same box: UP/DOWN move the cursor, INTERACT picks, BACK
+    // cancels. options = [{ label, value }]; onPick(value|null).
+    choose(speaker, options, onPick) {
+        this.mode = 'choose';
+        this.options = options;
+        this.cursor = 0;
+        this.onPick = onPick;
+        this.open = true;
+        this.speakerEl.textContent = speaker || '';
+        this.speakerEl.hidden = !speaker;
+        this.root.hidden = false;
+        this._menu();
+    }
+
+    move(delta) {
+        if (!this.open || this.mode !== 'choose') return;
+        this.cursor = (this.cursor + delta + this.options.length) % this.options.length;
+        this._menu();
+    }
+
+    // INTERACT: next line, or close on the last one; in a menu, pick.
     advance() {
         if (!this.open) return;
+        if (this.mode === 'choose') {
+            const picked = this.options[this.cursor];
+            this._end();
+            if (this.onPick) { const cb = this.onPick; this.onPick = null; cb(picked ? picked.value : null); }
+            return;
+        }
         this.index++;
         if (this.index >= this.lines.length) { this.close(); return; }
         this._page();
@@ -45,11 +72,22 @@ class DialogueBox {
 
     close() {
         if (!this.open) return;
-        this.open = false;
-        this.root.hidden = true;
+        const wasMenu = this.mode === 'choose';
+        this._end();
+        if (wasMenu) { const cb = this.onPick; this.onPick = null; if (cb) cb(null); return; }
         const cb = this.onClose;
         this.onClose = null;
         if (cb) cb();
+    }
+
+    _end() {
+        this.open = false;
+        this.root.hidden = true;
+    }
+
+    _menu() {
+        this.textEl.textContent = this.options.map((o, i) => (i === this.cursor ? '▶ ' : '   ') + o.label).join('\n');
+        this.moreEl.textContent = '↕';
     }
 
     _page() {

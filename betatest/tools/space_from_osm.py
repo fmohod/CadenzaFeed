@@ -233,11 +233,14 @@ def build(slug):
     # 9. spawn and exit at the park's west edge (nearest walkable to the west midpoint)
     west = min(park_tiles, key=lambda p: p[0])
     sp = nearest_walkable(grid, west[0] + 1, west[1]) or (grid.w // 2, grid.h // 2)
-    spawns = [{"id": "spawn:default", "x": sp[0], "y": sp[1], "facing": "right"},
-              {"id": "spawn:from-block", "x": sp[0], "y": sp[1], "facing": "right"}]
-    exits = [{"id": "exit:bus-stop", "x": sp[0] - 1, "y": sp[1], "trigger": "interact", "label": "Bus back to the block",
-              "to": {"space": "space:community-block", "spawn": "spawn:from-downtown"}}]
+    # The player arrives facing the bus stop, a travel chooser like every other
+    # bus stop in the world (world.json hub + every bound place); no exit is
+    # hard-wired to any particular space.
+    spawns = [{"id": "spawn:default", "x": sp[0], "y": sp[1], "facing": "left"},
+              {"id": "spawn:from-block", "x": sp[0], "y": sp[1], "facing": "left"}]
+    exits = []
     grid.set(sp[0] - 1, sp[1], "S")
+    interactables.insert(0, {"id": "travel:bus-stop", "type": "travel", "x": sp[0] - 1, "y": sp[1], "label": "Bus stop", "spawn": "spawn:from-block"})
 
     space = {
         "schema": 1,

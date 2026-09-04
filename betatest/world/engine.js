@@ -206,6 +206,8 @@ class WorldEngine {
             for (const a of pressed) {
                 if (a === 'INTERACT') this.dialogue.advance();
                 else if (a === 'BACK') this.dialogue.close();
+                else if (a === 'UP') this.dialogue.move(-1);
+                else if (a === 'DOWN') this.dialogue.move(1);
             }
             this.hudHint.textContent = '';
             return;
@@ -301,6 +303,27 @@ class WorldEngine {
             return;
         }
         if (t.kind === 'exit') { this.useExit(t.exit); return; }
+        if (t.kind === 'travel') {
+            // A bus stop: every real place that has a playable space, from the
+            // registry export and the bindings — never a hard-wired list.
+            const options = [];
+            const hub = this.content.manifest.hub;
+            if (hub && hub.space !== this.space.id && this.content.spaces.has(hub.space)) options.push({ label: hub.label || hub.space, value: hub.space, spawn: hub.spawn });
+            for (const [spaceId, placeSlug] of this.content.bindings) {
+                if (spaceId === this.space.id) continue;
+                const place = this.content.places.get(placeSlug);
+                const sp = this.content.spaces.get(spaceId);
+                if (place && sp) options.push({ label: place.name, value: spaceId });
+            }
+            if (!options.length) { this.dialogue.show(t.item.label || 'Bus stop', ['No buses today.']); return; }
+            options.push({ label: 'Stay here', value: null });
+            this.dialogue.choose(t.item.label || 'Bus stop', options, (spaceId) => {
+                if (!spaceId) return;
+                const picked = options.find(o => o.value === spaceId);
+                this.enter(spaceId, (picked && picked.spawn) || t.item.spawn || 'spawn:from-block');
+            });
+            return;
+        }
         this.dialogue.show('', [t.item && t.item.text ? t.item.text : `${t.label}: nothing happens.`]);
     }
 

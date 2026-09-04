@@ -95,29 +95,25 @@
    "id": "spawn:default",
    "x": 7,
    "y": 20,
-   "facing": "right"
+   "facing": "left"
   },
   {
    "id": "spawn:from-block",
    "x": 7,
    "y": 20,
-   "facing": "right"
+   "facing": "left"
   }
  ],
- "exits": [
+ "exits": [],
+ "interactables": [
   {
-   "id": "exit:bus-stop",
+   "id": "travel:bus-stop",
+   "type": "travel",
    "x": 6,
    "y": 20,
-   "trigger": "interact",
-   "label": "Bus back to the block",
-   "to": {
-    "space": "space:community-block",
-    "spawn": "spawn:from-downtown"
-   }
-  }
- ],
- "interactables": [
+   "label": "Bus stop",
+   "spawn": "spawn:from-block"
+  },
   {
    "id": "examine:monument-au-fantome",
    "type": "examine",

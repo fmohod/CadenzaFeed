@@ -199,8 +199,33 @@ is a parked entry in CAMT `FUTURE_IDEAS.md` (a local station first, because an A
 quiet in the storm it exists to warn about). And it fails soft: no network means no
 overlay and the dev line says `weather: unavailable`, never "clear".
 
+## Getting around
+
+The bus stop on the community block (`type: "travel"`) is a chooser built at runtime from
+the bindings: every real place that has a playable space, by its registry name, and
+"Stay here". Nothing lists destinations by hand; bind a place and it appears. Each
+generated park has a bus stop back. The dialogue box gained a menu mode for this
+(`DialogueBox.choose`: UP/DOWN, INTERACT picks, BACK cancels), which is the first piece
+of the options menu below.
+
+## Roadmap the owner has stated (2026-09-03) — recorded, not built
+
+- **Input devices and an options menu.** VR headset controllers, mouse, keyboard, touch,
+  and the **flute** (CAMT menu 31 already turns a played flute into events). The seam
+  exists: `world/input.js` is the single input owner and every device is just another
+  producer of the six actions, so a new device is a new binder, not a new game. What is
+  missing is a settings screen to choose and configure them; CAIN's Display Settings is
+  the pattern. VR also needs a renderer that is not this canvas; the engine does not care.
+- **Time travel.** Versions of the same place in different periods, as in Chrono Trigger.
+  The model is ready for it: a Place is one registry entity, a Space is one rendering of
+  it, and `bindings[].era` is reserved so one place can bind several spaces, one per era
+  (unset means the present). The generator can take historical geometry the same way it
+  takes today's. What is missing is the era switch, the content, and the rules for what
+  the archive says was there. `ARCHITECTURE_PRINCIPLES.md` 8 (eras, not dates) still
+  binds.
+
 ## Not in V0 (deliberately)
 
-Quests, story, eras, records placed in the world, real NPC identities, the CAMT export
-job, OSM-derived geometry, music, art assets beyond procedural tiles. Each waits for the
-sandbox to be walked by the owner first.
+Quests, story, records placed in the world, real NPC identities, music, art assets beyond
+procedural tiles, the era switch, the options menu. Each waits for the sandbox to be walked
+by the owner first.

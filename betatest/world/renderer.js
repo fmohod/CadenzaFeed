@@ -158,6 +158,13 @@ class Renderer {
 
     drawInteractable(ctx, item, sx, sy, ts) {
         const u = ts / 8;
+        if (item.type === 'travel') {
+            // a bus-stop sign: pole and a small blue plate
+            ctx.fillStyle = '#4a3320'; ctx.fillRect(sx + 3.7 * u, sy + 2 * u, 0.6 * u, 5.5 * u);
+            ctx.fillStyle = '#2c5f8a'; ctx.fillRect(sx + 2 * u, sy + u, 4 * u, 2.2 * u);
+            ctx.fillStyle = '#F6F2EB'; ctx.fillRect(sx + 2.6 * u, sy + 1.6 * u, 2.8 * u, u);
+            return;
+        }
         if (item.type === 'examine' && item.marker !== false) {
             ctx.fillStyle = '#c9b48a';
             ctx.fillRect(sx + 3 * u, sy + 2 * u, 2 * u, 2.5 * u);
