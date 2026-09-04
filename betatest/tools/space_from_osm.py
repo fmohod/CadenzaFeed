@@ -261,13 +261,14 @@ def build(slug, era=None):
               {"id": "spawn:from-block", "x": sp[0], "y": sp[1], "facing": "left"}]
     exits = []
     grid.set(sp[0] - 1, sp[1], "S")
-    interactables.insert(0, {"id": "travel:bus-stop", "type": "travel", "x": sp[0] - 1, "y": sp[1], "label": "Bus stop", "spawn": "spawn:from-block"})
+    # solid: a sign you stop in front of and face, never a tile you walk onto
+    interactables.insert(0, {"id": "travel:bus-stop", "type": "travel", "x": sp[0] - 1, "y": sp[1], "label": "Bus stop", "spawn": "spawn:from-block", "solid": True})
     # A gate to the same place in another time (Chrono Trigger's gate), one
     # tile north of the stop. The engine lists whatever eras this place has
     # bound; with none it says the gate is dark. Same tile in every era.
     gy = sp[1] - 1 if grid.get(sp[0] - 1, sp[1] - 1) in PASSABLE_CODES else sp[1] + 1
     grid.set(sp[0] - 1, gy, "S")
-    interactables.insert(1, {"id": "timegate:here", "type": "timegate", "x": sp[0] - 1, "y": gy, "label": "A gate in the air"})
+    interactables.insert(1, {"id": "timegate:here", "type": "timegate", "x": sp[0] - 1, "y": gy, "label": "A gate in the air", "solid": True})
 
     if overlay:
         for x in overlay.get("examine", []):

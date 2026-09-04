@@ -104,7 +104,8 @@
       "x": 22,
       "y": 9,
       "label": "Bus stop",
-      "spawn": "spawn:from-block"
+      "spawn": "spawn:from-block",
+      "solid": true
     }
   ],
   "npcs": [

@@ -217,10 +217,17 @@ certain time you can possibly travel between them."* The model:
 - A binding is a point or span on the timeline: `era` is `present` (unset) or an ISO
   date, and `valid: {from, to}` is the span the space stands for. One place binds several
   spaces, one per time. `bindings[].era` is no longer reserved; it is live.
-- The player's time is player state (`state.era`, saved). The **bus stop** lists places
-  whose binding covers that date, so two places that both existed then can be reached
-  from each other. The **gate** (`type: "timegate"`, one tile from every generated bus
-  stop) lists the other times of *this* place and drops you on the same tile.
+- The player's time is player state (`state.era`, saved) and **only the gate changes
+  it**. Owner, 2026-09-03, after playing: *"buses only move you around the current time
+  you're in; portals move you through time only; buses through space only."* So the
+  **bus stop** lists only places whose binding covers the date you are standing in (the
+  fictional block is a present-day place and is offered only in the present), and in a
+  time with no other bound place it says so and points at the gate. Arriving anywhere by
+  bus never rewrites the era. The **gate** (`type: "timegate"`, one tile from every
+  generated bus stop) lists the other times of *this* place and drops you on the same
+  tile. Later, a place that existed at a time but has no space yet can be shown as
+  inactive rather than absent; for now, unbound means unlisted, so the whole planet is
+  never available in every time.
 - A dated space gets **that day's sun** at the current hour (`Daylight.onDate`) and
   **that day's weather** from Open-Meteo's archive (ERA5 reanalysis, hourly, 1940 on),
   labelled as reanalysis, never as a reading. The renderer adds an era tint and grain.

@@ -120,14 +120,16 @@
    "x": 6,
    "y": 20,
    "label": "Bus stop",
-   "spawn": "spawn:from-block"
+   "spawn": "spawn:from-block",
+   "solid": true
   },
   {
    "id": "timegate:here",
    "type": "timegate",
    "x": 6,
    "y": 19,
-   "label": "A gate in the air"
+   "label": "A gate in the air",
+   "solid": true
   },
   {
    "id": "examine:monument-au-fantome",

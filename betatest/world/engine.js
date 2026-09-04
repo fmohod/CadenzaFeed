@@ -108,8 +108,12 @@ class WorldEngine {
         this.tween = null;
         this.tapQueue = [];
         Object.assign(this.player, { space: spaceId, x, y, facing, px: x, py: y, moving: false });
-        this.state.era = data.era || this.state.era || 'present';
-        this.hudSpace.textContent = space.name + (space.era && space.era !== 'present' ? `  ·  ${space.eraLabel || space.era}` : '');
+        // The player's time is player state and only the gate changes it. A bus
+        // moves through space within the current time; a space never rewrites the
+        // era on arrival (owner, 2026-09-03: "buses only move you around the current
+        // time you're in; portals move you through time only").
+        if ((data.era || 'present') !== (this.state.era || 'present')) console.warn(`[world] ${spaceId} is ${data.era || 'present'} but the player's time is ${this.state.era}`);
+        this.hudSpace.textContent = space.name + (this.state.era && this.state.era !== 'present' ? `  ·  ${space.eraLabel || this.state.era}` : '');
         this.bus.emit('LocationChanged', { space: spaceId });
         this.updateWeather(space, data);
         if (!this.flags.visited.has(spaceId)) {
@@ -375,7 +379,10 @@ class WorldEngine {
             // hard-wired list.
             const options = [];
             const hub = this.content.manifest.hub;
-            if (hub && hub.space !== this.space.id && this.content.spaces.has(hub.space)) options.push({ label: hub.label || hub.space, value: hub.space, spawn: hub.spawn });
+            const hubEra = (hub && hub.era) || 'present';
+            if (hub && hub.space !== this.space.id && this.content.spaces.has(hub.space) && this.bindingActive({ era: hubEra }, this.state.era)) {
+                options.push({ label: hub.label || hub.space, value: hub.space, spawn: hub.spawn });
+            }
             const seen = new Set();
             for (const b0 of this.content.bindingList) {
                 if (seen.has(b0.place)) continue;
@@ -388,7 +395,11 @@ class WorldEngine {
                 // name); the present one by its registry name.
                 if (place && sp) options.push({ label: (b.era !== 'present' && sp.name) ? sp.name : place.name, value: b.space });
             }
-            if (!options.length) { this.dialogue.show(t.item.label || 'Bus stop', ['No buses today.']); return; }
+            if (!options.length) {
+                const when = this.state.era === 'present' ? 'today' : `in ${this.space.eraLabel || this.state.era}`;
+                this.dialogue.show(t.item.label || 'Bus stop', [`No other place ${when} is on record yet.`, 'A bus only moves through space in the time you are in. The gate moves through time.']);
+                return;
+            }
             options.push({ label: 'Stay here', value: null });
             this.dialogue.choose(t.item.label || 'Bus stop', options, (spaceId) => {
                 if (!spaceId) return;
