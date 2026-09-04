@@ -16,6 +16,7 @@ class InputRouter {
         this._held = new Set();            // actions currently down (world)
         this._pressed = [];                // edge-triggered actions since last drain (world)
         this._rawHooks = [];               // fn(e) → true to swallow; for dev toggles
+        this.lastActivity = performance.now();
         this.keymap = {
             ArrowUp: 'UP', w: 'UP', W: 'UP',
             ArrowDown: 'DOWN', s: 'DOWN', S: 'DOWN',
@@ -53,6 +54,7 @@ class InputRouter {
 
     // ── the single entry point for an action from ANY device ──
     press(action, source = 'touch') {
+        this.lastActivity = performance.now();
         if (this.owner === 'terminal') {
             if (this.terminalSink) this.terminalSink({ key: this.terminalKeys[action] || '', preventDefault() {}, source });
             return;
@@ -67,6 +69,7 @@ class InputRouter {
     // ── keyboard ──
     _bindKeyboard() {
         document.addEventListener('keydown', (e) => {
+            this.lastActivity = performance.now();
             for (const hook of this._rawHooks) { if (hook(e) === true) { e.preventDefault(); return; } }
             if (this.owner === 'terminal') {
                 // Typing inside CAIN (a future search field) must still work, so

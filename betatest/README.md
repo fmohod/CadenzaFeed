@@ -199,6 +199,15 @@ is a parked entry in CAMT `FUTURE_IDEAS.md` (a local station first, because an A
 quiet in the storm it exists to warn about). And it fails soft: no network means no
 overlay and the dev line says `weather: unavailable`, never "clear".
 
+## On a phone
+
+Owner, 2026-09-03: controls on screen *"only when i need to move the avatar."* So the
+d-pad and A/B show only in world mode, hide whenever a dialogue, a menu or the terminal
+owns the screen, and fade after four seconds without a touch. In their place: tapping the
+dialogue box advances it, tapping a menu row picks it, and the hosted terminal carries a
+`⏻ leave` button because a phone has no Escape key (standalone CAIN never shows it). The
+dialogue sits under the HUD so it never covers the controls.
+
 ## Getting around
 
 The bus stop on the community block (`type: "travel"`) is a chooser built at runtime from

@@ -77,6 +77,11 @@ body.world-shell[class*="pack-"] {
     margin-bottom: 4px;
 }
 #dialogue-text { color: #F6F2EB; min-height: 1.45em; white-space: pre-wrap; }
+#dialogue .dlg-row { padding: 4px 2px; }
+#dialogue .dlg-row.is-cursor { color: #F6F2EB; }
+#dialogue .dlg-row:not(.is-cursor) { color: #c9b48a; }
+body.has-touch #dialogue { cursor: pointer; }
+body.has-touch #dialogue .dlg-row { padding: 9px 4px; }
 #dialogue-more {
     position: absolute;
     right: 12px; bottom: 6px;
@@ -102,7 +107,10 @@ body.has-touch #hud-hint { display: none; }
     inset: 0;
     pointer-events: none;
     z-index: 7;
+    transition: opacity 0.35s ease;
 }
+body.controls-hidden #touch { display: none; }
+body.controls-idle #touch { opacity: 0.35; }
 #touch-dpad {
     position: absolute;
     left: 16px; bottom: 16px;
@@ -177,3 +185,17 @@ body.has-touch #hud-hint { display: none; }
     overflow: hidden;
 }
 #cain-overlay #cain-os-display { position: absolute; inset: 0; overflow: hidden; }
+#cain-leave {
+    position: absolute;
+    top: 10px; right: 12px;
+    z-index: 1000;
+    background: transparent;
+    color: var(--text-color, #20C20E);
+    border: 1px solid var(--text-color, #20C20E);
+    font-family: var(--font-main, 'Share Tech Mono', monospace);
+    font-size: 14px;
+    padding: 6px 10px;
+    opacity: 0.8;
+    cursor: pointer;
+}
+#cain-leave:hover, #cain-leave:active { opacity: 1; background: rgba(32,194,14,0.12); }

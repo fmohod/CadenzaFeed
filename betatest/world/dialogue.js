@@ -22,6 +22,16 @@ class DialogueBox {
         this.index = 0;
         this.onClose = null;
         this.open = false;
+        // On a phone the box itself is the control: tap to advance, tap a row to pick.
+        root.addEventListener('pointerdown', (e) => {
+            if (!this.open) return;
+            e.preventDefault();
+            if (this.mode === 'choose') {
+                const row = e.target.closest('[data-index]');
+                if (row) { this.cursor = Number(row.dataset.index); this._menu(); }
+            }
+            this.advance();
+        });
     }
 
     show(speaker, lines, onClose = null) {
@@ -86,7 +96,14 @@ class DialogueBox {
     }
 
     _menu() {
-        this.textEl.textContent = this.options.map((o, i) => (i === this.cursor ? '▶ ' : '   ') + o.label).join('\n');
+        this.textEl.textContent = '';
+        this.options.forEach((o, i) => {
+            const row = document.createElement('div');
+            row.className = 'dlg-row' + (i === this.cursor ? ' is-cursor' : '');
+            row.dataset.index = String(i);
+            row.textContent = (i === this.cursor ? '▶ ' : '   ') + o.label;
+            this.textEl.appendChild(row);
+        });
         this.moreEl.textContent = '↕';
     }
 

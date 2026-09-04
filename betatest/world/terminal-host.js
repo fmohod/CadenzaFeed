@@ -31,6 +31,15 @@ class TerminalHost {
         this.os = new TerminalOS(this.display.id, { host: this });
         this.display.osRef = this.os; // BootScreen.onKey reaches the OS this way
         this.overlay.addEventListener('click', (e) => { if (this.isOpen) this.os.handleClick(e); });
+        // A phone has no Escape key: a visible way to power the computer off.
+        // Hosted-only chrome; standalone CAIN (terminal.html) never shows it.
+        const off = document.createElement('button');
+        off.id = 'cain-leave';
+        off.type = 'button';
+        off.textContent = '⏻ leave';
+        off.setAttribute('aria-label', 'Leave the terminal');
+        off.addEventListener('click', (e) => { e.stopPropagation(); this.close(); });
+        this.overlay.appendChild(off);
         this.mounted = true;
     }
 

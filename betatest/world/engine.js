@@ -243,6 +243,12 @@ class WorldEngine {
     }
 
     update(dt) {
+        // On-screen controls only when they are what you need (owner, 2026-09-03):
+        // hidden while a dialogue, a menu or the terminal owns the screen, faded
+        // after a few seconds without a touch.
+        const body = document.body;
+        body.classList.toggle('controls-hidden', this.paused || this.dialogue.open);
+        body.classList.toggle('controls-idle', performance.now() - (this.input.lastActivity || 0) > 4000);
         if (this.paused) { this.hudHint.textContent = ''; return; }
         const pressed = this.input.drainPressed();
 
