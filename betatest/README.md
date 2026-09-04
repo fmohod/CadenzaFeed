@@ -224,6 +224,17 @@ certain time you can possibly travel between them."* The model:
 - A dated space gets **that day's sun** at the current hour (`Daylight.onDate`) and
   **that day's weather** from Open-Meteo's archive (ERA5 reanalysis, hourly, 1940 on),
   labelled as reanalysis, never as a reading. The renderer adds an era tint and grain.
+- **Three rules, frozen 2026-09-03** (Machine Head's review of `01951bf`):
+  1. `present` is a temporal *state*, not a date. It never participates in date
+     arithmetic and is never rewritten as today's ISO date. "Show me this place now" and
+     "show me this place on 2026-09-03" are different requests even when they render the
+     same.
+  2. `present` is dynamic on load: a save whose time is `present` resolves against the
+     present at the moment it is loaded. An immutable snapshot is what an ISO date is for.
+  3. Temporal precision is data, and when several bindings cover a requested time the
+     **most specific applicable binding wins**: an exact date over a month, a month over a
+     year, a year over an open-ended span (`Engine.bestBinding`). A month-precision
+     reconstruction is honest data, not inferior data.
 - A past version is generated from today's geometry plus an **era overlay**
   (`content/geo/<slug>.<era>.json`: `remove`, `rename`, `examine`, `date`,
   `date_precision`, `valid`, `sources`), `canon: archive-reconstruction`. Every entry

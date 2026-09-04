@@ -142,9 +142,28 @@ class WorldEngine {
     // that both existed on a date be reached from each other (owner, 2026-09-03).
     bindingActive(b, era) {
         const e = era || 'present';
-        if (e === 'present') return (b.era || 'present') === 'present';
+        if (e === 'present') return (b.era || 'present') === 'present';   // a state, never a date
         if (b.valid && b.valid.from && b.valid.to) return b.valid.from <= e && e <= b.valid.to;
         return b.era === e;
+    }
+
+    // Days a binding's span covers: the measure of its specificity. `present`
+    // and a bare date are points (0); an open-ended span is infinite.
+    static spanDays(b) {
+        if (!b.valid || !b.valid.from || !b.valid.to) return b.era && b.era !== 'present' ? 0 : Infinity;
+        return (Date.parse(b.valid.to) - Date.parse(b.valid.from)) / 86400000;
+    }
+
+    // When several bindings of one place cover the requested time, the most
+    // specific applicable binding wins (frozen 2026-09-03): a date over a month,
+    // a month over a year, a year over an open span.
+    bestBinding(placeSlug, era) {
+        let best = null;
+        for (const b of this.content.bindingList) {
+            if (b.place !== placeSlug || !this.bindingActive(b, era)) continue;
+            if (!best || WorldEngine.spanDays(b) < WorldEngine.spanDays(best)) best = b;
+        }
+        return best;
     }
 
     // The place's clock: its neighborhood's time zone (data), else the browser's.
@@ -357,12 +376,17 @@ class WorldEngine {
             const options = [];
             const hub = this.content.manifest.hub;
             if (hub && hub.space !== this.space.id && this.content.spaces.has(hub.space)) options.push({ label: hub.label || hub.space, value: hub.space, spawn: hub.spawn });
-            for (const b of this.content.bindingList) {
-                if (b.space === this.space.id) continue;
-                if (!this.bindingActive(b, this.state.era)) continue;
+            const seen = new Set();
+            for (const b0 of this.content.bindingList) {
+                if (seen.has(b0.place)) continue;
+                seen.add(b0.place);
+                const b = this.bestBinding(b0.place, this.state.era);   // one entry per place: its most specific binding for this time
+                if (!b || b.space === this.space.id) continue;
                 const place = this.content.places.get(b.place);
                 const sp = this.content.spaces.get(b.space);
-                if (place && sp) options.push({ label: place.name, value: b.space });
+                // A dated destination is named as it was then (the space carries that
+                // name); the present one by its registry name.
+                if (place && sp) options.push({ label: (b.era !== 'present' && sp.name) ? sp.name : place.name, value: b.space });
             }
             if (!options.length) { this.dialogue.show(t.item.label || 'Bus stop', ['No buses today.']); return; }
             options.push({ label: 'Stay here', value: null });
