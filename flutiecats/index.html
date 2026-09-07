@@ -1,0 +1,2094 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Flute Input — detector prototype — Cadenza Arthouse Media Tools</title>
+<!-- Flutie Cats site build 2026-09-07 15:14 -- published from CAMT jobs/flutie_publish.py; edit THERE, not here -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0b0d0f">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+  :root { --bg:#101214; --panel:#181c1f; --ink:#e8e6e3; --dim:#8a9096;
+          --ok:#7dc87d; --warn:#e0b050; --bad:#d07070; --acc:#6fa8dc; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink);
+         font:15px/1.45 system-ui, sans-serif; }
+  header { padding:10px 16px; display:flex; gap:16px; align-items:baseline;
+           flex-wrap:wrap; border-bottom:1px solid #23282c; }
+  header h1 { font-size:17px; margin:0; font-weight:600; }
+  header .sub { color:var(--dim); font-size:13px; }
+  #clock { font-variant-numeric:tabular-nums; color:var(--dim); }
+  .banner { background:#1d2429; color:#9fb8c8; padding:6px 16px; font-size:13px; }
+  main { display:grid; grid-template-columns: 1.2fr 1fr; gap:14px;
+         padding:14px 16px; max-width:1200px; margin:0 auto; }
+  @media (max-width:900px) { main { grid-template-columns:1fr; } }
+  .panel { background:var(--panel); border:1px solid #23282c; border-radius:10px;
+           padding:14px; }
+  .panel h2 { margin:0 0 10px; font-size:13px; letter-spacing:.06em;
+              text-transform:uppercase; color:var(--dim); font-weight:600; }
+  #bignote { font-size:96px; font-weight:700; line-height:1; text-align:center;
+             min-height:104px; font-variant-numeric:tabular-nums; }
+  #bignote small { font-size:40px; color:var(--dim); }
+  #centsrow { text-align:center; font-size:22px; min-height:30px;
+              font-variant-numeric:tabular-nums; }
+  .needle-track { position:relative; height:14px; margin:10px 8%;
+                  background:#23282c; border-radius:7px; }
+  .needle-track .mid { position:absolute; left:50%; top:-4px; width:2px;
+                       height:22px; background:var(--dim); }
+  #needle { position:absolute; top:1px; width:12px; height:12px; left:50%;
+            margin-left:-6px; border-radius:6px; background:var(--dim);
+            transition:left .06s linear; }
+  .bars { display:grid; grid-template-columns:64px 1fr 74px; gap:6px 10px;
+          align-items:center; margin-top:12px; font-size:13px; }
+  .bars .track { height:10px; background:#23282c; border-radius:5px;
+                 overflow:hidden; }
+  .bars .fill { height:100%; width:0%; background:var(--acc); }
+  .bars .val { text-align:right; color:var(--dim);
+               font-variant-numeric:tabular-nums; }
+  .kv { display:grid; grid-template-columns:auto auto; gap:2px 14px;
+        font-size:14px; margin-top:12px; font-variant-numeric:tabular-nums; }
+  .kv div:nth-child(odd) { color:var(--dim); }
+  button { background:#26313a; color:var(--ink); border:1px solid #34424e;
+           border-radius:8px; padding:9px 16px; font-size:15px; cursor:pointer; }
+  button:hover { background:#2d3a45; }
+  button.primary { background:#2e4a63; border-color:#3d6285; }
+  #evlog { font:13px/1.5 ui-monospace, Consolas, monospace; max-height:340px;
+           overflow-y:auto; white-space:pre; }
+  #evlog .onset { color:var(--dim); } #evlog .stable { color:var(--ok); }
+  #evlog .note_change { color:var(--acc); } #evlog .release { color:var(--warn); }
+  #evlog .silence_start, #evlog .silence_end { color:#5a6168; }
+  #evlog .keyboard { font-style:italic; }
+  table { border-collapse:collapse; width:100%; font-size:13px;
+          font-variant-numeric:tabular-nums; }
+  th, td { text-align:right; padding:3px 8px; border-bottom:1px solid #23282c; }
+  th:first-child, td:first-child { text-align:left; }
+  th { color:var(--dim); font-weight:600; }
+  .cfg { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
+         gap:8px; }
+  .cfg label { display:block; font-size:12px; color:var(--dim); }
+  .cfg input { width:100%; background:#101214; color:var(--ink);
+               border:1px solid #2c3338; border-radius:6px; padding:6px 8px;
+               font-size:14px; }
+  .foot { color:var(--dim); font-size:12px; padding:8px 16px 20px;
+          max-width:1200px; margin:0 auto; }
+  .statusdot { display:inline-block; width:9px; height:9px; border-radius:5px;
+               background:var(--bad); margin-right:6px; }
+  .statusdot.on { background:var(--ok); }
+  .row { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+</style>
+</head>
+<body data-play="1">
+<header>
+  <h1>Flute Input — detector prototype</h1>
+  <span class="sub">Cadenza Arthouse Media Tools · V0 · DRAFT-until-data</span>
+  <span id="micstate"><span class="statusdot" id="micdot"></span>mic off</span>
+  <span id="clock">t = 0.000 s</span>
+  <span class="sub" id="srlabel"></span>
+</header>
+<div class="banner">Live analysis only — no audio is recorded, stored, or
+transmitted. This server has no upload path. Frames, events and stats live and
+die in this tab.</div>
+
+<main>
+  <section class="panel">
+    <h2>DetectorFrame — live</h2>
+    <div class="row" style="margin-bottom:10px">
+      <button class="primary" id="btn-start">Start microphone</button>
+      <button id="btn-drill">Start hands-free drill</button>
+      <button id="btn-game">Play Flutie Cats (prototype)</button>
+      <button id="btn-kbd">Keyboard oracle: off</button>
+      <span class="sub" id="kbdhint" style="display:none">
+        a w s e d f t g y h u j k o l = C4…D5 · z/x octave down/up</span>
+    </div>
+    <canvas id="scope" width="800" height="64"
+      style="width:100%;height:64px;background:#0b0d0f;border:1px solid #23282c;
+             border-radius:8px;margin-bottom:6px"></canvas>
+    <div id="bignote">—</div>
+    <div id="centsrow">&nbsp;</div>
+    <div class="needle-track"><div class="mid"></div><div id="needle"></div></div>
+    <div class="bars">
+      <span>clarity</span><div class="track"><div class="fill" id="b-clar"></div></div><span class="val" id="v-clar">—</span>
+      <span>tone*</span><div class="track"><div class="fill" id="b-tone"></div></div><span class="val" id="v-tone">—</span>
+      <span>level</span><div class="track"><div class="fill" id="b-lvl"></div></div><span class="val" id="v-lvl">—</span>
+    </div>
+    <div class="kv">
+      <div>f0</div><div id="v-f0">—</div>
+      <div>state</div><div id="v-state">SILENT</div>
+      <div>last time-to-stable</div><div id="v-tts">—</div>
+      <div>holding (stable_since)</div><div id="v-hold">—</div>
+    </div>
+    <div class="sub" style="margin-top:10px">* tone is an experimental
+      harmonic-vs-breath ratio; trust it only after the calibration playthrough.</div>
+  </section>
+
+  <section class="panel">
+    <h2>MusicalEvent log <button id="btn-clearlog" style="float:right;padding:2px 10px;font-size:12px">clear</button></h2>
+    <div id="evlog"></div>
+  </section>
+
+  <section class="panel">
+    <h2>Time-to-stable by note (this tab only)
+      <button id="btn-clearstats" style="float:right;padding:2px 10px;font-size:12px">reset</button>
+      <button id="btn-save" style="float:right;padding:2px 10px;font-size:12px;margin-right:8px">save session to desktop</button></h2>
+    <div class="sub" id="save-msg" style="min-height:16px"></div>
+    <table id="stats"><thead><tr>
+      <th>note</th><th>n</th><th>median ms</th><th>min</th><th>max</th>
+    </tr></thead><tbody></tbody></table>
+    <div class="sub" style="margin-top:8px">The measurement protocol lives on
+      these numbers: play each note mf and pp, tongued and slurred, across the
+      range; then airy on purpose to find the clarity floor.</div>
+  </section>
+
+  <section class="panel">
+    <h2>EngineConfig (owner-set; in-page only, nothing persists)</h2>
+    <div class="cfg" id="cfg"></div>
+    <div class="row" style="margin-top:10px">
+      <button id="btn-apply">Apply</button>
+      <span class="sub" id="cfgmsg"></span>
+    </div>
+  </section>
+</main>
+
+<div class="foot">Pipeline: mic → AudioWorklet → MPM/NSDF → DetectorFrame
+(~90/s, monotonic session clock) → state machine (SILENT → ATTACK → STABLE) →
+MusicalEvent → this screen. Keyboard oracle emits synthetic events through the
+same bus (source=keyboard) so the pipeline tests with no flute present. The
+hands-free drill is the first event CONSUMER: it speaks each protocol step and
+advances on matching events — the engine never knows a drill is running.
+Schemas: AI work logs\20260828-02. V0 deviations from the agreed schema, on
+purpose: onset fires on the voiced transition (onset_level_delta waits for
+data); no ExpectationHint yet.</div>
+
+<div id="game" style="display:none; position:fixed; inset:0; z-index:60;
+     background:#0b0d0f">
+  <canvas id="gcv" style="position:absolute; inset:0"></canvas>
+  <div id="gsel" style="position:absolute; inset:0; display:none;
+       background:#0b0d0f; text-align:center; padding-top:7vh; overflow:auto">
+    <div style="font:800 5.5vmin system-ui; letter-spacing:.04em">FLUTIE CATS</div>
+    <div class="sub" id="gsel-prompt" style="font-size:2.4vmin; margin-top:1vh">choose your player</div>
+    <div style="margin-top:1.4vh">
+      <button id="gmode-fly">🚁 flight</button>
+      <button id="gmode-cross" style="margin-left:1.5vw">🐔 crossing</button>
+      <button id="gmode-laser" style="margin-left:1.5vw">🎯 laser</button>
+      <button id="gmode-duet" style="margin-left:1.5vw">👥 multi laser</button>
+    </div>
+    <div id="gsel-nrow" style="display:none; margin-top:1.2vh">
+    </div>
+    <div style="margin-top:1.6vh"><button id="btn-train"
+      style="font:700 2.3vmin system-ui; padding:.9vh 2.2vw; border-radius:10px;
+             border:2px solid #e8c860; background:#171b1f; color:#e8c860;
+             cursor:pointer">🎓 Training with Rocco — learn the flute controls</button></div>
+    <div id="gsel-grid" style="display:grid; margin:4vh auto 0; width:min(94vw,880px);
+         grid-template-columns:repeat(4,1fr); gap:12px"></div>
+    <div id="gsel-highs" style="margin-top:2.5vh"></div>
+    <div class="sub" style="font-size:2.2vmin; margin-top:2vh">
+      a friend's yes away — the roster grows</div>
+  </div>
+  <div id="gname" style="display:none; position:absolute; inset:0; z-index:5;
+       background:rgba(9,11,13,.85); text-align:center; padding-top:22vh">
+    <div style="font:800 4.5vmin system-ui; color:#e8c860">NEW HIGH SCORE</div>
+    <div class="sub" style="font-size:2.2vmin; margin-top:1vh">enter your initials</div>
+    <div><input id="gname-in" maxlength="3" autocapitalize="characters"
+      autocomplete="off" spellcheck="false"
+      style="margin-top:2.5vh; width:min(46vw,230px); text-align:center;
+             font:800 6vmin monospace; letter-spacing:.3em;
+             text-transform:uppercase; background:#14181b; color:#e8e6e3;
+             border:2px solid #e8c860; border-radius:10px; padding:.6vh 0"></div>
+    <div style="margin-top:2.5vh">
+      <button id="gname-save" style="font:700 2.4vmin system-ui;
+        padding:1vh 4vw">save</button>
+      <button id="gname-skip" style="font:400 2.1vmin system-ui;
+        padding:1vh 3vw; margin-left:3vw">skip</button>
+    </div>
+  </div>
+  <div style="position:absolute; top:10px; left:14px; right:14px;
+       display:flex; justify-content:space-between; align-items:center">
+    <span id="g-score" style="font:700 26px system-ui;
+          font-variant-numeric:tabular-nums">0</span>
+    <span class="sub" id="g-msg" style="font-size:16px"></span>
+    <span><button id="btn-fs" title="full screen">⛶</button>
+    <button id="btn-game-stop">Exit (Esc)</button></span>
+  </div>
+</div>
+
+<div id="drill" style="display:none; position:fixed; inset:0; z-index:50;
+     background:rgba(9,11,13,.96); padding:5vh 6vw; text-align:center">
+  <div class="row" style="justify-content:space-between">
+    <span class="sub" id="drill-step"></span>
+    <button id="btn-drill-stop">Stop drill (Esc)</button>
+  </div>
+  <div id="drill-text" style="font-size:6.5vmin; font-weight:700;
+       margin-top:8vh; line-height:1.25"></div>
+  <div id="drill-count" style="font-size:4vmin; color:var(--dim);
+       margin-top:2vh; min-height:5vmin"></div>
+  <div id="drill-res" style="font-size:14vmin; font-weight:800;
+       color:var(--ok); min-height:16vmin; margin-top:2vh"></div>
+  <div class="sub" style="font-size:2.6vmin">hearing:
+    <span id="drill-hear">—</span></div>
+</div>
+
+<script>
+"use strict";
+/* ------------------------------------------------------------------ config */
+const CFG = {
+  a4_hz: 440, stable_frames_N: 5, stable_cents_T: 25,
+  clarity_floor: 0.50, level_floor_db: -60,
+  silence_ms: 500, max_attack_ms: 600, release_frames: 3, onset_frames: 2,
+  range_low_midi: 60, range_high_midi: 96,   // C4..C7
+  window: 2048, hop: 512, mpm_k: 0.9, mpm_cont_k: 0.8,
+};
+const CFG_HELP = {
+  a4_hz:"A4 reference (Hz)", stable_frames_N:"frames to commit",
+  stable_cents_T:"± cents agreement", clarity_floor:"min clarity (0-1)",
+  level_floor_db:"min level (dBFS)", silence_ms:"silence after (ms)",
+  max_attack_ms:"give up attack (ms)", release_frames:"unvoiced frames to release",
+  onset_frames:"voiced frames to onset",
+  range_low_midi:"lowest MIDI note", range_high_midi:"highest MIDI note",
+  window:"analysis window (samples)", hop:"hop (samples)",
+  mpm_k:"MPM peak threshold k",
+  mpm_cont_k:"octave-continuity relax (0-1)",
+};
+const $ = id => document.getElementById(id);
+
+function buildCfgPanel(){
+  const host = $("cfg"); host.innerHTML = "";
+  for (const k of Object.keys(CFG)){
+    const l = document.createElement("label");
+    l.innerHTML = `${k}<br><span class="sub">${CFG_HELP[k]||""}</span>`;
+    const i = document.createElement("input");
+    i.type = "number"; i.step = "any"; i.value = CFG[k]; i.id = "cfg-" + k;
+    l.appendChild(i); host.appendChild(l);
+  }
+}
+buildCfgPanel();
+$("btn-apply").onclick = () => {
+  for (const k of Object.keys(CFG)){
+    const v = parseFloat($("cfg-"+k).value);
+    if (Number.isFinite(v)) CFG[k] = v;
+  }
+  $("cfgmsg").textContent = "applied (takes effect on the next frame)";
+  setTimeout(()=>$("cfgmsg").textContent="", 2500);
+};
+
+/* ----------------------------------------------------- note bookkeeping */
+const NAMES = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
+const noteName = m => m==null ? "—" : NAMES[((m%12)+12)%12] + (Math.floor(m/12)-1);
+
+/* ------------------------------------------------------------ event bus */
+const evlog = $("evlog");
+let SEQ = 0;
+const stats = new Map();          // midi -> array of tts ms (flute source only)
+// Set by the drill's TTS below. Declared here so emit() can tag events that
+// happened while the page itself was talking -- session 2 proved the drill's
+// own voice lands in the stats as phantom E4/F4 rows if nothing marks it.
+let SPEAKING=false, SPEAK_UNTIL=0;
+
+function emit(ev){                 // MusicalEvent, per 20260828-02
+  ev.seq = ++SEQ;
+  if (SPEAKING || performance.now() < SPEAK_UNTIL) ev.during_tts = true;
+  const t = (ev.t_ms/1000).toFixed(3).padStart(8);
+  const note = ev.midi_note==null ? "  — " : noteName(ev.midi_note).padStart(4);
+  const bits = [];
+  if (ev.cents_at_commit!=null) bits.push((ev.cents_at_commit>=0?"+":"")+ev.cents_at_commit.toFixed(0)+"c");
+  if (ev.time_to_stable_ms!=null) bits.push("tts "+ev.time_to_stable_ms.toFixed(0)+"ms");
+  if (ev.duration_ms!=null) bits.push("dur "+ev.duration_ms.toFixed(0)+"ms");
+  if (ev.clarity_mean!=null) bits.push("cl "+ev.clarity_mean.toFixed(2));
+  if (ev.tone_mean!=null) bits.push("tn "+ev.tone_mean.toFixed(2));
+  if (ev.during_tts) bits.push("·tts");
+  const line = document.createElement("div");
+  line.className = ev.type + (ev.source==="keyboard" ? " keyboard" : "");
+  if (ev.during_tts) line.style.opacity = ".45";
+  line.textContent = `${t}  ${ev.type.padEnd(13)} ${note}  ${bits.join("  ")}  [${ev.source}]`;
+  evlog.prepend(line);
+  while (evlog.childNodes.length > 300) evlog.removeChild(evlog.lastChild);
+
+  if ((ev.type==="stable"||ev.type==="note_change") && ev.source==="flute"
+      && !ev.during_tts && ev.time_to_stable_ms!=null){
+    if (!stats.has(ev.midi_note)) stats.set(ev.midi_note, []);
+    stats.get(ev.midi_note).push(ev.time_to_stable_ms);
+    renderStats();
+  }
+  if (ev.type==="stable"||ev.type==="note_change")
+    $("v-tts").textContent = ev.time_to_stable_ms.toFixed(0)+" ms";
+  EVENTS_HIST.push(ev);
+  if (EVENTS_HIST.length > 5000) EVENTS_HIST.shift();
+  // Applications subscribe here. The engine reports facts; consumers (the
+  // drill below, games later) decide what they mean -- the agreed boundary.
+  EV_TAPS.forEach(fn => { try { fn(ev); } catch(e){} });
+}
+const EV_TAPS = [];
+const EVENTS_HIST = [];
+$("btn-clearlog").onclick = () => { evlog.innerHTML = ""; };
+$("btn-clearstats").onclick = () => { stats.clear(); renderStats(); };
+
+function renderStats(){
+  const tb = $("stats").querySelector("tbody"); tb.innerHTML = "";
+  [...stats.keys()].sort((a,b)=>a-b).forEach(m => {
+    const a = [...stats.get(m)].sort((x,y)=>x-y);
+    const med = a.length%2 ? a[(a.length-1)/2]
+                           : (a[a.length/2-1]+a[a.length/2])/2;
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>${noteName(m)}</td><td>${a.length}</td>`+
+      `<td>${med.toFixed(0)}</td><td>${a[0].toFixed(0)}</td>`+
+      `<td>${a[a.length-1].toFixed(0)}</td>`;
+    tb.appendChild(tr);
+  });
+}
+
+/* -------------------------------------------------------- state machine */
+const SM = {
+  state:"SILENT", attack_t:0, cand:null, candCount:0,
+  stableNote:null, stable_t:0, stable_since:null,
+  chg:null, chgCount:0, chg_t:0,
+  unvoicedRun:0, silentSince:0, silenceAnnounced:false,
+  acc:{cl:0, tn:0, lv:-120, n:0},
+  accReset(){ this.acc={cl:0,tn:0,lv:-120,n:0}; },
+  accAdd(f){ if(f.voiced){ this.acc.cl+=f.clarity; this.acc.tn+=f.tone||0;
+             this.acc.lv=Math.max(this.acc.lv,f.level_db); this.acc.n++; } },
+};
+
+function stepStateMachine(f){
+  const t = f.t_ms;
+  if (f.voiced) { SM.unvoicedRun = 0; } else { SM.unvoicedRun++; }
+
+  switch (SM.state){
+  case "SILENT":
+    if (f.voiced){
+      // Onset debounce: one flickering frame near the floor is not an
+      // onset. The first real session sprayed onsets 30-100 ms apart from
+      // exactly that flutter. Require onset_frames in a row; the onset is
+      // stamped with the FIRST frame's time, so nothing is stolen from
+      // time-to-stable.
+      SM.voicedRun = (SM.voicedRun||0) + 1;
+      if (SM.voicedRun === 1) SM.runStart_t = t;
+      if (SM.voicedRun < CFG.onset_frames) break;
+      if (SM.silenceAnnounced){
+        emit({type:"silence_end", t_ms:SM.runStart_t, midi_note:null, source:"flute"});
+        SM.silenceAnnounced = false;
+      }
+      SM.state="ATTACK"; SM.attack_t=SM.runStart_t;
+      SM.cand=f.midi_note; SM.candCount=1;
+      SM.accReset(); SM.accAdd(f);
+      emit({type:"onset", t_ms:SM.runStart_t, midi_note:null, source:"flute"});
+    } else {
+      SM.voicedRun = 0;
+      if (!SM.silenceAnnounced && SM.silentSince &&
+          (t - SM.silentSince) >= CFG.silence_ms){
+        emit({type:"silence_start", t_ms:t, midi_note:null, source:"flute"});
+        SM.silenceAnnounced = true;
+      }
+    }
+    break;
+
+  case "ATTACK":
+    // A churning attack that never settles does not get to accrue seconds
+    // of "time to stable" (the 4357 ms A6 in the first session). Decay to
+    // SILENT even while sound continues; the next voiced frame re-onsets
+    // with a fresh clock, so tts stays an honest onset->commit measure.
+    if ((t - SM.attack_t) > CFG.max_attack_ms){
+      SM.state="SILENT"; SM.silentSince=t; SM.voicedRun=0;
+      break;
+    }
+    if (f.voiced && f.midi_note===SM.cand && Math.abs(f.cents)<=CFG.stable_cents_T){
+      SM.candCount++; SM.accAdd(f);
+      if (SM.candCount >= CFG.stable_frames_N){
+        SM.state="STABLE"; SM.stableNote=SM.cand; SM.stable_t=t;
+        SM.stable_since=t;
+        emit({type:"stable", t_ms:t, midi_note:SM.cand,
+              cents_at_commit:f.cents, time_to_stable_ms:t-SM.attack_t,
+              clarity_mean:SM.acc.cl/SM.acc.n, tone_mean:SM.acc.tn/SM.acc.n,
+              level_peak:SM.acc.lv, source:"flute"});
+      }
+    } else if (f.voiced){
+      SM.cand=f.midi_note; SM.candCount=1;      // new candidate, keep attack_t
+    } else if (SM.unvoicedRun >= CFG.release_frames){
+      SM.state="SILENT"; SM.silentSince=t; SM.voicedRun=0;  // never stabilised
+    }
+    break;
+
+  case "STABLE":
+    if (!f.voiced){
+      if (SM.unvoicedRun >= CFG.release_frames){
+        emit({type:"release", t_ms:t, midi_note:SM.stableNote,
+              duration_ms:t-SM.stable_t, clarity_mean:SM.acc.cl/Math.max(1,SM.acc.n),
+              tone_mean:SM.acc.tn/Math.max(1,SM.acc.n), level_peak:SM.acc.lv,
+              source:"flute"});
+        SM.state="SILENT"; SM.silentSince=t; SM.silenceAnnounced=false;
+        SM.voicedRun=0;
+        SM.stableNote=null; SM.stable_since=null; SM.chg=null; SM.chgCount=0;
+      }
+      break;
+    }
+    SM.accAdd(f);
+    if (f.midi_note===SM.stableNote){
+      SM.chg=null; SM.chgCount=0;               // back home; candidate dies
+    } else {
+      // note_change needs the SAME stability criteria as first commitment
+      if (f.midi_note===SM.chg && Math.abs(f.cents)<=CFG.stable_cents_T){
+        SM.chgCount++;
+        if (SM.chgCount >= CFG.stable_frames_N){
+          emit({type:"note_change", t_ms:t, midi_note:f.midi_note,
+                cents_at_commit:f.cents, time_to_stable_ms:t-SM.chg_t,
+                clarity_mean:SM.acc.cl/SM.acc.n, tone_mean:SM.acc.tn/SM.acc.n,
+                level_peak:SM.acc.lv, source:"flute"});
+          SM.stableNote=f.midi_note; SM.stable_t=t; SM.stable_since=t;
+          SM.chg=null; SM.chgCount=0; SM.accReset(); SM.accAdd(f);
+        }
+      } else {
+        SM.chg=f.midi_note; SM.chgCount=1; SM.chg_t=t;   // new note's onset
+      }
+    }
+    break;
+  }
+  $("v-state").textContent = SM.state +
+    (SM.state==="STABLE" ? " ("+noteName(SM.stableNote)+")" : "");
+}
+
+/* ------------------------------------------------------------- detector */
+let AC=null, TOTAL=0, SR=48000, PREV_F0=null, CONT_DISAGREE=0;
+const RING = new Float32Array(1 << 15);        // 32768 samples (~0.7 s)
+let ringPos=0, analyseAt=0;
+
+function pushSamples(buf){
+  for (let i=0;i<buf.length;i++){ RING[ringPos]=buf[i]; ringPos=(ringPos+1)&(RING.length-1); }
+  TOTAL += buf.length;
+  // Analysis walks an ABSOLUTE sample cursor, one hop at a time. Audio
+  // arrives in bursts; analysing "the latest window" on every burst stamped
+  // duplicate windows with one clock and let stability commit on repeated
+  // evidence -- the 21 ms wall in the first real session's data. Each call
+  // here analyses a DISTINCT window ending at its own cursor position.
+  if (analyseAt === 0) analyseAt = Math.max(CFG.window, CFG.hop);
+  if (TOTAL - analyseAt > RING.length - CFG.window)      // stalled tab: skip
+    analyseAt = TOTAL - ((TOTAL - analyseAt) % CFG.hop);
+  while (TOTAL >= analyseAt){
+    analyse(analyseAt);
+    analyseAt += CFG.hop;
+  }
+}
+
+const AWIN = new Float32Array(4096);
+function analyse(endAbs){
+  const W = Math.min(CFG.window, AWIN.length);
+  if (endAbs < W) return;
+  // W samples ending at the cursor, oldest first
+  let s = (endAbs - W) & (RING.length-1);
+  for (let i=0;i<W;i++){ AWIN[i]=RING[s]; s=(s+1)&(RING.length-1); }
+
+  const t_ms = endAbs / SR * 1000;
+
+  // level + DC removal
+  let mean=0; for (let i=0;i<W;i++) mean+=AWIN[i]; mean/=W;
+  let e=0; for (let i=0;i<W;i++){ AWIN[i]-=mean; e+=AWIN[i]*AWIN[i]; }
+  const rms = Math.sqrt(e/W);
+  const level_db = rms>1e-6 ? 20*Math.log10(rms) : -120;
+
+  // MPM / NSDF over the configured pitch range
+  const fLow  = CFG.a4_hz*Math.pow(2,(CFG.range_low_midi-69)/12);
+  const fHigh = CFG.a4_hz*Math.pow(2,(CFG.range_high_midi-69)/12);
+  const tauMin = Math.max(2, Math.floor(SR/fHigh));
+  const tauMax = Math.min(W-2, Math.ceil(SR/fLow));
+  let f0=null, clarity=0;
+  if (level_db > CFG.level_floor_db - 20 && tauMax > tauMin){
+    // Canonical MPM: compute from tau=2 so the zero-crossing structure is
+    // seen whole; the tau~0 lobe is skipped, and only peaks inside the
+    // configured pitch band are eligible. Starting the scan AT tauMin would
+    // clip the first true peak for high notes whose lag sits near the edge.
+    const tau0 = 2;
+    const nsdf = new Float32Array(tauMax+1);
+    for (let tau=tau0; tau<=tauMax; tau++){
+      let acf=0, m=0;
+      for (let i=0, n=W-tau; i<n; i++){
+        const a=AWIN[i], b=AWIN[i+tau];
+        acf += a*b; m += a*a + b*b;
+      }
+      nsdf[tau] = m>0 ? 2*acf/m : 0;
+    }
+    // key maxima between positive-going zero crossings
+    const peaks=[];
+    let tau=tau0;
+    while (tau<=tauMax && nsdf[tau]>0) tau++;          // skip the tau~0 lobe
+    for (; tau<=tauMax; tau++){
+      if (nsdf[tau]>0 && nsdf[tau-1]<=0){              // entered positive region
+        let best=tau;
+        while (tau<=tauMax && nsdf[tau]>0){
+          if (nsdf[tau]>nsdf[best]) best=tau;
+          tau++;
+        }
+        if (best>=tauMin && best<=tauMax) peaks.push(best);
+      }
+    }
+    if (peaks.length){
+      let nmax=0; for (const p of peaks) if (nsdf[p]>nmax) nmax=nsdf[p];
+      const thr = CFG.mpm_k * nmax;
+      let chosen=-1;
+      for (const p of peaks) if (nsdf[p]>=thr){ chosen=p; break; }
+      // Octave continuity. A flute's 2nd harmonic can outpower its
+      // fundamental, and first-peak-above-threshold then grabs the half
+      // period: the mid-note B4<->B5 flapping all over the first real
+      // session. If some peak sits within 60 cents of the pitch we were
+      // just hearing and is still strong (>= mpm_cont_k * nmax), hold it.
+      //
+      // The hold cannot be unconditional: any played pitch also correlates
+      // perfectly at DOUBLE its period, so the previous lower octave always
+      // finds frame-level support -- an unconditional hold swallowed a
+      // deliberate G4->G5 slur whole in testing. The separation is
+      // temporal: spurious flapping ALTERNATES, a real jump disagrees
+      // consistently. So the hold releases after stable_frames_N straight
+      // frames of the unbiased detector voting against it.
+      const canonical = chosen;
+      if (PREV_F0 != null){
+        let best=-1, bestv=0;
+        for (const p of peaks){
+          const centsOff = Math.abs(Math.log2((SR/p)/PREV_F0))*1200;
+          if (centsOff <= 60 && nsdf[p] > bestv){ best=p; bestv=nsdf[p]; }
+        }
+        if (best >= 0 && bestv >= CFG.mpm_cont_k * nmax) chosen = best;
+      }
+      if (chosen !== canonical){
+        CONT_DISAGREE++;
+        if (CONT_DISAGREE >= CFG.stable_frames_N){
+          chosen = canonical; CONT_DISAGREE = 0; PREV_F0 = null;
+        }
+      } else CONT_DISAGREE = 0;
+      if (chosen>tauMin && chosen<tauMax){
+        // parabolic interpolation
+        const y0=nsdf[chosen-1], y1=nsdf[chosen], y2=nsdf[chosen+1];
+        const d = (y0 - y2) / (2*(y0 - 2*y1 + y2) || 1);
+        const tauF = chosen + (Number.isFinite(d)?Math.max(-1,Math.min(1,d)):0);
+        f0 = SR / tauF;
+        clarity = Math.max(0, Math.min(1, y1));
+      }
+    }
+  }
+
+  let midi=null, cents=null, tone=null;
+  if (f0!=null){
+    const mf = 69 + 12*Math.log2(f0/CFG.a4_hz);
+    midi = Math.round(mf);
+    cents = (mf - midi)*100;
+    if (midi < CFG.range_low_midi || midi > CFG.range_high_midi){
+      f0=null; midi=null; cents=null; clarity=0;
+    }
+  }
+  const voiced = f0!=null && clarity>=CFG.clarity_floor && level_db>=CFG.level_floor_db;
+  if (voiced) tone = toneMetric(AWIN, W, f0);
+  PREV_F0 = voiced ? f0 : null;               // continuity lives within a note
+
+  const frame = { t_ms, f0_hz:f0, midi_note:voiced?midi:(f0!=null?midi:null),
+                  note_name:midi!=null?noteName(midi):null, cents,
+                  clarity, level_db, tone, voiced };
+  stepStateMachine(frame);
+  LATEST = frame;
+}
+
+/* experimental: harmonic energy at k*f0 vs total (Goertzel on Hann window) */
+const HANN = new Float32Array(4096); let hannW=0;
+function toneMetric(x, W, f0){
+  if (hannW!==W){ for (let i=0;i<W;i++) HANN[i]=0.5-0.5*Math.cos(2*Math.PI*i/(W-1)); hannW=W; }
+  let tot=0; const xw=new Float32Array(W);
+  for (let i=0;i<W;i++){ xw[i]=x[i]*HANN[i]; tot+=xw[i]*xw[i]; }
+  if (tot<=0) return 0;
+  let harm=0;
+  for (let k=1;k<=6;k++){
+    const f=k*f0; if (f > SR*0.45) break;
+    const w=2*Math.PI*f/SR, cw=2*Math.cos(w);
+    let s0=0,s1=0,s2=0;
+    for (let i=0;i<W;i++){ s0 = xw[i] + cw*s1 - s2; s2=s1; s1=s0; }
+    harm += (s1*s1 + s2*s2 - cw*s1*s2);
+  }
+  // normalise single-bin powers against total windowed energy * W
+  return Math.max(0, Math.min(1, 2*harm/(tot*W)));
+}
+
+/* --------------------------------------------------------------- audio */
+const WORKLET_SRC = `
+class Tap extends AudioWorkletProcessor {
+  process(inputs){
+    const ch = inputs[0] && inputs[0][0];
+    if (ch && ch.length) this.port.postMessage(ch.slice(0));
+    return true;
+  }
+}
+registerProcessor("camt-flute-tap", Tap);
+`;
+
+async function startMic(){
+  if (AC) return;
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: {
+      echoCancellation:false, noiseSuppression:false, autoGainControl:false,
+      channelCount:1 }});
+    AC = new AudioContext();
+    SR = AC.sampleRate; $("srlabel").textContent = SR + " Hz";
+    const url = URL.createObjectURL(new Blob([WORKLET_SRC],{type:"application/javascript"}));
+    await AC.audioWorklet.addModule(url);
+    const src = AC.createMediaStreamSource(stream);
+    const node = new AudioWorkletNode(AC, "camt-flute-tap");
+    node.port.onmessage = e => pushSamples(e.data);
+    // A worklet with no route to the destination may never be pulled by the
+    // graph. Route it through zero gain: process() runs, nothing is audible,
+    // and nothing can feed back into the room.
+    const mute = AC.createGain(); mute.gain.value = 0;
+    src.connect(node); node.connect(mute); mute.connect(AC.destination);
+    $("micdot").classList.add("on");
+    $("micstate").lastChild.textContent = "";
+    $("micstate").append("mic live");
+    $("btn-start").textContent = "Microphone running";
+    $("btn-start").disabled = true;
+  } catch (err){
+    alert("Microphone unavailable: " + err.message + "\n\nOn a phone this " +
+          "page must be reached over HTTPS (tailscale serve), not a plain " +
+          "http tailnet address.");
+  }
+}
+$("btn-start").onclick = startMic;
+
+/* ---------------------------------------------------- keyboard oracle */
+let KBD=false, KBD_BASE=60;                     // C4
+const KEYMAP = {a:0,w:1,s:2,e:3,d:4,f:5,t:6,g:7,y:8,h:9,u:10,j:11,k:12,
+                o:13,l:14};                     // ...C#5, D5 (the D ladder)
+const kdown = new Map();                        // midi -> press t_ms
+function nowMs(){ return AC ? TOTAL/SR*1000 : performance.now(); }
+$("btn-kbd").onclick = () => {
+  KBD = !KBD;
+  $("btn-kbd").textContent = "Keyboard oracle: " + (KBD?"on":"off");
+  $("kbdhint").style.display = KBD ? "" : "none";
+};
+window.addEventListener("keydown", e => {
+  if (!KBD || e.repeat) return;
+  if (/INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return;
+  const key = e.key.toLowerCase();
+  if (key==="z"){ KBD_BASE-=12; return; }
+  if (key==="x"){ KBD_BASE+=12; return; }
+  if (!(key in KEYMAP)) return;
+  const midi = KBD_BASE + KEYMAP[key];
+  if (kdown.has(midi)) return;
+  const t = nowMs(); kdown.set(midi, t);
+  emit({type:"onset",  t_ms:t, midi_note:null, source:"keyboard"});
+  emit({type:"stable", t_ms:t, midi_note:midi, cents_at_commit:0,
+        time_to_stable_ms:0, clarity_mean:1, tone_mean:1, level_peak:0,
+        source:"keyboard"});
+});
+window.addEventListener("keyup", e => {
+  if (!KBD) return;
+  const key = e.key.toLowerCase();
+  if (!(key in KEYMAP)) return;
+  for (const [midi, t0] of kdown){
+    if (midi%12===((KBD_BASE+KEYMAP[key])%12+12)%12 || midi===KBD_BASE+KEYMAP[key]){
+      const t = nowMs();
+      emit({type:"release", t_ms:t, midi_note:midi, duration_ms:t-t0,
+            clarity_mean:1, tone_mean:1, level_peak:0, source:"keyboard"});
+      kdown.delete(midi);
+    }
+  }
+});
+
+/* ---------------------------------------------------------- drill mode */
+/* The hands-free measurement session: TTS speaks each protocol step, the
+   MusicalEvent stream satisfies it, a timeout moves on when a note will
+   not speak (he is at a music stand and cannot touch the screen). The
+   drill is an event CONSUMER: it owns "satisfied", the engine never
+   knows it is running -- the agreed engine/application boundary.
+   SPEAKING / SPEAK_UNTIL are declared up by the event bus so emit() can
+   tag speech-window events. */
+function drillSpeak(text, cb){
+  // The watchdog matters: with no voices installed (or TTS wedging), onend
+  // never fires and a hands-free session would freeze with nobody at the
+  // screen. The drill must keep moving even if it goes mute.
+  let done = false;
+  const finish = () => {
+    if (done) return;
+    done = true; SPEAKING = false; SPEAK_UNTIL = performance.now() + 350;
+    if (cb) cb();
+  };
+  try {
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.rate = 1.05;
+    SPEAKING = true;
+    u.onend = u.onerror = finish;
+    speechSynthesis.speak(u);
+    setTimeout(finish, 3000 + text.length * 90);
+  } catch(e){ finish(); }
+}
+function spokenName(m){
+  const base = NAMES[((m%12)+12)%12].replace("#"," sharp");
+  return base + " " + (Math.floor(m/12)-1);
+}
+function buildDrill(){
+  const st=[];
+  const say  = t        => st.push({kind:"say", text:t});
+  const note = (m,txt,spk,timeout) => st.push({kind:"note", midi:m,
+                 text:txt, speak:spk, timeout:timeout||18000});
+  const timed= (secs,txt,spk) => st.push({kind:"timed", secs:secs,
+                 text:txt, speak:spk});
+  const seq  = (ms,txt,spk,timeout) => st.push({kind:"seq", midis:ms,
+                 text:txt, speak:spk, timeout:timeout||25000});
+
+  say("Drill starting. I will call each step. Play and hold until I say "+
+      "good. If a note will not speak, keep trying and I will move us on.");
+  timed(30, "Warm up — play anything", "Warm up. Play anything for thirty seconds.");
+  say("Chromatic sweep. Hold each note about two seconds.");
+  for (let m=60; m<=96; m++)
+    note(m, "Play "+noteName(m), spokenName(m), m>=89 ? 12000 : 18000);
+  say("Beginner strip. G, A, B, four ways each.");
+  for (const m of [67,69,71]){
+    const n=noteName(m), s=spokenName(m);
+    note(m, n+" — medium loud, tongued",      s+". Medium loud, tongued.");
+    note(m, n+" — medium loud, slurred in",   s+". Slurred in.");
+    note(m, n+" — very soft, tongued",        s+". Very soft, tongued.");
+    note(m, n+" — very soft, gentle start",   s+". Very soft, gentle start.");
+  }
+  say("Register break. Slur low G up to high G. Four times, I count each.");
+  for (let i=1;i<=4;i++)
+    seq([67,79], "Slur G4 → G5  ("+i+" of 4)", "Slur it. Number "+i+".");
+  say("Legato line.");
+  seq([71,69,67], "Play B, A, G — slow and connected", "B, A, G. Slow and connected.");
+  seq([71,69,67], "B, A, G — faster", "Again, faster.");
+  timed(10, "Airy, unfocused B4 — on purpose",
+        "Now play a deliberately airy, unfocused B. Like a week one student. Ten seconds.");
+  say("Tone calibration on B. Five ways, six seconds each.");
+  timed(6, "B4 — best centered tone", "B. Your best centered tone.");
+  timed(6, "B4 — airy",               "B. Airy.");
+  timed(6, "B4 — overblown",          "B. Overblow it.");
+  timed(6, "B4 — as soft as possible","B. As soft as you can.");
+  timed(6, "B4 — as loud as possible","B. As loud as you can.");
+  say("Drill complete. Saving your results to the desktop now. Nice work.");
+  return st;
+}
+const DRILL_STEPS = buildDrill();
+let DR = null;
+
+function drillStart(){
+  if (DR) return;
+  if (!AC){ alert("Start the microphone first — the drill listens for your notes."); return; }
+  DR = {i:-1, seqPos:0, timer:null, iv:null};
+  $("drill").style.display = "block";
+  drillNext();
+}
+function drillStop(){
+  if (!DR) return;
+  clearTimeout(DR.timer); clearInterval(DR.iv);
+  DR = null;
+  try { speechSynthesis.cancel(); } catch(e){}
+  $("drill").style.display = "none";
+}
+function drillAdvance(delayMs){
+  if (!DR) return;
+  clearTimeout(DR.timer); clearInterval(DR.iv);
+  DR.timer = setTimeout(drillNext, delayMs||400);
+}
+function drillNext(){
+  if (!DR) return;
+  clearTimeout(DR.timer); clearInterval(DR.iv);
+  DR.i++; DR.seqPos = 0;
+  if (DR.i >= DRILL_STEPS.length){
+    saveSession("drill_complete", ok =>
+      drillSpeak(ok ? "Results saved." : "Save failed — press the save "+
+                 "button when you are back at a screen.", null));
+    drillStop();
+    return;
+  }
+  const s = DRILL_STEPS[DR.i];
+  $("drill-step").textContent = "step " + (DR.i+1) + " / " + DRILL_STEPS.length;
+  $("drill-text").textContent = s.text || "";
+  $("drill-count").textContent = "";
+  $("drill-res").textContent = "";
+  if (s.kind === "say"){
+    drillSpeak(s.text, () => drillAdvance(500));
+  } else if (s.kind === "timed"){
+    drillSpeak(s.speak || s.text, () => {
+      if (!DR) return;
+      let left = s.secs;
+      $("drill-count").textContent = left + " s";
+      DR.iv = setInterval(() => {
+        left--; $("drill-count").textContent = Math.max(0,left) + " s";
+      }, 1000);
+      DR.timer = setTimeout(drillNext, s.secs*1000);
+    });
+  } else {                                   // note | seq
+    drillSpeak(s.speak || s.text, null);
+    DR.timer = setTimeout(() => {
+      if (!DR) return;
+      $("drill-res").textContent = "→";
+      drillSpeak("Moving on.", () => drillAdvance(300));
+    }, s.timeout);
+  }
+}
+EV_TAPS.push(ev => {
+  if (!DR) return;
+  // The desk speakers say the instructions and the mic hears the desk:
+  // nothing detected during speech (plus a beat after) may satisfy a step.
+  if (SPEAKING || performance.now() < SPEAK_UNTIL) return;
+  const s = DRILL_STEPS[DR.i];
+  if (!s || (ev.type!=="stable" && ev.type!=="note_change")) return;
+  if (s.kind === "note" && ev.midi_note === s.midi){
+    $("drill-res").textContent = "✓";
+    drillSpeak("Good.", null);
+    drillAdvance(900);
+  } else if (s.kind === "seq"){
+    if (ev.midi_note === s.midis[DR.seqPos]){
+      DR.seqPos++;
+      $("drill-count").textContent =
+        s.midis.slice(0,DR.seqPos).map(noteName).join(" · ");
+      if (DR.seqPos >= s.midis.length){
+        $("drill-res").textContent = "✓";
+        drillSpeak("Good.", null);
+        drillAdvance(900);
+      }
+    } else if (ev.midi_note === s.midis[0]){
+      DR.seqPos = 1;
+      $("drill-count").textContent = noteName(s.midis[0]);
+    } else {
+      DR.seqPos = 0;
+    }
+  }
+});
+$("btn-drill").onclick = drillStart;
+$("btn-drill-stop").onclick = drillStop;
+window.addEventListener("keydown", e => {
+  if (e.key === "Escape") drillStop();
+});
+
+/* ------------------------------------------------------ save session */
+/* One press (or drill completion) sends the NUMBERS to the desktop over
+   the same route the page came from -- config, stats, events, device.
+   No audio exists client-side to include. Files land in the repo's
+   prototypes\flute_sessions\ for any session to read directly. */
+function basePath(){
+  return location.pathname.startsWith("/flute") ? "/flute" : "";
+}
+function savePath(){ return basePath() + "/save"; }
+function saveSession(trigger, cb){
+  const st = {};
+  stats.forEach((arr, midi) => { st[noteName(midi)] = arr.slice(); });
+  const payload = {
+    kind: "flute_session",
+    saved_at: new Date().toISOString(),
+    trigger: trigger,
+    device: navigator.userAgent,
+    sample_rate: SR, mic_started: !!AC,
+    session_t_ms: Math.round(nowMs()),
+    config: Object.assign({}, CFG),
+    tts_stats_ms: st,
+    events: EVENTS_HIST.slice(),
+  };
+  fetch(savePath(), {method:"POST",
+                     headers:{"Content-Type":"application/json"},
+                     body: JSON.stringify(payload)})
+    .then(r => r.json())
+    .then(d => { $("save-msg").textContent =
+                   d.ok ? "saved on the desktop: " + d.file : "save failed";
+                 if (cb) cb(!!d.ok); })
+    .catch(() => { $("save-msg").textContent =
+                     "save failed — is the tailnet up?";
+                   if (cb) cb(false); });
+}
+$("btn-save").onclick = () => saveSession("button");
+
+/* ------------------------------------------------- Flutie Cats V0 loop */
+/* Ugly on purpose. The helicopter mechanic on the real input protocol:
+   a sounding note is a held button (stable/note_change => lift,
+   release/silence => gravity). The game is an EV_TAPS consumer exactly
+   like the drill -- it owns its own physics and scoring policy, and it
+   plays identically from the flute or the keyboard oracle, which is the
+   whole input-parity requirement made visible. Art comes later; today a
+   rectangle with ears has to be fun or nothing after it will be. */
+// Tuned for a WIND instrument: notes are sustained, not tapped, so the
+// ceiling bonks (vy zeroed) instead of killing -- only the floor is deadly.
+// First playtest died 0.45 s into its first held note; that punished
+// exactly the tone-holding the class is trying to teach.
+// Lift slightly outmuscles gravity so an even sound/silence alternation
+// gently climbs -- a beginner's ragged phrasing should hover, not sink.
+// GK is the DESKTOP REFERENCE TUNE -- the values that measured as fun on
+// a ~1920x940 canvas. gkFor() rescales them to whatever canvas is really
+// there, so every screen plays the SAME game: same seconds of runway,
+// same gap fraction. Found the hard way at the 2026-08-30 TV-cast demo:
+// fixed pixels gave a phone ~1.2 s of obstacle warning where the desktop
+// had ~6.3 s -- "really motherfucking hard" was a scaling bug, not a
+// difficulty setting.
+const GK = { gravity: 1150, lift: -1350, maxVy: 460, speed: 230,
+             gapFrac: 0.34, obsEveryS: 1.9, obsW: 64, catR: 24 };
+const GK_REF = { W: 1920, H: 940 };
+function gkFor(W, H){
+  // Axis-true scaling. Horizontal quantities (speed, obstacle width, the
+  // hitbox's WIDTH) follow screen width; vertical ones (gravity, gap,
+  // the hitbox's HEIGHT) follow screen height. Anything less and a
+  // portrait phone spends 3x longer inside each gate than the desktop
+  // does -- measured, not guessed: the same autopilot that flew desktop
+  // forever died in 21 s on a 375px-wide screen under uniform scaling.
+  const sx = W / GK_REF.W, sy = H / GK_REF.H;
+  return { gravity: GK.gravity*sy, lift: GK.lift*sy, maxVy: GK.maxVy*sy,
+           speed: GK.speed*sx, gapFrac: GK.gapFrac,
+           obsEveryS: GK.obsEveryS,
+           obsW: Math.max(10, GK.obsW*sx),
+           catRx: Math.max(4, GK.catR*sx),
+           catRy: Math.max(10, GK.catR*sy) };
+}
+// The canvas renders at the device's REAL resolution (devicePixelRatio),
+// while all game math stays in CSS pixels -- crisp on the phone, and the
+// numbers mean the same thing everywhere.
+function dpr(){ return window.devicePixelRatio || 1; }
+function sizeGame(cv){
+  const W = innerWidth || 800, H = innerHeight || 500, d = dpr();
+  cv.width = Math.round(W*d); cv.height = Math.round(H*d);
+  // An abspos canvas displays at its INTRINSIC (attribute) size, so the
+  // hi-dpi backing store must be pinned back to CSS pixels explicitly or
+  // the whole game draws d-times too large and overflows the screen.
+  cv.style.width = W + "px"; cv.style.height = H + "px";
+  GM.W = W; GM.H = H; GM.k = gkFor(W, H);
+  const s = (GM.char && GM.char.scale) || 1;
+  GM.rx = GM.k.catRx * s;                 // collision is an ellipse; the
+  GM.ry = GM.k.catRy * s;                 // sprite draws at ry (forgiving)
+}
+// The roster is CONTENT: the owner's real animal friends (ruling
+// 2026-08-29, FUTURE_IDEAS "Characters"; appearance facts in the Flutie
+// Cats README table). Every drawn detail below is an accuracy constraint
+// from life, not a style choice. All seven are selectable for now --
+// the Crossy-Road unlock progression is future design, and the one
+// mystery slot keeps that promise visible (Lulu waits on consent).
+// scale enforces the real height order: Xica smallest -> Rocco -> cats
+// -> Star -> Ella.
+const CHARS = [
+  // Rocco leads, by the owner's ruling. The real dog sang along when
+  // Frankie played flute and sat through hours of piano -- the first
+  // character everyone gets is the one who always answered the music.
+  // NO TAIL (docked in life; never drawn), one big radar ear plus a
+  // small flop, tricolor. In memoriam. He gets to keep running.
+  {id:"rocco", name:"Rocco", sub:"the good boy · sings along", unlocked:true,
+   scale:.8, accent:"#b06e2e", body:"#26221f", tan:"#b06e2e", bib:"#f2f0ea",
+   ears:"radar", tailStyle:"none"},
+  {id:"star", name:"Star", sub:"the grinner", unlocked:true,
+   scale:1, accent:"#6fa8dc", body:"#5f7180", patch:"#f2f0ea",
+   ears:"flop", tailStyle:"curlUp", tongue:"#e8839b"},
+  // Black mouth cur, a year old, big, wrecks the house daily. Her dad's
+  // word is "untrained"; the owner's is "free spirit" -- the owner's
+  // read is the character.
+  {id:"ella", name:"Ella", sub:"the free spirit", unlocked:true,
+   scale:1.06, accent:"#c49a5e", body:"#c49a5e", dark:"#3a2e24",
+   ears:"point", tailStyle:"sickle"},
+  {id:"xica", name:"Xica", sub:"tail up · smallest", unlocked:true,
+   scale:.6, accent:"#9fb2c4", body:"#7e8b99",
+   ears:"cat", tailStyle:"hookUp"},
+  {id:"elvis", name:"Elvis", sub:"the tuxedo", unlocked:true,
+   scale:.84, accent:"#e8e6e3", body:"#1b1d20", bib:"#f2f0ea",
+   eye:"#b7c94a", ears:"cat", tailStyle:"taper"},
+  // Randy is a young man (~1 year); Smokey is a full-grown mama, older,
+  // a litter behind her and a belly to show for it -- she outsizes him.
+  {id:"randy", name:"Randy Boy", sub:"the handsome young man", unlocked:true,
+   scale:.84, accent:"#e8963f", body:"#d98a3a", dark:"#a4561e",
+   chin:"#f2f0ea", ears:"cat", tailStyle:"taper"},
+  {id:"smokey", name:"Smokey", sub:"plume tail · mama", unlocked:true,
+   scale:.93, accent:"#a7acb4", body:"#878c94", light:"#a7acb4",
+   eye:"#e0bd45", ears:"cat", tailStyle:"plume", belly:true},
+  {id:"slot8", name:"???", sub:"a friend's yes away", unlocked:false,
+   body:"#3a4148"},
+];
+let GM = null, GM_BEST = 0, HIGHS = [];
+
+// The desk keeps the leaderboard (prototypes\flute_scores.json) so every
+// phone and the desktop compete on ONE board -- scores post on death,
+// the top five greet the next player at the select screen.
+function renderHighs(){
+  const el = $("gsel-highs"); if (!el) return;
+  if (!HIGHS.length){ el.innerHTML = ""; return; }
+  const section = (title, rows) => !rows.length ? "" :
+    '<div style="display:inline-block;vertical-align:top;margin:0 2.5vw">'+
+    '<div style="font:800 2vmin system-ui;letter-spacing:.12em;'+
+      'color:#e8c860">'+title+'</div>' +
+    rows.map((h,i) => {
+      const c = CHARS.find(x => x.id===h.char);
+      const who = (h.name ? h.name + " · " : "") + (c ? c.name : h.char);
+      return '<div style="font:600 1.9vmin system-ui;color:'+
+        (i===0?"#e8c860":"#aab0b6")+';margin-top:.5vh">'+
+        (i+1)+'. '+h.score+' — '+who+'</div>';
+    }).join("") + '</div>';
+  el.innerHTML =
+    section("FLIGHT",   HIGHS.filter(h => (h.mode||"fly")==="fly").slice(0,3)) +
+    section("CROSSING", HIGHS.filter(h => h.mode==="cross").slice(0,3)) +
+    section("LASER",    HIGHS.filter(h => h.mode==="laser").slice(0,3)) +
+    section("DUET",     HIGHS.filter(h => h.mode==="duet").slice(0,3)) +
+    section("PARTY",    HIGHS.filter(h => h.mode==="party").slice(0,3));
+}
+function loadHighs(){
+  fetch(basePath()+"/scores").then(r => r.json())
+    .then(d => { HIGHS = Array.isArray(d) ? d : []; renderHighs(); })
+    .catch(()=>{});
+}
+
+// Parametric pixel painter: one function, seven real animals. Side view
+// facing right, centered on (0,0), r = half the body height-ish; every
+// coordinate is in u = r/8 grid cells so the critters stay blocky at any
+// size. Draw order back-to-front: tail, far legs, body, coat details,
+// chest, head furniture, near legs.
+function drawCritter(cx, ch, r, dead){
+  const u = r/8;
+  const C = c => dead ? "#d07070" : c;          // whole critter flushes red
+  const D = c => dead ? "#b25c5c" : c;
+  const R = (x,y,w,h,c) => { cx.fillStyle=c; cx.fillRect(x*u,y*u,w*u,h*u); };
+  const body = C(ch.body), dark = D(ch.dark||ch.body),
+        lite = C(ch.light||ch.body), white = C("#f2f0ea");
+  switch (ch.tailStyle){                         // tails live behind
+    case "none": break;                          // Rocco: never, ever
+    case "curlUp":                               // Star: long, upward curl
+      R(-11,-1,3,2,body); R(-12,-4,2,4,body); R(-11,-6,3,2,body); break;
+    case "sickle":                               // Ella: over the back
+      R(-10,-4,2,5,body); R(-9,-6,3,2,body); R(-7,-8,3,2,dark); break;
+    case "hookUp":                               // Xica: a question mark
+      R(-9,-11,2,11,body); R(-8,-13,4,2,body); R(-5,-12,2,2,body); break;
+    case "plume":                                // Smokey: magnificent
+      R(-15,-3,3,6,body); R(-13,-5,4,9,lite); R(-10,-4,2,8,body); break;
+    default:                                     // taper (Elvis, Randy)
+      R(-11,-1,3,2,body); R(-13,-4,2,4,body);
+      if (ch.dark) R(-13,-3,2,1,dark);           // Randy: a tail ring
+  }
+  const legC = C(ch.tan||ch.body);
+  R(-7,5,2,5,legC); R(-3,5,2,5,legC);            // legs
+  R( 2,5,2,5,legC); R( 6,5,2,5,legC);
+  if (ch.id==="elvis"){                          // white paws
+    R(-7,8.6,2,1.4,white); R(-3,8.6,2,1.4,white);
+    R( 2,8.6,2,1.4,white); R( 6,8.6,2,1.4,white);
+  }
+  R(-8,-6,16,12,body);                           // the body block
+  if (ch.belly) R(-5,6,9,1.6,body);              // Smokey: the mama belly
+  if (ch.id==="randy"){                          // classic tabby stripes
+    R(-6,-6,2,9,dark); R(-2,-6,2,10,dark); R(2,-6,2,9,dark); R(6,-6,1,4,dark);
+  }
+  if (ch.id==="smokey"){                         // shaggy coat + chest ruff
+    R(-8,4,2,2,lite); R(-4,4,2,2,lite); R(0,4,2,2,lite); R(4,4,2,2,lite);
+    R(5,-3,3,7,lite);
+  }
+  if (ch.bib) R(5,-2,3,8,C(ch.bib));             // white chest bib
+  if (ch.patch) R(5.5,1.5,2.5,4.5,C(ch.patch));  // Star: SMALL chest patch
+  R(8,-5,2.6,3.6,ch.id==="ella"?dark:body);      // muzzle (Ella: black mask)
+  if (ch.id==="ella") R(6,-6,2,4,dark);          //   the mask reaches back
+  if (ch.id==="rocco"||ch.id==="elvis")          // white muzzle / blaze
+    R(8.6,-4.2,2,2.8,white);
+  if (ch.chin) R(8.4,-2.2,2.2,1.2,C(ch.chin));   // Randy: white chin
+  if (ch.tongue){                                // Star: open-mouth grin
+    R(8.8,-1.4,1.8,1,D("#2a2226")); R(9.2,-.6,1.4,2.2,C(ch.tongue));
+  }
+  cx.fillStyle = body; cx.beginPath();           // ears, per style
+  if (ch.ears==="radar"){                        // Rocco: one big dish...
+    cx.moveTo(1.5*u,-6*u); cx.lineTo(4*u,-12.5*u); cx.lineTo(6.5*u,-6*u);
+    cx.moveTo(-.5*u,-6*u); cx.lineTo(.5*u,-8.5*u); cx.lineTo(2*u,-6*u);
+  } else if (ch.ears==="flop"){                  // Star: soft, barely-lifted
+    cx.rect(.5*u,-7.6*u,2.6*u,2.2*u);            //   flaps -- floppy reads as
+    cx.rect(5*u,-7.6*u,2.6*u,2.2*u);             //   LOW in pixel shorthand
+  } else if (ch.ears==="point"){                 // Ella: big and upright
+    cx.moveTo(1*u,-6*u); cx.lineTo(2.5*u,-11*u); cx.lineTo(4.5*u,-6*u);
+    cx.moveTo(5*u,-6*u); cx.lineTo(6.5*u,-10.5*u); cx.lineTo(8*u,-6*u);
+  } else {                                       // cat
+    cx.moveTo(2*u,-6*u); cx.lineTo(3*u,-9*u); cx.lineTo(4.5*u,-6*u);
+    cx.moveTo(5.5*u,-6*u); cx.lineTo(6.8*u,-9*u); cx.lineTo(8*u,-6*u);
+  }
+  cx.fill();
+  if (ch.tan){                                   // Rocco: eyebrow + cheek
+    R(4.6,-5.4,1.2,1.2,C(ch.tan)); R(7.6,-1.6,1.6,1.6,C(ch.tan));
+  }
+  R(5.6,-4.6,1.2,1.2,C(ch.eye||"#101214"));      // the eye
+}
+
+function buildSelect(){
+  const grid = $("gsel-grid"); grid.innerHTML = "";
+  CHARS.forEach(ch => {
+    const tile = document.createElement("button");
+    tile.style.cssText = "padding:10px 6px 10px;border-radius:12px;"+
+      "border:2px solid "+(ch.unlocked?(ch.accent||"#3d6285"):"#2a3036")+";"+
+      "background:linear-gradient(#171b1f,#101316);"+
+      "cursor:"+(ch.unlocked?"pointer":"default")+";"+
+      "opacity:"+(ch.unlocked?1:.5);
+    if (ch.unlocked){
+      const cv = document.createElement("canvas");
+      cv.width = 150; cv.height = 128;
+      cv.style.cssText = "width:100%;height:auto;image-rendering:pixelated";
+      const cc = cv.getContext("2d");
+      cc.save(); cc.translate(78, 74);
+      drawCritter(cc, ch, 34*(ch.scale||1), false);
+      cc.restore();
+      tile.appendChild(cv);
+    } else {
+      const lk = document.createElement("div");
+      lk.style.cssText = "font-size:6vmin;line-height:128px";
+      lk.textContent = "🔒";
+      tile.appendChild(lk);
+    }
+    const nm = document.createElement("div");
+    nm.style.cssText = "font:800 2.4vmin system-ui;letter-spacing:.05em;"+
+      "margin-top:6px;padding:3px 0;border-radius:6px;"+
+      "color:#101214;background:"+(ch.unlocked?(ch.accent||"#8a9096"):"#2a3036");
+    nm.textContent = ch.name.toUpperCase();
+    const sb = document.createElement("div");
+    sb.style.cssText = "font:400 1.8vmin system-ui;color:#8a9096;margin-top:4px";
+    sb.textContent = ch.sub;
+    tile.appendChild(nm); tile.appendChild(sb);
+    if (ch.unlocked) tile.onclick = () => {
+      if (GMODE === "duet"){
+        GSEL_PICKS.push(ch);
+        if (GSEL_PICKS.length >= DUET_N){
+          const picks = GSEL_PICKS.slice(); GSEL_PICKS = [];
+          beginParty(picks);
+        } else {
+          $("gsel-prompt").textContent = "player " + GSEL_PICKS.length +
+            " is " + ch.name + " — player " + (GSEL_PICKS.length+1) +
+            " of " + DUET_N + ", choose";
+        }
+        return;
+      }
+      GMODE === "cross" ? beginCross(ch)
+        : GMODE === "laser" ? beginLaser(ch) : beginRun(ch);
+    };
+    grid.appendChild(tile);
+  });
+}
+let GMODE = "fly";                          // which game a tile launches
+function styleModeBtns(){
+  const base = "font:700 2.2vmin system-ui;padding:.7vh 2.4vw;"+
+               "border-radius:9px;cursor:pointer;background:#14181b;";
+  $("gmode-fly").style.cssText = base + (GMODE==="fly"
+    ? "border:2px solid #6fa8dc;color:#6fa8dc"
+    : "border:2px solid #2a3036;color:#8a9096");
+  $("gmode-cross").style.cssText = base + (GMODE==="cross"
+    ? "border:2px solid #7dc87d;color:#7dc87d"
+    : "border:2px solid #2a3036;color:#8a9096") + ";margin-left:1.5vw";
+  $("gmode-laser").style.cssText = base + (GMODE==="laser"
+    ? "border:2px solid #e8839b;color:#e8839b"
+    : "border:2px solid #2a3036;color:#8a9096") + ";margin-left:1.5vw";
+  $("gmode-duet").style.cssText = base + (GMODE==="duet"
+    ? "border:2px solid #c9a0e8;color:#c9a0e8"
+    : "border:2px solid #2a3036;color:#8a9096") + ";margin-left:1.5vw";
+}
+let GSEL_PICKS = [], DUET_N = 2;             // multi mode's pending picks
+function drawNRow(){
+  const row = $("gsel-nrow");
+  row.style.display = GMODE === "duet" ? "" : "none";
+  if (GMODE !== "duet") return;
+  row.innerHTML = '<span class="sub" style="font-size:2vmin">players: </span>' +
+    [2,3,4,5,6].map(n =>
+      '<button data-n="'+n+'" style="font:700 2.4vmin system-ui;'+
+      'padding:.5vh 1.6vw;margin-left:1vw;border-radius:8px;cursor:pointer;'+
+      'background:#14181b;'+(n===DUET_N
+        ? "border:2px solid #c9a0e8;color:#c9a0e8"
+        : "border:2px solid #2a3036;color:#8a9096")+'">'+n+'</button>'
+    ).join("");
+  [...row.querySelectorAll("button")].forEach(b =>
+    b.onclick = () => { DUET_N = +b.dataset.n; GSEL_PICKS = [];
+      $("gsel-prompt").textContent =
+        DUET_N + " players — player 1, choose your animal";
+      drawNRow(); });
+}
+function setMode(m){
+  GMODE = m; GSEL_PICKS = [];
+  $("gsel-prompt").textContent = m === "duet"
+    ? DUET_N + " players — player 1, choose your animal"
+    : "choose your player";
+  drawNRow();
+  styleModeBtns();
+}
+$("gmode-fly").onclick = () => setMode("fly");
+$("gmode-cross").onclick = () => setMode("cross");
+$("gmode-laser").onclick = () => setMode("laser");
+$("gmode-duet").onclick = () => setMode("duet");
+styleModeBtns();
+// CROSSING -- Frogger on a scale ladder. The third input layer (owner,
+// 2026-09-02): beyond on/off, PITCH IS POSITION. The note you sound is
+// the lane you stand in; silence stands still; climbing the scale IS
+// crossing the road. The lane list is the owner's pedagogy dial. His
+// ruling from real play (2026-09-02, after testing on his own flute):
+// low C is too low -- 90% of players can't sound it -- and "low D to
+// high D is the normal and most fun set of notes to play on the flute";
+// everything outside that octave is harder, especially for beginners.
+// So the ladder lives D4 to D5 -- and in D NATURAL MINOR, his refinement
+// in the same session: "easier on the right hand and left hand, using Bb
+// instead of the F#". Keyboard oracle: s d f g h u k l (u = Bb).
+// Octave-transposed notes match too (smallest shift wins, ties go high),
+// so a flute can play whichever register speaks easily while the
+// keyboard stays at base.
+const CROSS = {
+  notes: [62,64,65,67,69,70,72,74],
+  // Traffic is RHYTHMIC, like the arcade: each lane picks one period per
+  // run and keeps it, so its gaps are guaranteed and learnable -- a lane
+  // has a tempo. Random spawning was tried first and produced unwinnable
+  // walls (all reachable lanes blocked at once, measured 25x in 28 s).
+  lanePeriodS: [3.8, 6.2],   // per-lane fixed period drawn from this range
+  carSpeedFrac: 0.10,        // cars cross this fraction of W per second
+  rampPerCross: 0.09,        // +9% speed and spawn rate per crossing
+  rampMax: 2.4,
+};
+// Shared by every pitch-mapped mode: which ladder slot does this midi
+// note name? Octave-transposed matches count (smallest shift wins, ties
+// go high) so a flute plays its comfortable register.
+function noteIdxIn(midi, notes){
+  let best = -1, bestShift = 99;
+  notes.forEach((n, i) => {
+    if ((midi - n) % 12 !== 0) return;
+    const shift = Math.abs(midi - n);
+    if (shift < bestShift || (shift === bestShift && i > best)){
+      best = i; bestShift = shift;
+    }
+  });
+  return best;                              // -1: not on the ladder, ignore
+}
+function crossLaneFor(midi){ return noteIdxIn(midi, CROSS.notes); }
+function crossLaneY(i, H){
+  const y0 = H*0.08, y1 = H*0.91;
+  return y1 - (i+0.5)*(y1-y0)/CROSS.notes.length;
+}
+function beginCross(ch){
+  if (!GM) return;
+  const cv = $("gcv");
+  // Both C's are grass: lane 0 (low do) is the safe start bank, the top
+  // lane (high do) is home, and the traffic runs D through B. That gives
+  // a player in trouble a real move -- drop back down to low C and
+  // breathe. Do is home, both of them.
+  Object.assign(GM, { phase:"cross", mode:"cross", char:ch, lane:0,
+                      cars:[],
+                      periods: CROSS.notes.map(() => CROSS.lanePeriodS[0] +
+                        Math.random()*(CROSS.lanePeriodS[1]-CROSS.lanePeriodS[0])),
+                      toSpawn: CROSS.notes.map(() => 1 + Math.random()*3),
+                      bankAt:0, banner:0, started:false, dead:false, score:0,
+                      last: performance.now() });
+  sizeGame(cv);
+  GM.py = crossLaneY(0, GM.H);
+  $("gsel").style.display = "none";
+  $("g-score").textContent = "0";
+  $("g-msg").textContent = "climb the scale to cross — silence stands still";
+  requestAnimationFrame(gameTick);
+}
+function crossTick(now, cx, W, H, dt, fpx){
+  const L = CROSS.notes.length;
+  const y0 = H*0.08, y1 = H*0.91, laneH = (y1-y0)/L;
+  const laneY = i => y1 - (i+0.5)*laneH;
+  const r = laneH*0.40;
+  const ramp = Math.min(CROSS.rampMax, 1 + CROSS.rampPerCross*GM.score);
+
+  if (!GM.dead){
+    if (GM.started){                        // the road wakes with you
+      for (let i=1;i<L-1;i++){              // lanes 0 and L-1 are grass:
+                                            // no cars on either do, ever
+        GM.toSpawn[i] -= dt;
+        if (GM.toSpawn[i] <= 0){
+          GM.toSpawn[i] = GM.periods[i] / ramp;   // the lane keeps its tempo
+          const dir = i%2 ? 1 : -1, wCar = W*(0.06+Math.random()*0.04);
+          GM.cars.push({lane:i, dir, w:wCar, x: dir>0 ? -wCar : W+wCar,
+                        hue: 190+Math.random()*150});
+        }
+      }
+      const v = W*CROSS.carSpeedFrac*ramp;
+      for (const c of GM.cars) c.x += c.dir*v*dt;
+      GM.cars = GM.cars.filter(c => c.x > -W*0.2 && c.x < W*1.2);
+    }
+    const ty = laneY(GM.lane);
+    GM.py += (ty - GM.py)*Math.min(1, dt*11);
+    if (GM.lane > 0 && GM.lane < L-1){       // grass can't hurt you
+      for (const c of GM.cars){
+        if (c.lane === GM.lane &&
+            Math.abs(c.x + c.w/2 - W/2) < c.w/2 + r*0.9){ gameDie(); break; }
+      }
+    }
+    if (GM.bankAt && now - GM.bankAt > 450){ // made it across: bank + reset
+      GM.score++; $("g-score").textContent = GM.score;
+      GM.banner = now; GM.bankAt = 0; GM.lane = 0;
+    }
+  }
+
+  // ---- draw the road ----
+  cx.fillStyle = "#0b0d0f"; cx.fillRect(0,0,W,H);
+  for (let i=0;i<L;i++){
+    cx.fillStyle = (i===0 || i===L-1) ? "#14231a"   // both do's are grass
+                 : i%2 ? "#14171a" : "#101316";
+    cx.fillRect(0, y1-(i+1)*laneH, W, laneH);
+  }
+  cx.fillStyle = "#14231a";                 // below the low do: more grass
+  cx.fillRect(0, y1, W, H-y1);
+  cx.fillStyle = "#e8c860";                 // the far side is home
+  cx.fillRect(0, y0-4, W, 4);
+  cx.textAlign = "left";                    // the note ladder, labeled
+  cx.font = "600 "+Math.round(laneH*0.34)+"px system-ui";
+  for (let i=0;i<L;i++){
+    cx.fillStyle = GM.lane===i ? "#e8c860" : "#3b434b";
+    // in a minor ladder the sixth degree is a FLAT to a musician's eye
+    cx.fillText(noteName(CROSS.notes[i]).replace("A#","Bb"),
+                10, laneY(i)+laneH*0.12);
+  }
+  for (const c of GM.cars){
+    cx.fillStyle = "hsl("+c.hue+" 45% 55%)";
+    cx.fillRect(c.x, laneY(c.lane)-laneH*0.28, c.w, laneH*0.56);
+    cx.fillStyle = "rgba(11,13,15,.45)";    // windows
+    cx.fillRect(c.x + c.w*(c.dir>0?0.55:0.15), laneY(c.lane)-laneH*0.20,
+                c.w*0.3, laneH*0.20);
+  }
+  cx.save(); cx.translate(W/2, GM.py);
+  drawCritter(cx, GM.char || CHARS[0], r, GM.dead);
+  cx.restore();
+  cx.textAlign = "center";
+  if (GM.banner && now - GM.banner < 1300){
+    cx.fillStyle = "#e8c860"; cx.font = "800 "+fpx+"px system-ui";
+    cx.fillText("+1 crossing!", W/2, H*0.5);
+  }
+  if (GM.dead){
+    cx.fillStyle = "#e8e6e3"; cx.font = "700 "+fpx+"px system-ui";
+    cx.fillText("crossings: " + GM.score, W/2, H*0.42);
+    cx.font = "400 "+Math.round(fpx*0.6)+"px system-ui";
+    cx.fillText("play a note to try again", W/2, H*0.42 + fpx*1.3);
+  } else if (!GM.started){
+    cx.fillStyle = "#8a9096"; cx.font = "400 "+Math.round(fpx*0.65)+"px system-ui";
+    cx.fillText("each lane is a note — play up the scale to cross", W/2, H*0.5);
+  }
+  drawHUD(cx, W, H, fpx, CROSS.notes, dt);
+}
+
+// In-game tuner HUD -- his playtest ask (2026-09-07): "sometimes I
+// wasn't getting a response but then I realized I was probably out of
+// tune and not holding an accepted value long enough." So show the raw
+// detector LIVE in every mode: what the mic hears right now, how many
+// cents off it is (green in tune, amber leaning, red wild), and -- in
+// the pitch-mapped modes -- which ladder slot it resolves to, or that
+// it doesn't. A silent game is never a mystery again. Mic only, on
+// purpose: this is the tuner speaking, not the keyboard oracle.
+// His refinement after playing with the text version: numbers update
+// "faster than a human can read" -- so the HUD is a GAUGE now, car-
+// dashboard style. A semicircular dial, zones painted on the arc (red
+// amber GREEN amber red), and a DAMPED needle: center is in tune, right
+// is sharp, left is flat, flat/sharp glyphs at the ends. The needle
+// eases toward the reading instead of teleporting, so the eye reads a
+// lean, not a flicker. The note name (which changes slowly by nature)
+// is the only text; off-ladder notes get a red x prefix.
+const HUDS = { c: 0, a: 0 };            // displayed cents + brightness
+function drawHUD(cx, W, H, fpx, ladder, dt){
+  const f = LATEST, live = !!(f && f.voiced);
+  const target = live ? Math.max(-50, Math.min(50, f.cents || 0)) : 0;
+  HUDS.c += (target - HUDS.c) * Math.min(1, dt*10);
+  HUDS.a += ((live ? 1 : 0.28) - HUDS.a) * Math.min(1, dt*6);
+  const r = Math.max(26, Math.min(W, H)*0.085);
+  const hx = W - r*1.9, hy = H*0.985;   // bottom-right: free in every mode
+  cx.save();
+  cx.globalAlpha = HUDS.a;
+  cx.lineWidth = Math.max(4, r*0.16);
+  // canvas arcs measure from the +x axis; the dial thinks from straight
+  // up -- rotate the frame instead of juggling angle offsets
+  cx.translate(hx, hy); cx.rotate(-Math.PI/2); cx.translate(-hx, -hy);
+  const zoneR = (c1, c2, col) => {
+    cx.beginPath(); cx.strokeStyle = col;
+    cx.arc(hx, hy, r, (c1/50)*(Math.PI/3), (c2/50)*(Math.PI/3));
+    cx.stroke();
+  };
+  zoneR(-50,-25,"#d07070"); zoneR(-25,-10,"#e0b050");
+  zoneR(-10, 10,"#7dc87d"); zoneR( 10, 25,"#e0b050");
+  zoneR( 25, 50,"#d07070");
+  // the needle, in the same rotated frame
+  const a = Math.abs(HUDS.c);
+  cx.strokeStyle = !live ? "#5a6168"
+                 : a<=10 ? "#7dc87d" : a<=25 ? "#e0b050" : "#d07070";
+  cx.lineWidth = Math.max(2.5, r*0.07);
+  const na = (HUDS.c/50)*(Math.PI/3);
+  cx.beginPath(); cx.moveTo(hx, hy);
+  cx.lineTo(hx + Math.cos(na)*r*0.9, hy + Math.sin(na)*r*0.9); cx.stroke();
+  cx.setTransform(dpr(), 0, 0, dpr(), 0, 0);        // undo the rotation
+  cx.fillStyle = "#2a3036";                          // the hub
+  cx.beginPath(); cx.arc(hx, hy, Math.max(3, r*0.1), 0, Math.PI*2); cx.fill();
+  cx.fillStyle = "#5a6168";                          // flat left, sharp right
+  cx.font = "600 "+Math.round(r*0.34)+"px system-ui";
+  cx.textAlign = "center";
+  cx.fillText("♭", hx - r*1.18, hy - r*0.12);
+  cx.fillText("♯", hx + r*1.18, hy - r*0.12);
+  if (live){                                         // the one piece of text
+    const nm = noteName(f.midi_note).replace("A#","Bb");
+    const off = ladder && noteIdxIn(f.midi_note, ladder) < 0;
+    cx.fillStyle = off ? "#d07070" : "#e8e6e3";
+    cx.font = "800 "+Math.round(r*0.42)+"px system-ui";
+    cx.fillText((off ? "✕ " : "") + nm, hx, hy - r*1.22);
+  }
+  cx.restore();
+}
+
+// LASER BREAKOUT -- his design, log 20260907-01: "each brick has a known
+// frequency... use your flute as a guided gun to destroy certain bricks
+// of a certain color or frequency -- direct the so-called laser beam
+// from your flute." Direct note, direct target: hold a brick's note and
+// the beam cuts it. The wall descends, Space-Invaders style; clear it
+// for the next wave. Bricks live on the same D-minor D4-D5 ladder as
+// Crossing (one range ruling governs all pitch mechanics), one hue per
+// scale degree -- color-pitch pairing is free ear training. Damage
+// persists when the breath stops: a beginner can fell one brick over
+// three breaths. Every number is an owner dial.
+const LASER = {
+  cols: 8, rows0: 3, rowMax: 6,
+  burnS: 0.35,        // seconds of held tone to cut one brick
+  descentS: 140,      // seconds for the wall to cross the screen, wave 1
+  wavePace: 1.18,     // each wave descends this much faster...
+  paceMax: 8,         // ...capped high enough that the wall EVENTUALLY
+                      // outruns even perfect play -- no infinite game
+  hues: [210, 25, 130, 275, 55, 350, 175, 300],   // one per scale degree
+};
+function laserWave(){
+  const W = GM.W, H = GM.H;
+  const rows = Math.min(LASER.rowMax,
+                        LASER.rows0 + Math.floor((GM.wave-1)/2));
+  const cols = GM.ladder.length;             // 8 solo/duet, 12 party
+  const cellW = W/cols, bh = H*0.05;
+  GM.bricks = []; GM.wallY = 0;
+  for (let r = 0; r < rows; r++){
+    // each row is a shuffled permutation of the ladder, so every note
+    // always has somewhere to shoot
+    const perm = GM.ladder.map((_, i) => i);
+    for (let i = perm.length-1; i > 0; i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [perm[i], perm[j]] = [perm[j], perm[i]];
+    }
+    for (let c = 0; c < cols; c++)
+      GM.bricks.push({ idx: perm[c], burn: 0, gone: false,
+                       x: c*cellW + cellW*0.06, w: cellW*0.88,
+                       y0: H*0.13 + r*bh*1.3, h: bh });
+                       // 0.13: clear of the score bar on landscape phones
+                       // (his S23 screenshot had the msg across row one)
+  }
+}
+function laserTarget(idx){
+  let best = null;
+  for (const b of GM.bricks){
+    if (b.gone || b.idx !== idx) continue;
+    if (!best || b.y0 > best.y0 || (b.y0 === best.y0 && b.x < best.x))
+      best = b;
+  }
+  return best;                    // lowest matching brick, then leftmost
+}
+// DUET -- the interview's centerpiece (Voice 260907_123916) made real:
+// disjoint note sets are multiplayer on ONE microphone. Player 1 owns
+// the lower tetrachord, player 2 the upper; set membership IS the
+// channel, so each player can only cut their own bricks by construction
+// (ladder slots 0-3 vs 4-7). Matching is EXACT octave here, no folding
+// -- folded, both D's would be ambiguous between players. The sets are
+// owner dials. Honest limit, recorded: the detector is monophonic, so
+// two flutes sounding at once trade dominance -- duet v1 plays best as
+// traded phrases; the keyboard oracle is per-key and truly simultaneous.
+// A polyphonic front-end is the roadmap's answer, not this mode's job.
+// His generalization, stated while duet shipped: pick the player count
+// at game start, and "/12 tells us how many sets of notes can be played
+// that don't overlap." So: TWO players keep the musical D-minor
+// tetrachord split; THREE TO SIX slice the chromatic octave D4..C#5
+// into contiguous disjoint chunks (12/n each, remainders to the first
+// teams). Every team owns a lane of the chromatic; nobody's notes
+// collide. Classroom shape: 5 teams of 2 kids, one phone cast to the
+// TV, biggest brick count when the wall lands wins.
+const ACCENTS = ["#6fa8dc","#e8c860","#7dc87d","#e8839b","#c9a0e8","#e0955a"];
+const ACCENT_HUES = [210, 45, 130, 330, 275, 20];
+function partySets(n){
+  if (n <= 2) return { ladder: CROSS.notes.slice(),
+                       sets: [[0,1,2,3],[4,5,6,7]].slice(0, n) };
+  const ladder = [];
+  for (let m = 62; m < 74; m++) ladder.push(m);   // D4..C#5, the /12
+  const base = Math.floor(12/n), extra = 12 % n, sets = [];
+  let at = 0;
+  for (let p = 0; p < n; p++){
+    const len = base + (p < extra ? 1 : 0);
+    sets.push(Array.from({length: len}, (_, k) => at + k));
+    at += len;
+  }
+  return { ladder, sets };
+}
+function beginLaser(ch){ beginParty([ch]); }
+function beginDuet(a, b){ beginParty([a, b]); }
+function beginParty(chs){
+  if (!GM) return;
+  const n = chs.length, ps = partySets(n);
+  const ownerOf = [];
+  ps.sets.forEach((slots, p) => slots.forEach(s => ownerOf[s] = p));
+  const cv = $("gcv");
+  Object.assign(GM, { phase:"laser",
+                      mode: n === 1 ? "laser" : n === 2 ? "duet" : "party",
+                      players:n, ladder: ps.ladder, psets: ps.sets, ownerOf,
+                      chars: chs.slice(), char: chs[0],
+                      beams: chs.map(() => ({idx:-1, target:null})),
+                      pScores: chs.map(() => 0),
+                      wave:1, bricks:[], wallY:0,
+                      banner:0, started:false, dead:false, score:0,
+                      last: performance.now() });
+  sizeGame(cv);
+  laserWave();
+  $("gsel").style.display = "none";
+  $("g-score").textContent = "0";
+  $("g-msg").textContent =
+    n === 1 ? "every brick is a note — hold its note to cut it"
+    : n === 2 ? "P1 cuts D E F G · P2 cuts A B♭ C D — trade phrases"
+    : n + " teams, one mic — cut your own color, biggest count wins";
+  requestAnimationFrame(gameTick);
+}
+function laserTick(now, cx, W, H, dt, fpx){
+  const pace = Math.min(LASER.paceMax,
+                        Math.pow(LASER.wavePace, GM.wave-1));
+  const v = (H/LASER.descentS)*pace;
+  const catY = H*0.87, deadline = H*0.75;
+
+  if (!GM.dead && GM.started){
+    GM.wallY += v*dt;
+    GM.beams.forEach((bm, p) => {
+      if (bm.idx < 0) return;
+      if (!bm.target || bm.target.gone || bm.target.idx !== bm.idx)
+        bm.target = laserTarget(bm.idx);
+      if (bm.target){
+        bm.target.burn += dt;
+        if (bm.target.burn >= LASER.burnS){
+          bm.target.gone = true; GM.score++; GM.pScores[p]++;
+          $("g-score").textContent = GM.score;
+          bm.target = laserTarget(bm.idx);      // keep mowing while held
+        }
+      }
+    });
+    GM.bricks = GM.bricks.filter(b => !b.gone);
+    if (!GM.bricks.length){
+      GM.wave++; GM.banner = now;
+      laserWave();
+    }
+    for (const b of GM.bricks){
+      if (b.y0 + GM.wallY + b.h > deadline){ gameDie(); break; }
+    }
+  }
+
+  // ---- draw ----
+  cx.fillStyle = "#0b0d0f"; cx.fillRect(0,0,W,H);
+  cx.strokeStyle = "#2a3036"; cx.setLineDash([6,6]);   // the deadline
+  cx.beginPath(); cx.moveTo(0, deadline); cx.lineTo(W, deadline); cx.stroke();
+  cx.setLineDash([]);
+  cx.font = "600 "+Math.round(H*0.02)+"px system-ui";
+  cx.textAlign = "center";
+  for (const b of GM.bricks){
+    const y = b.y0 + GM.wallY, heat = Math.min(1, b.burn/LASER.burnS);
+    // solo & duet color by NOTE (ear training); party colors by TEAM --
+    // with five lanes on the wall, ownership is the salient fact
+    const hue = GM.players >= 3 ? ACCENT_HUES[GM.ownerOf[b.idx]]
+                                : LASER.hues[b.idx];
+    cx.fillStyle = "hsl("+hue+" "+(45+heat*40)+"% "+(46+heat*30)+"%)";
+    cx.fillRect(b.x, y, b.w, b.h);
+    if (GM.players === 2){                         // duet keeps the stripe
+      cx.fillStyle = ACCENTS[GM.ownerOf[b.idx]];
+      cx.fillRect(b.x, y + b.h - 4, b.w, 4);
+    }
+    cx.fillStyle = "rgba(11,13,15,.75)";
+    cx.fillText(noteName(GM.ladder[b.idx]).replace("A#","Bb"),
+                b.x + b.w/2, y + b.h*0.68);
+  }
+  const xs = GM.chars.map((_, i) => W*(i+1)/(GM.players+1));
+  GM.beams.forEach((bm, p) => {                    // the guided laser(s)
+    if (bm.idx < 0 || !bm.target || GM.dead) return;
+    const t = bm.target, tx = t.x + t.w/2, ty = t.y0 + GM.wallY + t.h;
+    cx.strokeStyle = "hsl("+LASER.hues[bm.idx]+" 90% 70% / .35)";
+    cx.lineWidth = 7;
+    cx.beginPath(); cx.moveTo(xs[p], catY - GM.ry); cx.lineTo(tx, ty); cx.stroke();
+    cx.strokeStyle = "hsl("+LASER.hues[bm.idx]+" 95% 82%)";
+    cx.lineWidth = 2.5;
+    cx.beginPath(); cx.moveTo(xs[p], catY - GM.ry); cx.lineTo(tx, ty); cx.stroke();
+    cx.lineWidth = 1;
+  });
+  const crR = GM.players >= 3 ? GM.ry*0.8 : GM.ry;
+  GM.chars.forEach((ch, p) => {
+    cx.save(); cx.translate(xs[p], catY);
+    drawCritter(cx, ch || CHARS[0], crR || GK.catR, GM.dead);
+    cx.restore();
+    if (GM.players > 1){                           // whose notes are whose
+      const slots = GM.psets[p];
+      const lbl = noteName(GM.ladder[slots[0]]).replace("A#","Bb") + "–" +
+        noteName(GM.ladder[slots[slots.length-1]]).replace("A#","Bb");
+      cx.fillStyle = ACCENTS[p];
+      cx.font = "700 "+Math.round(fpx*0.48)+"px system-ui";
+      cx.textAlign = "center";
+      cx.fillText("P"+(p+1)+" "+lbl+" · "+GM.pScores[p],
+                  xs[p], catY + GM.ry*1.9);
+    }
+  });
+  cx.textAlign = "center";
+  if (GM.banner && now - GM.banner < 1300){
+    cx.fillStyle = "#e8c860"; cx.font = "800 "+fpx+"px system-ui";
+    cx.fillText("wave " + GM.wave + "!", W/2, H*0.5);
+  }
+  if (GM.dead){
+    cx.fillStyle = "#e8e6e3"; cx.font = "700 "+fpx+"px system-ui";
+    cx.fillText("score " + GM.score + " — the wall came down", W/2, H*0.42);
+    if (GM.players > 1){                           // the TV scoreboard beat
+      cx.font = "700 "+Math.round(fpx*0.7)+"px system-ui";
+      cx.fillText(GM.pScores.map((s,i)=>"P"+(i+1)+": "+s).join("   "),
+                  W/2, H*0.42 + fpx*1.4);
+    }
+    cx.fillStyle = "#e8e6e3";
+    cx.font = "400 "+Math.round(fpx*0.6)+"px system-ui";
+    cx.fillText("play a note to try again", W/2, H*0.42 + fpx*2.6);
+  } else if (!GM.started){
+    cx.fillStyle = "#8a9096";
+    cx.font = "400 "+Math.round(fpx*0.65)+"px system-ui";
+    cx.fillText(GM.players > 1
+      ? "one mic, " + GM.players + " lanes — your notes cut your bricks"
+      : "hold a brick's note — the flute is the laser", W/2, H*0.5);
+  }
+  drawHUD(cx, W, H, fpx, GM.ladder, dt);
+}
+
+// TRAINING MODE -- teaches the flute-as-controller verbs before anyone
+// dies for real. Rocco teaches: the dog who sang along when the owner
+// played is the one who shows new players how. The STRUCTURE here is the
+// tool's; every VALUE is the owner's pedagogy dial (his standing rule:
+// build the engine, he supplies the rule values).
+const TRAIN = [
+  {kind:"free",  label:"LESSON 1 — SOUND IS LIFT", secs:12,
+   text:"play any note to rise · go quiet to sink"},
+  {kind:"band",  label:"LESSON 2 — HOLD YOUR ALTITUDE", need:8,
+   text:"stay inside the band as it drifts (8 s total)"},
+  {kind:"gates", label:"LESSON 3 — FIRST GATES", need:3,
+   gapFrac:.52, speedMul:.55,
+   text:"thread the wide gates — nothing hurts in training"},
+];
+// The main game EASES IN: the first `gates` gates open wider and arrive
+// slower, reaching the reference tune as the score climbs. His first
+// flute sessions stalled under 3 -- the opener was reference-hard.
+const RAMP = { gap0:.5, speed0:.68, gates:8 };
+
+function bandC(H, now){ return H*0.45 + Math.sin(now/2600)*H*0.16; }
+function trainAdvance(now){
+  GM.banner = now;
+  GM.stage++;
+  GM.stageT = 0; GM.inBand = 0; GM.gatesN = 0; GM.obs = []; GM.toNext = 1.6;
+  if (GM.stage >= TRAIN.length){ GM.phase = "traindone"; GM.doneAt = now; }
+}
+function beginTrain(){
+  if (!GM) return;
+  const cv = $("gcv");
+  Object.assign(GM, { phase:"train", char: CHARS[0], stage:0, vy:0,
+                      held:false, started:false, dead:false,
+                      stageT:0, inBand:0, gatesN:0, banner:0,
+                      obs:[], toNext:1.6, last: performance.now() });
+  sizeGame(cv); GM.y = GM.H*0.45;
+  $("gsel").style.display = "none";
+  $("g-msg").textContent = "training — Esc exits";
+  requestAnimationFrame(gameTick);
+}
+
+function gameStart(){
+  if (GM) return;
+  GM = { phase:"select", char:null, y:0, vy:0, held:false, started:false,
+         dead:false, deadAt:0, score:0, obs:[], toNext:1.2,
+         last: performance.now() };
+  buildSelect(); loadHighs();
+  $("game").style.display = "block";
+  $("gsel").style.display = "block";
+  $("g-score").textContent = "0"; $("g-msg").textContent = "";
+}
+function beginRun(ch){
+  if (!GM) return;
+  const cv = $("gcv");
+  // Little animals fly a little hitbox: Xica plays easier than Ella,
+  // exactly as Crossy-Road-style rosters intend.
+  Object.assign(GM, { phase:"play", mode:"fly", char:ch, vy:0,
+                      held:false, started:false, dead:false, score:0,
+                      obs:[], toNext:1.2, last: performance.now() });
+  sizeGame(cv);
+  GM.y = GM.H*0.45;
+  $("gsel").style.display = "none";
+  $("g-msg").textContent = "play any note to fly — sound lifts, silence drops";
+  requestAnimationFrame(gameTick);
+}
+function gameStop(){
+  if (!GM) return;
+  GM = null;
+  $("gname").style.display = "none";
+  $("game").style.display = "none";
+}
+function gameReset(){
+  if (GM.phase === "laser"){
+    Object.assign(GM, { wave:1, wallY:0, started:false, dead:false, score:0 });
+    for (const bm of GM.beams){ bm.idx = -1; bm.target = null; }
+    laserWave();
+    $("g-score").textContent = "0";
+    $("g-msg").textContent = "every brick is a note";
+    return;
+  }
+  if (GM.phase === "cross"){
+    Object.assign(GM, { lane:0, py: crossLaneY(0, GM.H), cars: [], bankAt: 0,
+                        periods: CROSS.notes.map(() => CROSS.lanePeriodS[0] +
+                          Math.random()*(CROSS.lanePeriodS[1]-CROSS.lanePeriodS[0])),
+                        toSpawn: CROSS.notes.map(() => 1 + Math.random()*3),
+                        started: false, dead: false, score: 0 });
+    $("g-score").textContent = "0";
+    $("g-msg").textContent = "climb the scale to cross";
+    return;
+  }
+  Object.assign(GM, { y: GM.H*0.45, vy: 0, started: false,
+                      dead: false, score: 0, obs: [], toNext: 1.2 });
+  $("g-msg").textContent = "play any note to fly";
+}
+EV_TAPS.push(ev => {
+  if (!GM || (GM.phase !== "play" && GM.phase !== "train" &&
+              GM.phase !== "cross" && GM.phase !== "laser") ||
+      ev.during_tts) return;
+  if (ev.type==="stable" || ev.type==="note_change"){
+    if (GM.dead){
+      if (!GM.naming &&                    // initials first, restart after
+          performance.now() - GM.deadAt > 800) gameReset();
+      return;
+    }
+    if (GM.phase === "cross"){             // pitch is POSITION here
+      GM.started = true;
+      const idx = crossLaneFor(ev.midi_note);
+      if (idx >= 0 && !GM.bankAt){
+        GM.lane = idx;
+        if (idx === CROSS.notes.length-1)
+          GM.bankAt = performance.now();
+      }
+      $("g-msg").textContent = "";
+      return;
+    }
+    if (GM.phase === "laser"){             // pitch is the TARGET here
+      GM.started = true;
+      // multiplayer matches EXACT octave (folding would blur set
+      // boundaries between players); solo keeps the friendly fold
+      const slot = GM.players > 1 ? GM.ladder.indexOf(ev.midi_note)
+                                  : noteIdxIn(ev.midi_note, GM.ladder);
+      if (slot >= 0){
+        const p = GM.ownerOf[slot];        // set membership IS the player
+        GM.beams[p].idx = slot;
+        GM.beams[p].target = null;
+      }
+      $("g-msg").textContent = "";
+      return;
+    }
+    GM.held = true; GM.started = true;
+    if (GM.phase === "play") $("g-msg").textContent = "";
+  } else if (ev.type==="release" || ev.type==="silence_start"){
+    GM.held = false;                       // crossing ignores this: silence
+    if (GM.phase === "laser"){             // stands still, by design
+      // beams need breath; damage stays. A release names its note, so in
+      // multiplayer only that owner's beam drops; bare silence drops all.
+      const slot = (GM.players > 1 && ev.midi_note != null)
+                   ? GM.ladder.indexOf(ev.midi_note) : -1;
+      if (slot >= 0){
+        const p = GM.ownerOf[slot];
+        GM.beams[p].idx = -1; GM.beams[p].target = null;
+      } else {
+        for (const bm of GM.beams){ bm.idx = -1; bm.target = null; }
+      }
+    }
+  }
+});
+function gameTick(now){
+  if (!GM || (GM.phase !== "play" && GM.phase !== "train" &&
+              GM.phase !== "traindone" && GM.phase !== "cross" &&
+              GM.phase !== "laser")) return;
+  const cv = $("gcv"), cx = cv.getContext("2d");
+  if (innerWidth && cv.width !== Math.round(innerWidth*dpr())) sizeGame(cv);
+  const W = GM.W, H = GM.H, k = GM.k;
+  cx.setTransform(dpr(), 0, 0, dpr(), 0, 0);      // math in CSS px, always
+  const fpx = Math.max(16, Math.round(H*0.036));  // text scales with screen
+  // clamped both ways: a restored tab (or any clock weirdness) must not
+  // run time backwards -- a negative dt once sent the laser wall flying
+  // upward off-screen
+  let dt = Math.max(0, Math.min(0.05, (now - GM.last)/1000));
+  GM.last = now;
+
+  if (GM.phase === "cross"){
+    crossTick(now, cx, W, H, dt, fpx);
+    requestAnimationFrame(gameTick);
+    return;
+  }
+  if (GM.phase === "laser"){
+    laserTick(now, cx, W, H, dt, fpx);
+    requestAnimationFrame(gameTick);
+    return;
+  }
+
+  if (GM.phase === "traindone"){                  // graduation screen
+    cx.fillStyle = "#0b0d0f"; cx.fillRect(0,0,W,H);
+    cx.textAlign = "center";
+    cx.fillStyle = "#e8c860"; cx.font = "800 "+fpx+"px system-ui";
+    cx.fillText("TRAINING COMPLETE", W/2, H*0.42);
+    cx.fillStyle = "#aab0b6"; cx.font = "400 "+Math.round(fpx*0.6)+"px system-ui";
+    cx.fillText("Rocco says you're ready — go fly for real", W/2, H*0.42+fpx*1.3);
+    if (now - GM.doneAt > 3000){
+      GM.phase = "select";
+      $("gsel").style.display = "block"; loadHighs();
+      return;
+    }
+    requestAnimationFrame(gameTick);
+    return;
+  }
+
+  const training = GM.phase === "train";
+  const st = training ? TRAIN[GM.stage] : null;
+  // easing: training stages set their own pace; the main game ramps from
+  // the RAMP opener to the reference tune over the first RAMP.gates gates
+  const prog  = training ? 0 : Math.min(1, GM.score / RAMP.gates);
+  const gapF  = training ? ((st && st.gapFrac) || k.gapFrac)
+                         : k.gapFrac + (RAMP.gap0 - k.gapFrac)*(1 - prog);
+  const speed = k.speed * (training ? ((st && st.speedMul) || 1)
+                                    : RAMP.speed0 + (1 - RAMP.speed0)*prog);
+  const spawnS = k.obsEveryS * (k.speed / speed); // keep spacing, not rate
+
+  if (GM.started && !GM.dead){
+    GM.vy += (GM.held ? k.lift : k.gravity) * dt;
+    GM.vy = Math.max(-k.maxVy, Math.min(k.maxVy, GM.vy));
+    GM.y += GM.vy * dt;
+    if (GM.y < GM.ry){ GM.y = GM.ry; GM.vy = 0; }       // ceiling bonks
+    if (GM.y > H - GM.ry){                              // floor kills --
+      if (training){ GM.y = H - GM.ry; GM.vy = 0; }     // except in class
+      else gameDie();
+    }
+
+    if (!training || st.kind === "gates"){
+      GM.toNext -= dt;
+      if (GM.toNext <= 0){
+        GM.toNext = spawnS;
+        const gap = H * gapF, m = H * 0.043;
+        const c = gap/2 + m + Math.random() * (H - gap - 2*m);
+        GM.obs.push({x: W + k.obsW, top: c - gap/2, bot: c + gap/2,
+                     passed: false, hitT: 0});
+      }
+      const catX = W * 0.24;
+      for (const o of GM.obs){
+        o.x -= speed * dt;
+        if (!o.passed && o.x + k.obsW < catX - GM.rx){
+          o.passed = true;
+          if (training) GM.gatesN++;
+          else { GM.score++; $("g-score").textContent = GM.score; }
+        }
+        const hit = catX + GM.rx > o.x && catX - GM.rx < o.x + k.obsW &&
+                    (GM.y - GM.ry < o.top || GM.y + GM.ry > o.bot);
+        if (hit){
+          if (training){ if (!o.hitT) o.hitT = now; }   // flash, no death
+          else gameDie();
+        }
+      }
+      GM.obs = GM.obs.filter(o => o.x > -k.obsW);
+    }
+
+    if (training){                                 // lesson bookkeeping
+      if (st.kind === "free"){
+        GM.stageT += dt;
+        if (GM.stageT >= st.secs) trainAdvance(now);
+      } else if (st.kind === "band"){
+        if (Math.abs(GM.y - bandC(H, now)) < H*0.10) GM.inBand += dt;
+        if (GM.inBand >= st.need) trainAdvance(now);
+      } else if (st.kind === "gates"){
+        if (GM.gatesN >= st.need) trainAdvance(now);
+      }
+    }
+  }
+
+  // ---- draw (deliberately primitive) ----
+  cx.fillStyle = "#0b0d0f"; cx.fillRect(0,0,W,H);
+  if (training && st.kind === "band"){            // lesson 2's target band
+    const c = bandC(H, now);
+    cx.fillStyle = "rgba(111,168,220,.16)";
+    cx.fillRect(0, c - H*0.10, W, H*0.20);
+  }
+  for (const o of GM.obs){                        // obstacles: tree trunks
+    cx.fillStyle = (o.hitT && now - o.hitT < 400) ? "#7e3440" : "#15304a";
+    cx.fillRect(o.x, 0, k.obsW, o.top);
+    cx.fillRect(o.x, o.bot, k.obsW, H - o.bot);
+  }
+  const catX = W * 0.24;                          // per-character critter
+  const ch = GM.char || CHARS[0];
+  cx.save(); cx.translate(catX, GM.y);
+  cx.rotate(Math.max(-0.35, Math.min(0.35, GM.vy/(4*k.maxVy))));
+  drawCritter(cx, ch, GM.ry || GK.catR, GM.dead);
+  cx.restore();
+  if (training){                                  // lesson header + meter
+    cx.textAlign = "center";
+    cx.fillStyle = "#e8c860";
+    cx.font = "800 "+Math.round(fpx*0.75)+"px system-ui";
+    cx.fillText(st.label, W/2, H*0.10);
+    cx.fillStyle = "#aab0b6";
+    cx.font = "400 "+Math.round(fpx*0.55)+"px system-ui";
+    cx.fillText(st.text, W/2, H*0.10 + fpx);
+    const p = st.kind==="free" ? Math.min(1, GM.stageT/st.secs)
+            : st.kind==="band" ? Math.min(1, GM.inBand/st.need)
+            :                    Math.min(1, GM.gatesN/st.need);
+    cx.fillStyle = "#1d232a"; cx.fillRect(W*0.30, H*0.155, W*0.40, 8);
+    cx.fillStyle = "#6fa8dc"; cx.fillRect(W*0.30, H*0.155, W*0.40*p, 8);
+    if (GM.banner && now - GM.banner < 1300){
+      cx.fillStyle = "#e8c860"; cx.font = "800 "+fpx+"px system-ui";
+      cx.fillText("nice!", W/2, H*0.30);
+    }
+  }
+  if (GM.dead){
+    cx.fillStyle = "#e8e6e3"; cx.font = "700 "+fpx+"px system-ui";
+    cx.textAlign = "center";
+    cx.fillText("score " + GM.score +
+                (GM.score >= GM_BEST && GM.score > 0 ? "  — best!" : ""),
+                W/2, H*0.4);
+    cx.font = "400 "+Math.round(fpx*0.6)+"px system-ui";
+    cx.fillText("play a note to try again", W/2, H*0.4 + fpx*1.3);
+  } else if (!GM.started){
+    cx.fillStyle = "#8a9096"; cx.font = "400 "+Math.round(fpx*0.65)+"px system-ui";
+    cx.textAlign = "center";
+    cx.fillText("play any note (or keyboard oracle key) to start", W/2, H*0.4);
+  }
+  drawHUD(cx, W, H, fpx, null, dt);        // flight takes any note: no ladder
+  requestAnimationFrame(gameTick);
+}
+function postScore(name){                  // the desk keeps the leaderboard
+  fetch(basePath()+"/score", {method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({kind:"flute_score",
+                            char:(GM && GM.char||{}).id||"?",
+                            score: GM ? GM.score : 0,
+                            name: name || "",
+                            mode: (GM && GM.mode) || "fly"})})
+    .then(r => r.json())
+    .then(d => { if (d.ok && d.top) HIGHS = d.top; })
+    .catch(()=>{});
+}
+function nameDone(save){
+  if (!GM || !GM.naming) return;
+  GM.naming = false;
+  $("gname").style.display = "none";
+  $("gname-in").blur();
+  postScore(save ? $("gname-in").value : "");
+  $("g-msg").textContent = "best this tab: " + GM_BEST;
+}
+function gameDie(){
+  if (GM.dead) return;
+  GM.dead = true; GM.deadAt = performance.now();
+  GM_BEST = Math.max(GM_BEST, GM.score);
+  $("g-msg").textContent = "best this tab: " + GM_BEST;
+  if (GM.mode === "party"){              // classroom rounds: nobody types
+    let w = 0;                           // -- the winning team is the tag
+    GM.pScores.forEach((s, i) => { if (s > GM.pScores[w]) w = i; });
+    $("g-msg").textContent =
+      "P" + (w+1) + " takes the wall — " + GM.pScores[w] + " bricks";
+    if (GM.score > 0) postScore("P" + (w+1));
+    return;
+  }
+  if (GM.score <= 0) return;
+  // Arcade rules: making the top ten earns the initials screen. HIGHS
+  // may be a stale top ten -- the server re-sorts the truth either way.
+  const floor = HIGHS.length >= 10 ? HIGHS[9].score : 0;
+  if (GM.score > floor || HIGHS.length < 10){
+    GM.naming = true;
+    $("g-msg").textContent = "NEW HIGH SCORE — " + GM.score + "!";
+    $("gname-in").value = "";
+    $("gname").style.display = "block";
+    $("gname-in").focus();
+  } else {
+    postScore("");
+  }
+}
+$("gname-save").onclick = () => nameDone(true);
+$("gname-skip").onclick = () => nameDone(false);
+$("gname-in").addEventListener("keydown", e => {
+  if (e.key === "Enter") nameDone(true);
+  e.stopPropagation();                     // initials are not oracle notes
+});
+$("btn-game").onclick = gameStart;
+$("btn-train").onclick = beginTrain;
+$("btn-game-stop").onclick = gameStop;
+$("btn-fs").onclick = () => {                   // his ask: one-tap fullscreen
+  if (document.fullscreenElement) document.exitFullscreen();
+  else document.documentElement.requestFullscreen().catch(()=>{});
+};
+window.addEventListener("keydown", e => {
+  if (e.key === "Escape") gameStop();
+});
+
+/* -------------------------------------------------------------- render */
+let LATEST=null;
+function drawScope(){
+  const cv = $("scope"), cx = cv.getContext("2d");
+  cx.clearRect(0,0,cv.width,cv.height);
+  if (TOTAL <= 0){
+    cx.fillStyle = "#5a6168"; cx.font = "13px system-ui";
+    cx.fillText("no audio yet — press Start microphone (the browser keeps the mic off until you do)", 12, 38);
+    return;
+  }
+  const N = 1024, mid = cv.height/2, mask = RING.length-1;
+  let peak = 0.02;
+  for (let i=0;i<N;i++){
+    const s = Math.abs(RING[(ringPos - N + i) & mask]);
+    if (s > peak) peak = s;
+  }
+  const gain = (mid-4)/peak;
+  cx.strokeStyle = "#6fa8dc"; cx.lineWidth = 1.4; cx.beginPath();
+  for (let i=0;i<N;i++){
+    const s = RING[(ringPos - N + i) & mask];
+    const x = i/(N-1)*cv.width, y = mid - s*gain;
+    i ? cx.lineTo(x,y) : cx.moveTo(x,y);
+  }
+  cx.stroke();
+}
+function paint(){
+  const f = LATEST;
+  drawScope();
+  $("clock").textContent = "t = " + (nowMs()/1000).toFixed(3) + " s";
+  if (f){
+    if (f.voiced){
+      const nm = noteName(f.midi_note);
+      $("bignote").innerHTML = nm.replace(/(-?\d+)$/,"<small>$1</small>");
+      $("centsrow").textContent = (f.cents>=0?"+":"") + f.cents.toFixed(1) + " cents";
+      $("needle").style.left = "calc(50% + " + (Math.max(-50,Math.min(50,f.cents))/50*42) + "%)";
+      $("needle").style.background =
+        Math.abs(f.cents)<=10 ? "var(--ok)" :
+        Math.abs(f.cents)<=25 ? "var(--warn)" : "var(--bad)";
+      $("v-f0").textContent = f.f0_hz.toFixed(1) + " Hz";
+    } else {
+      $("bignote").textContent = "—"; $("centsrow").innerHTML="&nbsp;";
+      $("needle").style.background = "var(--dim)";
+      $("v-f0").textContent = "—";
+    }
+    $("b-clar").style.width = (f.clarity*100).toFixed(0)+"%";
+    $("v-clar").textContent = f.clarity.toFixed(2);
+    $("b-tone").style.width = f.tone!=null ? (f.tone*100).toFixed(0)+"%" : "0%";
+    $("v-tone").textContent = f.tone!=null ? f.tone.toFixed(2) : "—";
+    const pct = Math.max(0, Math.min(100, (f.level_db+90)/90*100));
+    $("b-lvl").style.width = pct.toFixed(0)+"%";
+    $("v-lvl").textContent = f.level_db.toFixed(1)+" dB";
+  }
+  $("v-hold").textContent = (SM.state==="STABLE" && SM.stable_since!=null)
+      ? ((nowMs()-SM.stable_since)/1000).toFixed(2)+" s" : "—";
+  if (DR) $("drill-hear").textContent =
+      (f && f.voiced) ? noteName(f.midi_note) : "—";
+  requestAnimationFrame(paint);
+}
+requestAnimationFrame(paint);
+
+/* ------------------------------------------------- play mode (/play) */
+/* The classroom face. Same engine, same games, none of the prototype
+   chrome: /play hides the detector panels and opens on a big friendly
+   landing card. Exit from a game loops back to the select screen, never
+   to the dev page. Saved to a phone home screen, it IS the game. */
+if (document.body.dataset.play === "1"){
+  document.title = "Flutie Cats";
+  // hide EVERYTHING that isn't the game -- his S23 screenshot caught the
+  // second .banner slipping through a selector list, so no more lists:
+  // any body child that isn't the game, the landing, or a script goes
+  for (const el of [...document.body.children]){
+    if (el.id !== "game" && el.id !== "playland" &&
+        el.tagName !== "SCRIPT") el.style.display = "none";
+  }
+  const land = document.createElement("div");
+  land.id = "playland";
+  land.style.cssText = "position:fixed;inset:0;z-index:80;background:#0b0d0f;"+
+    "display:flex;flex-direction:column;align-items:center;"+
+    "justify-content:center;text-align:center";
+  land.innerHTML =
+    '<div style="font:800 9vmin system-ui;letter-spacing:.04em">FLUTIE CATS</div>'+
+    '<div class="sub" style="font-size:2.6vmin;margin-top:1vh">'+
+      'a Cadenza Arthouse game — play it with a flute</div>'+
+    '<button id="play-go" style="margin-top:5vh;font:800 4vmin system-ui;'+
+      'padding:2vh 9vw;border-radius:14px;border:3px solid #e8c860;'+
+      'background:#171b1f;color:#e8c860;cursor:pointer">▶ play</button>'+
+    '<div class="sub" style="font-size:2vmin;margin-top:3vh">'+
+      'allow the microphone when asked — sound is the controller</div>';
+  document.body.appendChild(land);
+  $("play-go").onclick = () => {
+    startMic();                       // inside the tap: the mic gesture
+    document.documentElement.requestFullscreen().catch(()=>{});
+    land.style.display = "none";
+    gameStart();
+  };
+  const devStop = gameStop;           // exiting a game returns to select,
+  gameStop = function(){              // never to the prototype page
+    devStop();
+    gameStart();
+  };
+}
+</script>
+</body>
+</html>
