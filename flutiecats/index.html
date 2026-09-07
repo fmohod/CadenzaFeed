@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Flute Input — detector prototype — Cadenza Arthouse Media Tools</title>
-<!-- Flutie Cats site build 2026-09-07 15:53 -- published from CAMT jobs/flutie_publish.py; edit THERE, not here -->
+<!-- Flutie Cats site build 2026-09-07 16:06 -- published from CAMT jobs/flutie_publish.py; edit THERE, not here -->
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0b0d0f">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=2">
@@ -685,6 +685,39 @@ window.addEventListener("keyup", e => {
   }
 });
 
+/* ---------------------------------------------------------- touch oracle */
+/* The third input, for phones and for anyone who can't sound a note yet
+   (owner, 2026-09-07). Touch-and-hold IS a sustained note: pointerdown
+   emits onset+stable, release emits release -- through the SAME event
+   bus as the flute and keyboard, so flight lifts while a finger is
+   down and any death screen restarts on a tap. Pitch modes are safely
+   deaf to it (a null midi matches no ladder), so touch can't cheat
+   crossing or laser -- it flies, and it restarts. */
+{
+  const cvEl = $("gcv");
+  cvEl.style.touchAction = "none";
+  let touchDown = false;
+  cvEl.addEventListener("pointerdown", e => {
+    if (!GM) return;
+    e.preventDefault();
+    touchDown = true;
+    const t = nowMs();
+    emit({type:"onset",  t_ms:t, midi_note:null, source:"touch"});
+    emit({type:"stable", t_ms:t, midi_note:null, cents_at_commit:0,
+          time_to_stable_ms:0, clarity_mean:1, tone_mean:1, level_peak:0,
+          source:"touch"});
+  });
+  const up = () => {
+    if (!touchDown) return;
+    touchDown = false;
+    emit({type:"release", t_ms:nowMs(), midi_note:null, duration_ms:0,
+          clarity_mean:1, tone_mean:1, level_peak:0, source:"touch"});
+  };
+  cvEl.addEventListener("pointerup", up);
+  cvEl.addEventListener("pointercancel", up);
+  cvEl.addEventListener("pointerleave", up);
+}
+
 /* ---------------------------------------------------------- drill mode */
 /* The hands-free measurement session: TTS speaks each protocol step, the
    MusicalEvent stream satisfies it, a timeout moves on when a note will
@@ -1335,7 +1368,7 @@ function crossTick(now, cx, W, H, dt, fpx){
     cx.fillStyle = "#e8e6e3"; cx.font = "700 "+fpx+"px system-ui";
     cx.fillText("crossings: " + GM.score, W/2, H*0.42);
     cx.font = "400 "+Math.round(fpx*0.6)+"px system-ui";
-    cx.fillText("play a note to try again", W/2, H*0.42 + fpx*1.3);
+    cx.fillText("play a note — or tap — to try again", W/2, H*0.42 + fpx*1.3);
   } else if (!GM.started){
     cx.fillStyle = "#8a9096"; cx.font = "400 "+Math.round(fpx*0.65)+"px system-ui";
     cx.fillText("each lane is a note — play up the scale to cross", W/2, H*0.5);
@@ -1616,7 +1649,7 @@ function laserTick(now, cx, W, H, dt, fpx){
     }
     cx.fillStyle = "#e8e6e3";
     cx.font = "400 "+Math.round(fpx*0.6)+"px system-ui";
-    cx.fillText("play a note to try again", W/2, H*0.42 + fpx*2.6);
+    cx.fillText("play a note — or tap — to try again", W/2, H*0.42 + fpx*2.6);
   } else if (!GM.started){
     cx.fillStyle = "#8a9096";
     cx.font = "400 "+Math.round(fpx*0.65)+"px system-ui";
@@ -1690,7 +1723,8 @@ function beginRun(ch){
   sizeGame(cv);
   GM.y = GM.H*0.45;
   $("gsel").style.display = "none";
-  $("g-msg").textContent = "play any note to fly — sound lifts, silence drops";
+  $("g-msg").textContent =
+    "play any note to fly — or touch and hold the screen";
   requestAnimationFrame(gameTick);
 }
 function gameStop(){
@@ -1926,11 +1960,11 @@ function gameTick(now){
                 (GM.score >= GM_BEST && GM.score > 0 ? "  — best!" : ""),
                 W/2, H*0.4);
     cx.font = "400 "+Math.round(fpx*0.6)+"px system-ui";
-    cx.fillText("play a note to try again", W/2, H*0.4 + fpx*1.3);
+    cx.fillText("play a note — or tap — to try again", W/2, H*0.4 + fpx*1.3);
   } else if (!GM.started){
     cx.fillStyle = "#8a9096"; cx.font = "400 "+Math.round(fpx*0.65)+"px system-ui";
     cx.textAlign = "center";
-    cx.fillText("play any note (or keyboard oracle key) to start", W/2, H*0.4);
+    cx.fillText("play a note — or touch and hold — to fly", W/2, H*0.4);
   }
   drawHUD(cx, W, H, fpx, null, dt);        // flight takes any note: no ladder
   requestAnimationFrame(gameTick);
