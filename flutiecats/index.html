@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Flute Input — detector prototype — Cadenza Arthouse Media Tools</title>
-<!-- Flutie Cats site build 2026-09-07 15:14 -- published from CAMT jobs/flutie_publish.py; edit THERE, not here -->
+<!-- Flutie Cats site build 2026-09-07 15:51 -- published from CAMT jobs/flutie_publish.py; edit THERE, not here -->
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0b0d0f">
-<link rel="icon" type="image/png" href="icon-192.png">
-<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=2">
+<link rel="apple-touch-icon" href="icon-192.png?v=2">
 <style>
   :root { --bg:#101214; --panel:#181c1f; --ink:#e8e6e3; --dim:#8a9096;
           --ok:#7dc87d; --warn:#e0b050; --bad:#d07070; --acc:#6fa8dc; }
@@ -909,8 +909,11 @@ $("btn-save").onclick = () => saveSession("button");
 // fixed pixels gave a phone ~1.2 s of obstacle warning where the desktop
 // had ~6.3 s -- "really motherfucking hard" was a scaling bug, not a
 // difficulty setting.
-const GK = { gravity: 1150, lift: -1350, maxVy: 460, speed: 230,
+const GK = { gravity: 1150, lift: -1350, maxVy: 460, speed: 265,
              gapFrac: 0.34, obsEveryS: 1.9, obsW: 64, catR: 24 };
+             // speed 230 -> 265, owner 2026-09-07: "make it go a little
+             // faster" after real play; spacing stays proportional so
+             // gates arrive ~15% quicker everywhere
 const GK_REF = { W: 1920, H: 940 };
 function gkFor(W, H){
   // Axis-true scaling. Horizontal quantities (speed, obstacle width, the
