@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Flute Input — detector prototype — Cadenza Arthouse Media Tools</title>
-<!-- Flutie Cats site build 2026-09-07 15:51 -- published from CAMT jobs/flutie_publish.py; edit THERE, not here -->
+<!-- Flutie Cats site build 2026-09-07 15:53 -- published from CAMT jobs/flutie_publish.py; edit THERE, not here -->
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0b0d0f">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=2">
@@ -1645,6 +1645,9 @@ const TRAIN = [
 // slower, reaching the reference tune as the score climbs. His first
 // flute sessions stalled under 3 -- the opener was reference-hard.
 const RAMP = { gap0:.5, speed0:.68, gates:8 };
+// His rule, 2026-09-07: flight gets 5% faster every 5 seconds of air
+// time, compounding -- the arcade death spiral; every run ends. Dials.
+const FLY_ACCEL = { everyS: 5, factor: 1.05, max: 6 };
 
 function bandC(H, now){ return H*0.45 + Math.sin(now/2600)*H*0.16; }
 function trainAdvance(now){
@@ -1681,7 +1684,7 @@ function beginRun(ch){
   const cv = $("gcv");
   // Little animals fly a little hitbox: Xica plays easier than Ella,
   // exactly as Crossy-Road-style rosters intend.
-  Object.assign(GM, { phase:"play", mode:"fly", char:ch, vy:0,
+  Object.assign(GM, { phase:"play", mode:"fly", char:ch, vy:0, airT:0,
                       held:false, started:false, dead:false, score:0,
                       obs:[], toNext:1.2, last: performance.now() });
   sizeGame(cv);
@@ -1715,7 +1718,7 @@ function gameReset(){
     $("g-msg").textContent = "climb the scale to cross";
     return;
   }
-  Object.assign(GM, { y: GM.H*0.45, vy: 0, started: false,
+  Object.assign(GM, { y: GM.H*0.45, vy: 0, started: false, airT: 0,
                       dead: false, score: 0, obs: [], toNext: 1.2 });
   $("g-msg").textContent = "play any note to fly";
 }
@@ -1821,11 +1824,16 @@ function gameTick(now){
   const prog  = training ? 0 : Math.min(1, GM.score / RAMP.gates);
   const gapF  = training ? ((st && st.gapFrac) || k.gapFrac)
                          : k.gapFrac + (RAMP.gap0 - k.gapFrac)*(1 - prog);
+  const accel = training ? 1
+    : Math.min(FLY_ACCEL.max,
+               Math.pow(FLY_ACCEL.factor, (GM.airT || 0)/FLY_ACCEL.everyS));
   const speed = k.speed * (training ? ((st && st.speedMul) || 1)
-                                    : RAMP.speed0 + (1 - RAMP.speed0)*prog);
+                                    : (RAMP.speed0 + (1 - RAMP.speed0)*prog)
+                                      * accel);
   const spawnS = k.obsEveryS * (k.speed / speed); // keep spacing, not rate
 
   if (GM.started && !GM.dead){
+    if (!training) GM.airT = (GM.airT || 0) + dt;   // the spiral's clock
     GM.vy += (GM.held ? k.lift : k.gravity) * dt;
     GM.vy = Math.max(-k.maxVy, Math.min(k.maxVy, GM.vy));
     GM.y += GM.vy * dt;
