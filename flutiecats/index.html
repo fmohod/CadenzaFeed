@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Flute Input — detector prototype — Cadenza Arthouse Media Tools</title>
-<!-- Flutie Cats site build 2026-09-07 16:06 -- published from CAMT jobs/flutie_publish.py; edit THERE, not here -->
+<!-- Flutie Cats site build 2026-09-07 18:46 -- published from CAMT jobs/flutie_publish.py; edit THERE, not here -->
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0b0d0f">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=2">
@@ -1059,7 +1059,7 @@ function loadHighs(){
 // coordinate is in u = r/8 grid cells so the critters stay blocky at any
 // size. Draw order back-to-front: tail, far legs, body, coat details,
 // chest, head furniture, near legs.
-function drawCritter(cx, ch, r, dead){
+function drawCritter(cx, ch, r, dead, fluteUp){
   const u = r/8;
   const C = c => dead ? "#d07070" : c;          // whole critter flushes red
   const D = c => dead ? "#b25c5c" : c;
@@ -1125,6 +1125,12 @@ function drawCritter(cx, ch, r, dead){
     R(4.6,-5.4,1.2,1.2,C(ch.tan)); R(7.6,-1.6,1.6,1.6,C(ch.tan));
   }
   R(5.6,-4.6,1.2,1.2,C(ch.eye||"#101214"));      // the eye
+  if (fluteUp){                                  // sounding = flute raised
+    R(9,-3.6,8,1.1,C("#c6ccd4"));                // (his tap-mode spec: press
+    R(11,-3.9,1,0.6,C("#e8c860"));               // and the character plays,
+    R(13.5,-3.9,1,0.6,C("#e8c860"));             // release and it lowers)
+    R(16.6,-3.8,1.4,1.5,C("#c6ccd4"));
+  }
 }
 
 function buildSelect(){
@@ -1933,7 +1939,8 @@ function gameTick(now){
   const ch = GM.char || CHARS[0];
   cx.save(); cx.translate(catX, GM.y);
   cx.rotate(Math.max(-0.35, Math.min(0.35, GM.vy/(4*k.maxVy))));
-  drawCritter(cx, ch, GM.ry || GK.catR, GM.dead);
+  drawCritter(cx, ch, GM.ry || GK.catR, GM.dead,
+              GM.held && !GM.dead);              // lift = the flute is up
   cx.restore();
   if (training){                                  // lesson header + meter
     cx.textAlign = "center";
@@ -2122,8 +2129,21 @@ if (document.body.dataset.play === "1"){
     '<div class="sub" style="font-size:2vmin;margin-top:3vh">'+
       'allow the microphone when asked — sound is the controller</div>';
   document.body.appendChild(land);
+  // capability check, his spec: if no microphone exists, don't offer one
+  // -- touch is the instrument and the page says so up front
+  let MIC_ABSENT = false;
+  if (navigator.mediaDevices && navigator.mediaDevices.enumerateDevices){
+    navigator.mediaDevices.enumerateDevices().then(ds => {
+      if (!ds.some(d => d.kind === "audioinput")){
+        MIC_ABSENT = true;
+        const subs = land.querySelectorAll(".sub");
+        if (subs[1]) subs[1].textContent =
+          "no microphone here — touch and hold the screen to fly";
+      }
+    }).catch(()=>{});
+  }
   $("play-go").onclick = () => {
-    startMic();                       // inside the tap: the mic gesture
+    if (!MIC_ABSENT) startMic();      // inside the tap: the mic gesture
     document.documentElement.requestFullscreen().catch(()=>{});
     land.style.display = "none";
     gameStart();
