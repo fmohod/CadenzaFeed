@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Flute Input — detector prototype — Cadenza Arthouse Media Tools</title>
-<!-- Flutie Cats site build 2026-09-08 00:16 -- published from CAMT jobs/flutie_publish.py; edit THERE, not here -->
+<!-- Flutie Cats site build 2026-09-08 00:38 -- published from CAMT jobs/flutie_publish.py; edit THERE, not here -->
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0b0d0f">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=2">
@@ -693,6 +693,220 @@ window.addEventListener("keyup", e => {
   }
 });
 
+/* --------------------------------------------- boot: the scene engine */
+/* Machine Head's five-scene proposal (his chat, 2026-09-08), built as
+   DATA on the existing canvas per the standing cutscene ruling: INTRO
+   (still panels + typewriter + music) -> TITLE (logo + beat-pulsed
+   PRESS START) -> SELECT (the existing screen; title music rides under
+   it) -> TRANSITION (a fade) -> GAME. First visit gets the full
+   presentation; after that, boot opens at the title. Any input advances
+   a panel; input at the title starts. Story stays deliberately light --
+   panels set mood, not plot, until the owner writes the real one. */
+
+// Music slots. Loop points come from HIS music maps (menu 34): a tap
+// labeled "loop" is the repeat sign -- play from the top, loop that
+// region forever, sample-accurate. /music-map.json carries the marks.
+const MUSIC = {
+  intro: { loop: false },
+  title: { loop: true, loopStart: 0, loopEnd: null },
+};
+const TITLE_BPM = 96;                   // PRESS START pulses on this beat
+
+let MAC = null, MSRC = null, MGAIN = null, MTOKEN = 0, MMAP = false,
+    MNAME = null;
+const MBUF = {};
+async function loadMusicMap(){
+  if (MMAP) return; MMAP = true;
+  try {
+    const m = await (await fetch(basePath() + "/music-map.json")).json();
+    for (const k in m)
+      Object.assign(MUSIC[k] = MUSIC[k] || { loop: true }, m[k], { loop: true });
+  } catch(e){}
+}
+async function playMusic(name){
+  if (MSRC && MNAME === name) return;    // already singing that one
+  const tok = ++MTOKEN;
+  try {
+    if (!MAC) MAC = new (window.AudioContext || window.webkitAudioContext)();
+    if (MAC.state === "suspended") MAC.resume();
+    stopMusic(0.2);
+    if (name === "title") await loadMusicMap();
+    let buf = MBUF[name];
+    if (!buf){
+      const r = await fetch(basePath() + "/music/" + name + ".mp3");
+      if (!r.ok) return;
+      buf = MBUF[name] = await MAC.decodeAudioData(await r.arrayBuffer());
+    }
+    if (tok !== MTOKEN) return;         // something newer superseded us
+    const cfg = MUSIC[name] || {};
+    const src = MAC.createBufferSource();
+    src.buffer = buf;
+    if (cfg.loop){
+      src.loop = true;
+      src.loopStart = cfg.loopStart || 0;
+      src.loopEnd = cfg.loopEnd || buf.duration;
+    }
+    const g = MAC.createGain();
+    src.connect(g); g.connect(MAC.destination);
+    src.start();
+    MSRC = src; MGAIN = g; MNAME = name;
+  } catch(e){}
+}
+function stopMusic(fadeS){
+  if (!MSRC) return;
+  const src = MSRC, g = MGAIN;
+  MSRC = null; MGAIN = null; MNAME = null;
+  try {
+    const t = MAC.currentTime, f = fadeS || 0.05;
+    g.gain.setValueAtTime(g.gain.value, t);
+    g.gain.linearRampToValueAtTime(0, t + f);
+    src.stop(t + f + 0.02);
+  } catch(e){}
+}
+
+// Intro panels: draw functions + typewriter lines. Ninja Gaiden grammar
+// from the reference study -- letterbox, one light source, silhouettes.
+function bootShade(ch){                  // any roster animal, silhouetted
+  return Object.assign({}, ch, { body:"#10151c", tan:"#10151c",
+    bib:"#161c24", dark:"#0b0f14", light:"#161c24", chin:"#161c24",
+    patch:"#161c24", eye:"#2a3644", tongue:"#10151c" });
+}
+function panelMoon(cx, W, H){
+  cx.fillStyle = "#e8e6df";
+  cx.beginPath(); cx.arc(W*0.72, H*0.32, Math.min(W,H)*0.13, 0, 7); cx.fill();
+  cx.fillStyle = "#0d1218";
+  for (const rf of [[0.05,0.2,0.16],[0.28,0.14,0.24],[0.46,0.22,0.12],
+                    [0.72,0.2,0.2]])
+    cx.fillRect(W*rf[0], H*0.78 - H*rf[2], W*rf[1], H*rf[2] + H*0.22);
+}
+function panelRocco(cx, W, H){
+  panelMoon(cx, W, H);
+  cx.save(); cx.translate(W*0.32, H*0.68);
+  drawCritter(cx, bootShade(CHARS[0]), Math.min(W,H)*0.09, false, true);
+  cx.restore();
+  cx.fillStyle = "#e8c860";                       // notes drifting moonward
+  cx.font = "700 " + Math.round(Math.min(W,H)*0.05) + "px system-ui";
+  cx.fillText("♪", W*0.47, H*0.52);
+  cx.fillText("♫", W*0.55, H*0.42);
+}
+function panelCrew(cx, W, H){
+  panelMoon(cx, W, H);
+  const r = Math.min(W,H)*0.055;
+  CHARS.slice(0, 7).forEach((ch, i) => {
+    cx.save(); cx.translate(W*(0.12 + i*0.126), H*0.72);
+    drawCritter(cx, bootShade(ch), r*(ch.scale || 1), false, false);
+    cx.restore();
+  });
+}
+const PANELS = [
+  { text: "In this neighborhood, the animals listen.",
+    holdS: 8, draw: panelMoon },
+  { text: "When the flute played, one of them always sang along.",
+    holdS: 9, draw: panelRocco },
+  { text: "Tonight, they play.",
+    holdS: 7, draw: panelCrew },
+];
+
+let BOOT = null;
+function bootSeen(){
+  try { return !!localStorage.getItem("fc_intro_seen"); } catch(e){ return true; }
+}
+function bootStart(){
+  if (GM) return;                        // a game overlay is already up
+  const intro = !bootSeen();
+  BOOT = { phase: intro ? "intro" : "title", panel: 0, chars: 0,
+           t: 0, last: performance.now() };
+  playMusic(intro ? "intro" : "title");
+  $("game").style.display = "block";
+  $("gsel").style.display = "none";
+  $("g-msg").textContent = "";
+  const cv = $("gcv"), d = dpr();
+  const W = innerWidth || 800, H = innerHeight || 500;
+  cv.width = Math.round(W*d); cv.height = Math.round(H*d);
+  cv.style.width = W + "px"; cv.style.height = H + "px";
+  BOOT.W = W; BOOT.H = H;
+  requestAnimationFrame(bootTick);
+}
+function bootAdvance(){                  // any input during boot
+  if (!BOOT) return;
+  if (BOOT.phase === "intro"){
+    const p = PANELS[BOOT.panel];
+    if (BOOT.chars < p.text.length){ BOOT.chars = p.text.length; return; }
+    BOOT.panel++; BOOT.t = 0; BOOT.chars = 0;
+    if (BOOT.panel >= PANELS.length) bootTitle();
+  } else if (BOOT.phase === "title"){
+    bootDone();
+  }
+}
+function bootTitle(){
+  try { localStorage.setItem("fc_intro_seen", "1"); } catch(e){}
+  BOOT.phase = "title"; BOOT.t = 0;
+  playMusic("title");
+}
+function bootDone(){
+  BOOT = null;                           // title music rides into select
+  gameStart();
+}
+function bootStop(){                     // Esc during boot
+  if (!BOOT) return;
+  BOOT = null;
+  stopMusic(0.2);
+  $("game").style.display = "none";
+}
+function bootTick(now){
+  if (!BOOT) return;
+  const dt = Math.max(0, Math.min(0.05, (now - BOOT.last)/1000));
+  BOOT.last = now; BOOT.t += dt;
+  const cv = $("gcv"), cx = cv.getContext("2d");
+  const W = BOOT.W, H = BOOT.H;
+  cx.setTransform(dpr(), 0, 0, dpr(), 0, 0);
+  cx.fillStyle = "#06080a"; cx.fillRect(0, 0, W, H);
+  const box = H*0.12;                    // the letterbox
+  const fpx = Math.max(16, Math.round(H*0.036));
+  if (BOOT.phase === "intro"){
+    const p = PANELS[BOOT.panel];
+    cx.save(); cx.beginPath();
+    cx.rect(0, box, W, H - box*2); cx.clip();
+    cx.fillStyle = "#0b0d0f"; cx.fillRect(0, box, W, H - box*2);
+    p.draw(cx, W, H);
+    cx.restore();
+    BOOT.chars = Math.min(p.text.length, BOOT.chars + dt*28);
+    cx.fillStyle = "#e8e6e3";
+    cx.font = "400 " + Math.round(fpx*0.75) + "px monospace";
+    cx.textAlign = "center";
+    cx.fillText(p.text.slice(0, Math.floor(BOOT.chars)), W/2, H - box*0.45);
+    if (BOOT.t >= p.holdS){
+      BOOT.panel++; BOOT.t = 0; BOOT.chars = 0;
+      if (BOOT.panel >= PANELS.length) bootTitle();
+    }
+  } else {                               // TITLE
+    cx.textAlign = "center";
+    cx.fillStyle = "#e8e6e3";
+    cx.font = "800 " + Math.round(H*0.14) + "px system-ui";
+    cx.fillText("FLUTIE CATS", W/2, H*0.36);
+    cx.fillStyle = "#8a9096";
+    cx.font = "400 " + Math.round(fpx*0.7) + "px system-ui";
+    cx.fillText("a Cadenza Arthouse game", W/2, H*0.36 + fpx*1.4);
+    cx.save(); cx.translate(W/2, H*0.6);
+    drawCritter(cx, CHARS[0], H*0.055, false, true);   // Rocco, flute up
+    cx.restore();
+    const beat = Math.pow(Math.max(0,
+      Math.sin(BOOT.t * TITLE_BPM/60 * Math.PI)), 3);  // pulse on the beat
+    cx.globalAlpha = 0.45 + 0.55*beat;
+    cx.fillStyle = "#e8c860";
+    cx.font = "800 " + fpx + "px system-ui";
+    cx.fillText("PLAY A NOTE — OR TAP — TO START", W/2, H*0.82);
+    cx.globalAlpha = 1;
+  }
+  requestAnimationFrame(bootTick);
+}
+window.addEventListener("keydown", e => {
+  if (BOOT && e.key !== "Escape") bootAdvance();
+});
+EV_TAPS.push(ev => {                     // a NOTE is a start button too
+  if (BOOT && ev.type === "stable" && !ev.during_tts) bootAdvance();
+});
+
 /* ---------------------------------------------------------- touch oracle */
 /* The third input, for phones and for anyone who can't sound a note yet
    (owner, 2026-09-07). Touch-and-hold IS a sustained note: pointerdown
@@ -706,6 +920,7 @@ window.addEventListener("keyup", e => {
   cvEl.style.touchAction = "none";
   let touchDown = false;
   cvEl.addEventListener("pointerdown", e => {
+    if (BOOT){ e.preventDefault(); bootAdvance(); return; }
     if (!GM) return;
     e.preventDefault();
     touchDown = true;
@@ -1304,6 +1519,7 @@ function beginCross(ch){
                       last: performance.now() });
   sizeGame(cv);
   GM.py = crossLaneY(0, GM.H);
+  stopMusic(0.5);
   $("gsel").style.display = "none";
   $("g-score").textContent = "0";
   $("g-msg").textContent = "climb the scale to cross — silence stands still";
@@ -1564,6 +1780,7 @@ function beginParty(chs){
                       last: performance.now() });
   sizeGame(cv);
   laserWave();
+  stopMusic(0.5);
   $("gsel").style.display = "none";
   $("g-score").textContent = "0";
   $("g-msg").textContent =
@@ -1717,6 +1934,7 @@ function beginTrain(){
                       stageT:0, inBand:0, gatesN:0, banner:0,
                       obs:[], toNext:1.6, last: performance.now() });
   sizeGame(cv); GM.y = GM.H*0.45;
+  stopMusic(0.5);
   $("gsel").style.display = "none";
   $("g-msg").textContent = "training — Esc exits";
   requestAnimationFrame(gameTick);
@@ -1728,6 +1946,7 @@ function gameStart(){
          dead:false, deadAt:0, score:0, obs:[], toNext:1.2,
          last: performance.now() };
   buildSelect(); loadHighs();
+  playMusic("title");                    // the select screen keeps the tune
   $("game").style.display = "block";
   $("gsel").style.display = "block";
   $("g-score").textContent = "0"; $("g-msg").textContent = "";
@@ -1742,6 +1961,7 @@ function beginRun(ch){
                       obs:[], toNext:1.2, last: performance.now() });
   sizeGame(cv);
   GM.y = GM.H*0.45;
+  stopMusic(0.5);                        // the mic needs a quiet room
   $("gsel").style.display = "none";
   $("g-msg").textContent =
     "play any note to fly — or touch and hold the screen";
@@ -1750,6 +1970,7 @@ function beginRun(ch){
 function gameStop(){
   if (!GM) return;
   GM = null;
+  stopMusic(0.3);
   $("gname").style.display = "none";
   $("game").style.display = "none";
 }
@@ -2043,7 +2264,7 @@ $("gname-in").addEventListener("keydown", e => {
   if (e.key === "Enter") nameDone(true);
   e.stopPropagation();                     // initials are not oracle notes
 });
-$("btn-game").onclick = gameStart;
+$("btn-game").onclick = bootStart;      // the game opens like a game now
 $("btn-train").onclick = beginTrain;
 $("btn-game-stop").onclick = gameStop;
 $("btn-mute").onclick = () => {
@@ -2061,7 +2282,7 @@ $("btn-fs").onclick = () => {                   // his ask: one-tap fullscreen
   else document.documentElement.requestFullscreen().catch(()=>{});
 };
 window.addEventListener("keydown", e => {
-  if (e.key === "Escape") gameStop();
+  if (e.key === "Escape"){ bootStop(); gameStop(); }
 });
 
 /* -------------------------------------------------------------- render */
@@ -2170,7 +2391,7 @@ if (document.body.dataset.play === "1"){
     if (!MIC_ABSENT) startMic();      // inside the tap: the mic gesture
     document.documentElement.requestFullscreen().catch(()=>{});
     land.style.display = "none";
-    gameStart();
+    bootStart();                      // scenes first, select after
   };
   const devStop = gameStop;           // exiting a game returns to select,
   gameStop = function(){              // never to the prototype page
