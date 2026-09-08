@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Flute Input — detector prototype — Cadenza Arthouse Media Tools</title>
-<!-- Flutie Cats site build 2026-09-08 01:05 -- published from CAMT jobs/flutie_publish.py; edit THERE, not here -->
+<!-- Flutie Cats site build 2026-09-08 01:10 -- published from CAMT jobs/flutie_publish.py; edit THERE, not here -->
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0b0d0f">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=2">
@@ -835,9 +835,11 @@ function bootAdvance(){                  // any input during boot
   if (BOOT.phase === "intro"){
     const p = PANELS[BOOT.panel];
     if (BOOT.chars < p.text.length){ BOOT.chars = p.text.length; return; }
-    BOOT.panel++; BOOT.t = 0; BOOT.chars = 0;
-    if (BOOT.panel >= PANELS.length) bootTitle();
-  } else if (BOOT.phase === "title"){
+    if (BOOT.t < 0.5) return;            // scene ARMING: the launch tap
+    BOOT.panel++; BOOT.t = 0; BOOT.chars = 0;   // (or a fullscreen-toast
+    if (BOOT.panel >= PANELS.length) bootTitle(); // dismissal) must never
+  } else if (BOOT.phase === "title"){             // turn a page it caused
+    if (BOOT.t < 0.6) return;
     bootDone();
   }
 }
@@ -861,7 +863,9 @@ function bootStop(){                     // Esc during boot
   BOOT = null;
   stopMusic(0.2);
   $("game").style.display = "none";
-}
+  const land = document.getElementById("playland");
+  if (land) land.style.display = "flex"; // play mode: back to the landing,
+}                                        // never a black screen
 function bootTick(now){
   if (!BOOT) return;
   const dt = Math.max(0, Math.min(0.05, (now - BOOT.last)/1000));
@@ -1971,6 +1975,7 @@ function gameStart(){
          last: performance.now() };
   buildSelect(); loadHighs();
   playMusic("title");                    // the select screen keeps the tune
+  $("btn-game-stop").textContent = "↺ title";
   $("game").style.display = "block";
   $("gsel").style.display = "block";
   $("g-score").textContent = "0"; $("g-msg").textContent = "";
@@ -1986,6 +1991,7 @@ function beginRun(ch){
   sizeGame(cv);
   GM.y = GM.H*0.45;
   stopMusic(0.5);                        // the mic needs a quiet room
+  $("btn-game-stop").textContent = "Exit (Esc)";
   $("gsel").style.display = "none";
   $("g-msg").textContent =
     "play any note to fly — or touch and hold the screen";
@@ -1997,6 +2003,18 @@ function gameStop(){
   stopMusic(0.3);
   $("gname").style.display = "none";
   $("game").style.display = "none";
+}
+// His ruling: at character select there is nowhere to "exit" to -- the
+// button goes UP instead, back to the title screen. In a run it stays
+// Exit (to select, via the play-mode wrapper).
+function stopBtn(){
+  if (GM && GM.phase === "select"){
+    GM = null;
+    $("gname").style.display = "none";
+    bootStart();                         // seen -> opens at the title;
+    return;                              // title music rides on seamlessly
+  }
+  gameStop();
 }
 function gameReset(){
   if (GM.phase === "laser"){
@@ -2290,7 +2308,7 @@ $("gname-in").addEventListener("keydown", e => {
 });
 $("btn-game").onclick = bootStart;      // the game opens like a game now
 $("btn-train").onclick = beginTrain;
-$("btn-game-stop").onclick = gameStop;
+$("btn-game-stop").onclick = () => stopBtn();
 $("btn-mute").onclick = () => {
   MIC_MUTED = !MIC_MUTED;
   $("btn-mute").textContent = MIC_MUTED ? "🔇" : "🎤";
@@ -2306,7 +2324,9 @@ $("btn-fs").onclick = () => {                   // his ask: one-tap fullscreen
   else document.documentElement.requestFullscreen().catch(()=>{});
 };
 window.addEventListener("keydown", e => {
-  if (e.key === "Escape"){ bootStop(); gameStop(); }
+  if (e.key === "Escape"){
+    if (BOOT) bootStop(); else stopBtn();
+  }
 });
 
 /* -------------------------------------------------------------- render */
@@ -2422,10 +2442,8 @@ if (document.body.dataset.play === "1"){
     devStop();
     gameStart();
   };
-  // the Exit button bound BEFORE this wrapper existed and held the stale
-  // reference -- his phone found it: Exit went to a black screen (the
-  // hidden dev page). Rebind it to the wrapped stop.
-  $("btn-game-stop").onclick = () => gameStop();
+  // (the button binds through stopBtn -> the gameStop identifier, so the
+  // wrapper above is reached without a rebind)
 }
 </script>
 </body>
