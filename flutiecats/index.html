@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Flute Input — detector prototype — Cadenza Arthouse Media Tools</title>
-<!-- Flutie Cats site build 2026-09-08 00:38 -- published from CAMT jobs/flutie_publish.py; edit THERE, not here -->
+<!-- Flutie Cats site build 2026-09-08 00:46 -- published from CAMT jobs/flutie_publish.py; edit THERE, not here -->
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0b0d0f">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=2">
@@ -829,6 +829,9 @@ function bootStart(){
 }
 function bootAdvance(){                  // any input during boot
   if (!BOOT) return;
+  const now = performance.now();         // one tap is one tap
+  if (BOOT.advAt && now - BOOT.advAt < 250) return;
+  BOOT.advAt = now;
   if (BOOT.phase === "intro"){
     const p = PANELS[BOOT.panel];
     if (BOOT.chars < p.text.length){ BOOT.chars = p.text.length; return; }
@@ -895,7 +898,7 @@ function bootTick(now){
     cx.globalAlpha = 0.45 + 0.55*beat;
     cx.fillStyle = "#e8c860";
     cx.font = "800 " + fpx + "px system-ui";
-    cx.fillText("PLAY A NOTE — OR TAP — TO START", W/2, H*0.82);
+    cx.fillText("TAP — OR PRESS A KEY — TO START", W/2, H*0.82);
     cx.globalAlpha = 1;
   }
   requestAnimationFrame(bootTick);
@@ -903,8 +906,12 @@ function bootTick(now){
 window.addEventListener("keydown", e => {
   if (BOOT && e.key !== "Escape") bootAdvance();
 });
-EV_TAPS.push(ev => {                     // a NOTE is a start button too
-  if (BOOT && ev.type === "stable" && !ev.during_tts) bootAdvance();
+EV_TAPS.push(ev => {
+  // A note advances the boot ONLY when no music is playing: his phone
+  // test proved the speaker's own soundtrack reads as notes and blew
+  // through all three panels in under a second. With music up, taps and
+  // keys drive the boot; the flute takes over in-game, where it's quiet.
+  if (BOOT && ev.type === "stable" && !ev.during_tts && !MSRC) bootAdvance();
 });
 
 /* ---------------------------------------------------------- touch oracle */
