@@ -1,5 +1,5 @@
 // critters.js -- the Cadenza Arthouse animal roster and its pixel painter.
-// GENERATED 2026-09-07 19:02 by CAMT jobs/flutie_publish.py from jobs/flute.py; edit THERE.
+// GENERATED 2026-09-07 19:50 by CAMT jobs/flutie_publish.py from jobs/flute.py; edit THERE.
 // One painter, every game (owner ruling 2026-09-07): Flutie Cats and the world
 // draw the same seven real animals from this file. Facts per animal are
 // accuracy constraints from life (Flutie Cats README), not style choices.
@@ -44,7 +44,7 @@ const CHARS = [
   {id:"smokey", name:"Smokey", sub:"plume tail · mama", unlocked:true,
    scale:.93, accent:"#a7acb4", body:"#878c94", light:"#a7acb4",
    eye:"#e0bd45", ears:"cat", tailStyle:"plume", belly:true},
-  {id:"slot8", name:"???", sub:"a friend's yes away", unlocked:false,
+  {id:"slot8", name:"???", sub:"", unlocked:false,
    body:"#3a4148"},
 ];
 
