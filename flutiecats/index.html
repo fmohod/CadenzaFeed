@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Flute Input — detector prototype — Cadenza Arthouse Media Tools</title>
-<!-- Flutie Cats site build 2026-09-08 00:48 -- published from CAMT jobs/flutie_publish.py; edit THERE, not here -->
+<!-- Flutie Cats site build 2026-09-08 01:05 -- published from CAMT jobs/flutie_publish.py; edit THERE, not here -->
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0b0d0f">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=2">
@@ -846,6 +846,12 @@ function bootTitle(){
   BOOT.phase = "title"; BOOT.t = 0;
   playMusic("title");
 }
+function bootReplayIntro(){              // the quiet corner affordance
+  if (!BOOT || BOOT.phase !== "title") return;
+  try { localStorage.removeItem("fc_intro_seen"); } catch(e){}
+  BOOT.phase = "intro"; BOOT.panel = 0; BOOT.chars = 0; BOOT.t = 0;
+  playMusic("intro");
+}
 function bootDone(){
   BOOT = null;                           // title music rides into select
   gameStart();
@@ -900,11 +906,18 @@ function bootTick(now){
     cx.font = "800 " + fpx + "px system-ui";
     cx.fillText("TAP — OR PRESS A KEY — TO START", W/2, H*0.82);
     cx.globalAlpha = 1;
+    cx.fillStyle = "#3b434b";                          // quiet, corner, small
+    cx.font = "600 " + Math.round(fpx*0.55) + "px system-ui";
+    cx.textAlign = "left";
+    cx.fillText("↻ intro", W*0.02, H*0.965);
   }
   requestAnimationFrame(bootTick);
 }
 window.addEventListener("keydown", e => {
-  if (BOOT && e.key !== "Escape") bootAdvance();
+  if (!BOOT || e.key === "Escape") return;
+  if (e.key.toLowerCase() === "i" && BOOT.phase === "title")
+    bootReplayIntro();
+  else bootAdvance();
 });
 // The flute has NO vote outside a run (owner's ruling after his phone
 // test, 2026-09-08): boot and select are touch/key territory -- phones
@@ -924,7 +937,14 @@ window.addEventListener("keydown", e => {
   cvEl.style.touchAction = "none";
   let touchDown = false;
   cvEl.addEventListener("pointerdown", e => {
-    if (BOOT){ e.preventDefault(); bootAdvance(); return; }
+    if (BOOT){
+      e.preventDefault();
+      if (BOOT.phase === "title" &&
+          e.offsetX < BOOT.W*0.22 && e.offsetY > BOOT.H*0.9)
+        bootReplayIntro();
+      else bootAdvance();
+      return;
+    }
     if (!GM) return;
     e.preventDefault();
     touchDown = true;
