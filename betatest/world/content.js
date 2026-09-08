@@ -136,6 +136,20 @@ class ContentLoader {
     static async _json(url) {
         try {
             const res = await fetch(url, { cache: 'no-cache' });
+            if (res.status === 401 && (res.headers.get('content-type') || '').includes('text/html')) {
+                // The address gate (Cloudflare Worker) answered with its lock
+                // page. That happens when a browser still holds the game shell
+                // in its HTTP cache from before the gate went up, or after the
+                // cookie expired: the shell renders, the data does not. Show the
+                // lock page itself instead of a broken world; its own script
+                // reloads once the code is accepted.
+                if (!Content._locked) {
+                    Content._locked = true;
+                    const html = await res.text();
+                    document.open(); document.write(html); document.close();
+                }
+                return null;
+            }
             if (!res.ok) return null;
             return await res.json();
         } catch (e) {

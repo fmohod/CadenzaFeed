@@ -232,6 +232,14 @@ path, anything else sees the lock page. Deployed by CAMT `shell\cloudflare-gate.
 -Preset betatest`, which prompts for the API token and the code and writes neither to
 disk. The address is gated; this repo stays public, the owner's accepted trade-off.
 
+Live since 2026-09-07 (worker `betatest-gate`). Verified from a cookieless browser: the
+page is a 401 lock page with `no-store`, every asset under the path is 401 too, and a wrong
+code at `/betatest/gate?c=` is 403. One wrinkle the first test found: a browser that had
+the game open before the gate went up still holds `index.html` for ten minutes (the site's
+`max-age=600`), so the shell renders and then the data comes back as the lock page. The
+content loader now handles that: a 401 HTML answer to any content fetch replaces the
+document with the lock page itself, whose own script reloads once the code is accepted.
+
 ## Getting around
 
 The bus stop on the community block (`type: "travel"`) is a chooser built at runtime from
