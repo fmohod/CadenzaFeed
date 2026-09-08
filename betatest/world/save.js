@@ -40,7 +40,7 @@ class SaveLog {
     }
 
     checkpoint(player) {
-        this.data.player = { space: player.space, x: player.x, y: player.y, facing: player.facing, era: player.era || 'present' };
+        this.data.player = { space: player.space, x: player.x, y: player.y, facing: player.facing, era: player.era || 'present', avatar: player.avatar || null };
     }
 
     flush() {

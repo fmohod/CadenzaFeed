@@ -19,7 +19,8 @@ class WorldEngine {
 
         this.space = null;
         this.player = { space: null, x: 0, y: 0, facing: 'down', px: 0, py: 0, moving: false };
-        this.state = { era: 'present' };   // the time the player is in; part of the save
+        this.state = { era: 'present', avatar: 'rocco' };   // the time the player is in, and who they walk as; part of the save.
+        // Rocco first, by the owner's ruling (Flutie Cats README): the first character everyone gets.
         this.flags = { visited: new Set(), talked: new Set(), terminalOpened: false };
         this.tween = null;      // { fromX, fromY, toX, toY, t }
         this.tapQueue = [];     // directions tapped but not yet walked
@@ -45,6 +46,8 @@ class WorldEngine {
         const saved = this.save.load();
         this.flags = this.save.replay();
         if (saved && saved.player && saved.player.era) this.state.era = saved.player.era;
+        if (saved && saved.player && saved.player.avatar) this.state.avatar = saved.player.avatar;
+        this.player.avatar = this.state.avatar;
 
         let placed = false;
         if (saved && saved.player && this.content.spaces.has(saved.player.space)) {
@@ -338,6 +341,22 @@ class WorldEngine {
             this.host.open({ sourceId: t.item.id });
             return;
         }
+        if (t.kind === 'avatar') {
+            // The mirror: walk as one of the studio's animals. The roster is the
+            // shared painter's CHARS (unlocked ones), never a second list.
+            const lib = window.CADENZA_CRITTERS;
+            const opts = lib ? lib.CHARS.filter(c => c.unlocked).map(c => ({ label: `${c.name} — ${c.sub}`, value: c.id })) : [];
+            if (!opts.length) { this.dialogue.show(t.item.label || 'Mirror', ['Just you. The roster has not loaded.']); return; }
+            opts.push({ label: 'Stay as you are', value: null });
+            this.dialogue.choose(t.item.label || 'Mirror', opts, (id) => {
+                if (!id) return;
+                this.state.avatar = id;
+                this.player.avatar = id;
+                this.save.record('AvatarChosen', id);
+                this.persist();
+            });
+            return;
+        }
         if (t.kind === 'examine') {
             // An examine may read the registry's places instead of fixed text:
             // the first consumer of places.json inside the world.
@@ -418,7 +437,7 @@ class WorldEngine {
     }
 
     persist() {
-        this.save.checkpoint({ ...this.player, era: this.state.era });
+        this.save.checkpoint({ ...this.player, era: this.state.era, avatar: this.state.avatar });
         this.save.flush();
     }
 }

@@ -70,8 +70,8 @@ class Renderer {
         // Things on the map, in y order so nearer things draw over farther ones.
         const figures = [];
         for (const i of space.interactables) figures.push({ y: i.y, draw: () => this.drawInteractable(ctx, i, i.x * ts - cam.x, i.y * ts - cam.y, ts) });
-        for (const n of space.npcs) figures.push({ y: n.y, draw: () => this.drawFigure(ctx, n.x * ts - cam.x, n.y * ts - cam.y, ts, n.facing, (n.def.sprite && n.def.sprite.color) || '#7fb3d5', false) });
-        figures.push({ y: player.py, draw: () => this.drawFigure(ctx, player.px * ts - cam.x, player.py * ts - cam.y, ts, player.facing, '#F6F2EB', player.moving) });
+        for (const n of space.npcs) figures.push({ y: n.y, draw: () => this.drawActor(ctx, n.x * ts - cam.x, n.y * ts - cam.y, ts, n.facing, n.def.sprite || {}, false) });
+        figures.push({ y: player.py, draw: () => this.drawActor(ctx, player.px * ts - cam.x, player.py * ts - cam.y, ts, player.facing, { critter: player.avatar, color: '#F6F2EB' }, player.moving) });
         figures.sort((a, b) => a.y - b.y).forEach(f => f.draw());
 
         // Another era reads as another era: a tint and a little grain, presentation only.
@@ -196,6 +196,26 @@ class Renderer {
             ctx.fillStyle = '#4a3320';
             ctx.fillRect(sx + 3.7 * u, sy + 4.5 * u, 0.6 * u, 2.5 * u);
         }
+    }
+
+    // Who stands on a tile: one of the studio's real animals through the shared
+    // painter (/platform/sprites/critters.js, published from CAMT jobs/flute.py),
+    // or the plain figure when no critter is named or the module is absent.
+    drawActor(ctx, sx, sy, ts, facing, sprite, moving) {
+        const lib = window.CADENZA_CRITTERS;
+        const ch = sprite && sprite.critter && lib && lib.CHARS.find(c => c.id === sprite.critter);
+        if (!ch) { this.drawFigure(ctx, sx, sy, ts, facing, (sprite && sprite.color) || '#7fb3d5', moving); return; }
+        const u = ts / 8;
+        ctx.fillStyle = 'rgba(0,0,0,0.35)';
+        ctx.beginPath(); ctx.ellipse(sx + ts / 2, sy + ts - u / 2, 2.8 * u, u, 0, 0, Math.PI * 2); ctx.fill();
+        ctx.save();
+        // The painter draws a side view facing right, centred on (0,0), r = half
+        // the body height; flip for left, and let the walk bob it.
+        const bob = moving ? (Math.floor(this.frame / 6) % 2 ? -u * 0.3 : 0) : 0;
+        ctx.translate(sx + ts / 2, sy + ts * 0.58 + bob);
+        if (facing === 'left') ctx.scale(-1, 1);
+        lib.drawCritter(ctx, ch, ts * 0.36 * (ch.scale || 1), false, false);
+        ctx.restore();
     }
 
     // A small figure: head, body, two legs. `moving` bobs the legs.

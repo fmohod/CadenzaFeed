@@ -208,6 +208,30 @@ dialogue box advances it, tapping a menu row picks it, and the hosted terminal c
 `⏻ leave` button because a phone has no Escape key (standalone CAIN never shows it). The
 dialogue sits under the HUD so it never covers the controls.
 
+## The studio's animals, from one painter
+
+Owner ruling, log 20260907-02: Flutie Cats and this world share **one asset pool**. The
+seven real animals (Rocco, Star, Ella, Xica, Elvis, Randy Boy, Smokey; Lulu waits on
+consent) are drawn by one parametric pixel painter that lives in CAMT `jobs/flute.py`.
+CAMT publishes it as `/platform/sprites/critters.js` (derived; never edit the export),
+and `world/renderer.js` draws the player and any NPC whose sprite names a `critter` with
+it, flipped for left. The player walks as **Rocco** by default (the first character
+everyone gets, the owner's ruling) and can change at the **mirror** in the office; the
+choice is player state and is saved. Every drawn detail is an accuracy constraint from
+life (Flutie Cats README): Rocco has no tail, Star grins, Xica's tail is a question mark.
+
+Canon timeline for later: in the real-world universe an animal exists in-game only within
+its real lifetime, which the timeline model already supports (a placement is a binding
+with a `valid` span).
+
+## The address gate
+
+Owner, same log: `/betatest` sits behind the same Cloudflare gate as `/flutiecats`. A
+Worker on the route checks a `GATE_CODE` secret; the right code sets a cookie for the
+path, anything else sees the lock page. Deployed by CAMT `shell\cloudflare-gate.ps1
+-Preset betatest`, which prompts for the API token and the code and writes neither to
+disk. The address is gated; this repo stays public, the owner's accepted trade-off.
+
 ## Getting around
 
 The bus stop on the community block (`type: "travel"`) is a chooser built at runtime from

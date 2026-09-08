@@ -17,18 +17,92 @@
     "WWWWWWWWWWWW"
   ],
   "spawns": [
-    { "id": "spawn:default", "x": 5, "y": 4, "facing": "down" },
-    { "id": "spawn:from-street", "x": 10, "y": 4, "facing": "left" }
+    {
+      "id": "spawn:default",
+      "x": 5,
+      "y": 4,
+      "facing": "down"
+    },
+    {
+      "id": "spawn:from-street",
+      "x": 10,
+      "y": 4,
+      "facing": "left"
+    }
   ],
   "exits": [
-    { "id": "exit:front-door", "x": 11, "y": 4, "label": "Front door", "to": { "space": "space:community-block", "spawn": "spawn:from-office" } }
+    {
+      "id": "exit:front-door",
+      "x": 11,
+      "y": 4,
+      "label": "Front door",
+      "to": {
+        "space": "space:community-block",
+        "spawn": "spawn:from-office"
+      }
+    }
   ],
   "interactables": [
-    { "id": "terminal:office", "type": "terminal", "x": 2, "y": 1, "label": "Archive Terminal" },
-    { "id": "examine:desk", "type": "examine", "x": 3, "y": 1, "label": "Desk", "marker": false, "text": ["Contact sheets, a lens cloth, three hard drives daisy-chained together.", "The drives are labelled by year."] },
-    { "id": "examine:shelves", "type": "examine", "x": 10, "y": 2, "label": "Shelves", "marker": false, "text": ["Binders. Flyers. Programs from shows long over.", "Everything here happened somewhere in this city."] },
-    { "id": "examine:bed", "type": "examine", "x": 1, "y": 6, "label": "Bed", "marker": false, "text": ["Not now. There is daylight left."] },
-    { "id": "examine:city-map", "type": "examine", "x": 9, "y": 0, "label": "City map", "marker": false, "list": "places", "text": "A map of Houston pinned to the wall. The pins are the places the archive can name in public:" }
+    {
+      "id": "terminal:office",
+      "type": "terminal",
+      "x": 2,
+      "y": 1,
+      "label": "Archive Terminal"
+    },
+    {
+      "id": "examine:desk",
+      "type": "examine",
+      "x": 3,
+      "y": 1,
+      "label": "Desk",
+      "marker": false,
+      "text": [
+        "Contact sheets, a lens cloth, three hard drives daisy-chained together.",
+        "The drives are labelled by year."
+      ]
+    },
+    {
+      "id": "examine:shelves",
+      "type": "examine",
+      "x": 10,
+      "y": 2,
+      "label": "Shelves",
+      "marker": false,
+      "text": [
+        "Binders. Flyers. Programs from shows long over.",
+        "Everything here happened somewhere in this city."
+      ]
+    },
+    {
+      "id": "examine:bed",
+      "type": "examine",
+      "x": 1,
+      "y": 6,
+      "label": "Bed",
+      "marker": false,
+      "text": [
+        "Not now. There is daylight left."
+      ]
+    },
+    {
+      "id": "examine:city-map",
+      "type": "examine",
+      "x": 9,
+      "y": 0,
+      "label": "City map",
+      "marker": false,
+      "list": "places",
+      "text": "A map of Houston pinned to the wall. The pins are the places the archive can name in public:"
+    },
+    {
+      "id": "avatar:mirror",
+      "type": "avatar",
+      "x": 5,
+      "y": 0,
+      "label": "Mirror",
+      "marker": false
+    }
   ],
   "npcs": []
 }
