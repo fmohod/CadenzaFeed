@@ -1,5 +1,5 @@
 // critters.js -- the Cadenza Arthouse animal roster and its pixel painter.
-// GENERATED 2026-09-07 19:50 by CAMT jobs/flutie_publish.py from jobs/flute.py; edit THERE.
+// GENERATED 2026-09-08 01:57 by CAMT jobs/flutie_publish.py from jobs/flute.py; edit THERE.
 // One painter, every game (owner ruling 2026-09-07): Flutie Cats and the world
 // draw the same seven real animals from this file. Facts per animal are
 // accuracy constraints from life (Flutie Cats README), not style choices.

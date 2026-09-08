@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Flute Input — detector prototype — Cadenza Arthouse Media Tools</title>
-<!-- Flutie Cats site build 2026-09-08 01:10 -- published from CAMT jobs/flutie_publish.py; edit THERE, not here -->
+<!-- Flutie Cats site build 2026-09-08 01:57 -- published from CAMT jobs/flutie_publish.py; edit THERE, not here -->
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0b0d0f">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=2">
@@ -713,7 +713,7 @@ const MUSIC = {
 const TITLE_BPM = 96;                   // PRESS START pulses on this beat
 
 let MAC = null, MSRC = null, MGAIN = null, MTOKEN = 0, MMAP = false,
-    MNAME = null;
+    MNAME = null, MSTART = 0;
 const MBUF = {};
 async function loadMusicMap(){
   if (MMAP) return; MMAP = true;
@@ -749,8 +749,11 @@ async function playMusic(name){
     const g = MAC.createGain();
     src.connect(g); g.connect(MAC.destination);
     src.start();
-    MSRC = src; MGAIN = g; MNAME = name;
+    MSRC = src; MGAIN = g; MNAME = name; MSTART = MAC.currentTime;
   } catch(e){}
+}
+function musicTime(){                    // the film clock: where the song is
+  return (MSRC && MAC) ? MAC.currentTime - MSTART : null;
 }
 function stopMusic(fadeS){
   if (!MSRC) return;
@@ -764,47 +767,175 @@ function stopMusic(fadeS){
   } catch(e){}
 }
 
-// Intro panels: draw functions + typewriter lines. Ninja Gaiden grammar
-// from the reference study -- letterbox, one light source, silhouettes.
+// Intro panels: a FILM cut to the owner's cue sheet for "opening
+// sequence.mp3" (his ears, 2026-09-08). Soft theme alone to 16.132s;
+// snare paradiddle sneaks in there; the theme repeats at 19.549s with a
+// driving pulse rising the whole time; at 35.241s the theme stops and
+// only the pulse swells -- dread -- until the bass DROPS at 43.278s (the
+// tough part of the story); the theme returns all strong and mighty at
+// 58.247s; the last hit lands at 74.334s, percussion ends dead, the tail
+// fades. Panels carry ABSOLUTE start times on the music clock so the
+// drop lands on the drop; pages no longer turn by hand -- a tap skips
+// the whole film to the title. Backstories are canon (Flutie Cats
+// README): Rocco is THE singer, and the dark beat is his.
+const CUE = { snare: 16.132, repeat: 19.549, pulse: 35.241,
+              drop: 43.278, mighty: 58.247, hit: 74.334 };
+const INTRO_END = 80.6;                  // hand off to title inside the fade
 function bootShade(ch){                  // any roster animal, silhouetted
   return Object.assign({}, ch, { body:"#10151c", tan:"#10151c",
     bib:"#161c24", dark:"#0b0f14", light:"#161c24", chin:"#161c24",
     patch:"#161c24", eye:"#2a3644", tongue:"#10151c" });
 }
-function panelMoon(cx, W, H){
-  cx.fillStyle = "#e8e6df";
+function introSky(cx, W, H, t, dim){     // the one set: stars, moon, skyline
+  dim = dim || 0;
+  for (let i = 0; i < 26; i++){          // deterministic twinkle
+    const x = W*(((i*97)%53)/53), y = H*(0.06 + 0.48*(((i*57)%31)/31));
+    cx.globalAlpha = (0.7 - 0.55*dim)*(0.4 + 0.6*Math.abs(Math.sin(t*1.6 + i*2.3)));
+    cx.fillStyle = "#cfd6de";
+    cx.fillRect(x, y, 2, 2);
+  }
+  cx.globalAlpha = 1;
+  cx.fillStyle = dim > 0.5 ? "#6a6c66" : "#e8e6df";
   cx.beginPath(); cx.arc(W*0.72, H*0.32, Math.min(W,H)*0.13, 0, 7); cx.fill();
+  if (dim){                              // the moon loses its light
+    cx.fillStyle = "rgba(11,13,15," + (0.55*dim) + ")";
+    cx.beginPath(); cx.arc(W*0.72, H*0.32, Math.min(W,H)*0.132, 0, 7); cx.fill();
+  }
   cx.fillStyle = "#0d1218";
   for (const rf of [[0.05,0.2,0.16],[0.28,0.14,0.24],[0.46,0.22,0.12],
                     [0.72,0.2,0.2]])
     cx.fillRect(W*rf[0], H*0.78 - H*rf[2], W*rf[1], H*rf[2] + H*0.22);
 }
-function panelRocco(cx, W, H){
-  panelMoon(cx, W, H);
-  cx.save(); cx.translate(W*0.32, H*0.68);
+function introNotes(cx, W, H, t, up, n){ // drifting notes: rising or falling
+  cx.font = "700 " + Math.round(Math.min(W,H)*0.05) + "px system-ui";
+  cx.fillStyle = "#e8c860";
+  for (let i = 0; i < n; i++){
+    const ph = (t*0.16 + i*0.31) % 1;
+    const x = W*(0.4 + 0.055*i + 0.03*Math.sin(t*0.9 + i*3));
+    const y = up ? H*(0.62 - 0.34*ph) : H*(0.3 + 0.42*ph);
+    cx.globalAlpha = up ? 1 - ph : Math.max(0, 0.8 - ph);
+    cx.fillText(i%2 ? "♫" : "♪", x, y);
+  }
+  cx.globalAlpha = 1;
+}
+function introStar(cx, W, H, x, y, a){   // the one gold star. His.
+  const s = Math.min(W,H)*0.013;
+  cx.globalAlpha = a;
+  cx.fillStyle = "#e8c860";
+  cx.fillRect(x - s/2, y - s*2, s, s*4);
+  cx.fillRect(x - s*2, y - s/2, s*4, s);
+  cx.globalAlpha = 1;
+}
+function panelMoon(cx, W, H, t){ introSky(cx, W, H, t, 0); }
+function panelRocco(cx, W, H, t){
+  introSky(cx, W, H, t, 0);
+  cx.save();
+  cx.translate(W*0.32, H*0.68 + Math.sin(t*2)*H*0.006);   // he sways as he sings
   drawCritter(cx, bootShade(CHARS[0]), Math.min(W,H)*0.09, false, true);
   cx.restore();
-  cx.fillStyle = "#e8c860";                       // notes drifting moonward
-  cx.font = "700 " + Math.round(Math.min(W,H)*0.05) + "px system-ui";
-  cx.fillText("♪", W*0.47, H*0.52);
-  cx.fillText("♫", W*0.55, H*0.42);
+  introNotes(cx, W, H, t, true, 4);
 }
-function panelCrew(cx, W, H){
-  panelMoon(cx, W, H);
+function panelBio(id){                   // one animal steps into the moonlight
+  return (cx, W, H, t) => {
+    introSky(cx, W, H, t, 0);
+    const ch = CHARS.find(c => c.id === id) || CHARS[0];
+    const e = 1 - Math.pow(1 - Math.min(1, t/0.7), 3);
+    cx.save();
+    cx.translate(W*(0.15 + 0.35*e), H*0.66 + Math.sin(t*2.4)*H*0.006);
+    drawCritter(cx, bootShade(ch), Math.min(W,H)*0.1*(ch.scale || 1),
+                false, false);
+    cx.restore();
+    cx.globalAlpha = Math.min(1, Math.max(0, (t - 0.5)/0.5));
+    cx.fillStyle = ch.accent || "#e8c860";
+    cx.font = "800 " + Math.round(Math.min(W,H)*0.045) + "px system-ui";
+    cx.textAlign = "center";
+    cx.fillText(ch.name.toUpperCase(), W*0.5, H*0.32);
+    cx.globalAlpha = 1;
+  };
+}
+function panelNight(cx, W, H, t){        // 35.241: only the pulse, rising
+  introSky(cx, W, H, t, Math.min(1, t/7));   // the sky loses its light
+  introNotes(cx, W, H, t, true, Math.max(1, 3 - Math.floor(t/3)));
+}
+function panelGone(cx, W, H, t){         // 43.278: THE DROP. Nobody sang.
+  introSky(cx, W, H, t, 1);
+  cx.fillStyle = "rgba(232,230,223,0.07)";   // moonlight on his empty spot
+  cx.beginPath();
+  cx.ellipse(W*0.32, H*0.74, W*0.09, H*0.028, 0, 0, 7); cx.fill();
+  introNotes(cx, W, H, t, false, 3);         // the notes fall now
+}
+function panelRemember(cx, W, H, t){     // a new star, learning to shine
+  introSky(cx, W, H, t, 0.8);
+  introStar(cx, W, H, W*0.3, H*0.16,
+            (0.35 + 0.55*Math.abs(Math.sin(t*2.2)))*Math.min(1, t/1.5));
+}
+function panelReturn(cx, W, H, t){       // 58.247: mighty -- color floods in
+  introSky(cx, W, H, t, 0);
+  introStar(cx, W, H, W*0.3, H*0.16, 0.9);
   const r = Math.min(W,H)*0.055;
   CHARS.slice(0, 7).forEach((ch, i) => {
-    cx.save(); cx.translate(W*(0.12 + i*0.126), H*0.72);
-    drawCritter(cx, bootShade(ch), r*(ch.scale || 1), false, false);
+    const e = Math.max(0, Math.min(1, (t - i*0.5)/0.7));
+    if (!e) return;
+    const ee = 1 - Math.pow(1 - e, 3);
+    cx.save(); cx.globalAlpha = ee;
+    cx.translate(W*(0.12 + i*0.126) + (i%2 ? 1 : -1)*(1 - ee)*W*0.3,
+                 H*0.72 - Math.abs(Math.sin(t*3 + i))*H*0.01*ee);
+    drawCritter(cx, ch, r*(ch.scale || 1), false, false);  // FULL color
     cx.restore();
   });
+  cx.globalAlpha = 1;
+}
+function panelTonight(cx, W, H, t){      // the whole crew, bouncing on beat
+  introSky(cx, W, H, t, 0);
+  introStar(cx, W, H, W*0.3, H*0.16, 0.9);
+  const r = Math.min(W,H)*0.055;
+  CHARS.slice(0, 7).forEach((ch, i) => {
+    cx.save();
+    cx.translate(W*(0.12 + i*0.126),
+                 H*0.72 - Math.abs(Math.sin(t*3 + i*0.9))*H*0.014);
+    drawCritter(cx, ch, r*(ch.scale || 1), false, i === 0);  // Rocco: flute up
+    cx.restore();
+  });
+  introNotes(cx, W, H, t, true, 6);
+}
+function panelFade(cx, W, H, t){         // 74.334: the hit. Cut. His star.
+  if (t < 0.16){ cx.fillStyle = "#e8e6e3"; cx.fillRect(0, 0, W, H); return; }
+  introStar(cx, W, H, W*0.5, H*0.42, Math.max(0, 1 - (t - 0.16)/5.5));
 }
 const PANELS = [
-  { text: "In this neighborhood, the animals listen.",
-    holdS: 8, draw: panelMoon },
-  { text: "When the flute played, one of them always sang along.",
-    holdS: 9, draw: panelRocco },
-  { text: "Tonight, they play.",
-    holdS: 7, draw: panelCrew },
+  // ACT I -- the soft theme, alone. Stillness.
+  { at: 0.0,       text: "In this neighborhood, the animals listen.",
+    draw: panelMoon },
+  { at: 8.2,       text: "And when the flute played, Rocco always sang along.",
+    draw: panelRocco },
+  // ACT II -- the snare sneaks in, the pulse drives: meet the crew.
+  { at: CUE.snare, text: "Star came for a Christmas photo shoot. She never left.",
+    draw: panelBio("star") },
+  { at: CUE.repeat, text: "Ella breaks everything she loves. Nobody blames her.",
+    draw: panelBio("ella") },
+  { at: 22.7,      text: "Smokey walked off a construction site, into the family.",
+    draw: panelBio("smokey") },
+  { at: 25.8,      text: "Elvis wears a tuxedo to absolutely everything.",
+    draw: panelBio("elvis") },
+  { at: 28.9,      text: "Everyone thought Randy Boy was a girl. He forgave them.",
+    draw: panelBio("randy") },
+  { at: 32.05,     text: "And Xica keeps one paw in the house, one paw out.",
+    draw: panelBio("xica") },
+  // ACT III -- the theme stops. Only the pulse, louder and louder...
+  { at: CUE.pulse, text: "Then one night, the flute played...",
+    draw: panelNight },
+  // ...and the bass DROPS. The tough part of the story.
+  { at: CUE.drop,  text: "...and nobody sang.",
+    draw: panelGone },
+  { at: 50.8,      text: "The neighborhood went quiet. But the song remembered him.",
+    draw: panelRemember },
+  // ACT IV -- the theme returns, all strong and mighty.
+  { at: CUE.mighty, text: "Then, one by one -- they answered.",
+    draw: panelReturn },
+  { at: 66.4,      text: "For Rocco. Tonight, they play.",
+    draw: panelTonight },
+  // ACT V -- the last hit: cut to black, one star, fade with the tail.
+  { at: CUE.hit,   text: "", draw: panelFade },
 ];
 
 let BOOT = null;
@@ -815,7 +946,7 @@ function bootStart(){
   if (GM) return;                        // a game overlay is already up
   const intro = !bootSeen();
   BOOT = { phase: intro ? "intro" : "title", panel: 0, chars: 0,
-           t: 0, last: performance.now() };
+           t: 0, introT: 0, last: performance.now() };
   playMusic(intro ? "intro" : "title");
   $("game").style.display = "block";
   $("gsel").style.display = "none";
@@ -833,12 +964,12 @@ function bootAdvance(){                  // any input during boot
   if (BOOT.advAt && now - BOOT.advAt < 250) return;
   BOOT.advAt = now;
   if (BOOT.phase === "intro"){
-    const p = PANELS[BOOT.panel];
-    if (BOOT.chars < p.text.length){ BOOT.chars = p.text.length; return; }
-    if (BOOT.t < 0.5) return;            // scene ARMING: the launch tap
-    BOOT.panel++; BOOT.t = 0; BOOT.chars = 0;   // (or a fullscreen-toast
-    if (BOOT.panel >= PANELS.length) bootTitle(); // dismissal) must never
-  } else if (BOOT.phase === "title"){             // turn a page it caused
+    // The film is cut to the song, so pages never turn by hand: a tap
+    // SKIPS to the title. Scene ARMING is longer here -- a launch tap or
+    // fullscreen-toast dismissal must never skip a film it caused.
+    if (BOOT.introT < 1.5) return;
+    bootTitle();
+  } else if (BOOT.phase === "title"){
     if (BOOT.t < 0.6) return;
     bootDone();
   }
@@ -852,6 +983,7 @@ function bootReplayIntro(){              // the quiet corner affordance
   if (!BOOT || BOOT.phase !== "title") return;
   try { localStorage.removeItem("fc_intro_seen"); } catch(e){}
   BOOT.phase = "intro"; BOOT.panel = 0; BOOT.chars = 0; BOOT.t = 0;
+  BOOT.introT = 0;
   playMusic("intro");
 }
 function bootDone(){
@@ -877,20 +1009,38 @@ function bootTick(now){
   const box = H*0.12;                    // the letterbox
   const fpx = Math.max(16, Math.round(H*0.036));
   if (BOOT.phase === "intro"){
-    const p = PANELS[BOOT.panel];
+    // The film clock: the song itself when it is playing, a plain dt
+    // accumulator when it is not (fetch failed, muted device) -- either
+    // way the same 81-second timeline, and the same cut points.
+    BOOT.introT += dt;
+    const mt = (MNAME === "intro") ? musicTime() : null;
+    const tm = (mt !== null) ? mt : BOOT.introT;
+    if (tm >= INTRO_END){
+      bootTitle();
+      requestAnimationFrame(bootTick); return;
+    }
+    let pi = 0;
+    for (let i = 0; i < PANELS.length; i++) if (tm >= PANELS[i].at) pi = i;
+    if (pi !== BOOT.panel){ BOOT.panel = pi; BOOT.chars = 0; }
+    const p = PANELS[pi], tp = tm - p.at;
     cx.save(); cx.beginPath();
     cx.rect(0, box, W, H - box*2); cx.clip();
     cx.fillStyle = "#0b0d0f"; cx.fillRect(0, box, W, H - box*2);
-    p.draw(cx, W, H);
+    if (Math.abs(tm - CUE.drop) < 0.4)   // the bass drop SHAKES the room
+      cx.translate((Math.random() - 0.5)*W*0.012,
+                   (Math.random() - 0.5)*W*0.012);
+    p.draw(cx, W, H, tp);
     cx.restore();
-    BOOT.chars = Math.min(p.text.length, BOOT.chars + dt*28);
+    BOOT.chars = Math.min(p.text.length, BOOT.chars + dt*34);
     cx.fillStyle = "#e8e6e3";
     cx.font = "400 " + Math.round(fpx*0.75) + "px monospace";
     cx.textAlign = "center";
     cx.fillText(p.text.slice(0, Math.floor(BOOT.chars)), W/2, H - box*0.45);
-    if (BOOT.t >= p.holdS){
-      BOOT.panel++; BOOT.t = 0; BOOT.chars = 0;
-      if (BOOT.panel >= PANELS.length) bootTitle();
+    if (tm > 2 && tm < CUE.hit){         // quiet, corner, small
+      cx.fillStyle = "#3b434b";
+      cx.font = "600 " + Math.round(fpx*0.55) + "px system-ui";
+      cx.textAlign = "right";
+      cx.fillText("skip ▸", W*0.98, H*0.965);
     }
   } else {                               // TITLE
     cx.textAlign = "center";
