@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Flute Input — detector prototype — Cadenza Arthouse Media Tools</title>
-<!-- Flutie Cats site build 2026-09-07 19:50 -- published from CAMT jobs/flutie_publish.py; edit THERE, not here -->
+<!-- Flutie Cats site build 2026-09-08 00:16 -- published from CAMT jobs/flutie_publish.py; edit THERE, not here -->
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0b0d0f">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=2">
@@ -206,7 +206,8 @@ data); no ExpectationHint yet.</div>
     <span id="g-score" style="font:700 26px system-ui;
           font-variant-numeric:tabular-nums">0</span>
     <span class="sub" id="g-msg" style="font-size:16px"></span>
-    <span><button id="btn-fs" title="full screen">⛶</button>
+    <span><button id="btn-mute" title="mute the microphone">🎤</button>
+    <button id="btn-fs" title="full screen">⛶</button>
     <button id="btn-game-stop">Exit (Esc)</button></span>
   </div>
 </div>
@@ -283,7 +284,16 @@ const stats = new Map();          // midi -> array of tts ms (flute source only)
 // own voice lands in the stats as phantom E4/F4 rows if nothing marks it.
 let SPEAKING=false, SPEAK_UNTIL=0;
 
+// Mic mute -- his phone test, 2026-09-08: in tap mode, a stray whistle
+// or ambient tone off to the side can seize the controls mid-tap. One
+// tap on the 🎤 drops every microphone-sourced event at the bus; the
+// keyboard and touch oracles keep their own lanes. The detector still
+// RUNS (the gauge shows what it hears, dimmed), events just don't fire.
+let MIC_MUTED = false;
+
 function emit(ev){                 // MusicalEvent, per 20260828-02
+  if (MIC_MUTED && ev.source !== "keyboard" && ev.source !== "touch")
+    return;                        // muted: the mic doesn't get a vote
   ev.seq = ++SEQ;
   if (SPEAKING || performance.now() < SPEAK_UNTIL) ev.during_tts = true;
   const t = (ev.t_ms/1000).toFixed(3).padStart(8);
@@ -1400,7 +1410,7 @@ function crossTick(now, cx, W, H, dt, fpx){
 // is the only text; off-ladder notes get a red x prefix.
 const HUDS = { c: 0, a: 0 };            // displayed cents + brightness
 function drawHUD(cx, W, H, fpx, ladder, dt){
-  const f = LATEST, live = !!(f && f.voiced);
+  const f = LATEST, live = !MIC_MUTED && !!(f && f.voiced);
   const target = live ? Math.max(-50, Math.min(50, f.cents || 0)) : 0;
   HUDS.c += (target - HUDS.c) * Math.min(1, dt*10);
   HUDS.a += ((live ? 1 : 0.28) - HUDS.a) * Math.min(1, dt*6);
@@ -1436,7 +1446,11 @@ function drawHUD(cx, W, H, fpx, ladder, dt){
   cx.textAlign = "center";
   cx.fillText("♭", hx - r*1.18, hy - r*0.12);
   cx.fillText("♯", hx + r*1.18, hy - r*0.12);
-  if (live){                                         // the one piece of text
+  if (MIC_MUTED){                                    // the gauge says why
+    cx.fillStyle = "#5a6168";
+    cx.font = "700 "+Math.round(r*0.36)+"px system-ui";
+    cx.fillText("🔇 muted", hx, hy - r*1.22);
+  } else if (live){                                  // the one piece of text
     const nm = noteName(f.midi_note).replace("A#","Bb");
     const off = ladder && noteIdxIn(f.midi_note, ladder) < 0;
     cx.fillStyle = off ? "#d07070" : "#e8e6e3";
@@ -2032,6 +2046,16 @@ $("gname-in").addEventListener("keydown", e => {
 $("btn-game").onclick = gameStart;
 $("btn-train").onclick = beginTrain;
 $("btn-game-stop").onclick = gameStop;
+$("btn-mute").onclick = () => {
+  MIC_MUTED = !MIC_MUTED;
+  $("btn-mute").textContent = MIC_MUTED ? "🔇" : "🎤";
+  if (MIC_MUTED && GM){                 // don't leave a mic-held note stuck
+    GM.held = false;
+    if (GM.beams) for (const bm of GM.beams){ bm.idx = -1; bm.target = null; }
+  }
+  if (GM) $("g-msg").textContent = MIC_MUTED
+    ? "mic muted — taps and keys only" : "mic live";
+};
 $("btn-fs").onclick = () => {                   // his ask: one-tap fullscreen
   if (document.fullscreenElement) document.exitFullscreen();
   else document.documentElement.requestFullscreen().catch(()=>{});
