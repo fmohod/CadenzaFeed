@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Flute Input — detector prototype — Cadenza Arthouse Media Tools</title>
-<!-- Flutie Cats site build 2026-09-07 18:46 -- published from CAMT jobs/flutie_publish.py; edit THERE, not here -->
+<!-- Flutie Cats site build 2026-09-07 19:19 -- published from CAMT jobs/flutie_publish.py; edit THERE, not here -->
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0b0d0f">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=2">
@@ -891,7 +891,9 @@ window.addEventListener("keydown", e => {
    No audio exists client-side to include. Files land in the repo's
    prototypes\flute_sessions\ for any session to read directly. */
 function basePath(){
-  return location.pathname.startsWith("/flute") ? "/flute" : "";
+  const p = location.pathname;    // order matters: "flutiecats" CONTAINS
+  return p.startsWith("/flutiecats") ? "/flutiecats"        // "flute"
+       : p.startsWith("/flute") ? "/flute" : "";
 }
 function savePath(){ return basePath() + "/save"; }
 function saveSession(trigger, cb){
@@ -2153,6 +2155,10 @@ if (document.body.dataset.play === "1"){
     devStop();
     gameStart();
   };
+  // the Exit button bound BEFORE this wrapper existed and held the stale
+  // reference -- his phone found it: Exit went to a black screen (the
+  // hidden dev page). Rebind it to the wrapped stop.
+  $("btn-game-stop").onclick = () => gameStop();
 }
 </script>
 </body>
