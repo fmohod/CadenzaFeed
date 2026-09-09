@@ -98,7 +98,7 @@ the record, and the ADR-0011 manager's repo scan is what catches a mismatch.
 | `progress.raised_cents` | yes | index, page | What has come in. **Square is the truth; this is a dated copy of it.** |
 | `progress.successful_contributions` | yes | page, CAMT | Count of **completed Square payments** against the campaign's links — not people, not attempts. Named precisely so it is never read as either. |
 | `progress.as_of` | yes | page | ISO-8601 UTC. Shown on the page as "Figures as of …", so a reader can see how current the number is. |
-| `progress.source` | yes | CAMT | `manual` (a person copied it from Square) or `square_ingest` (CAMT reconciled it). Flipping this value is the whole of the V1→V2 change; no field is renamed. |
+| `progress.source` | yes | CAMT | `manual` (a person copied it from Square) or `square_ingest` (CAMT wrote it from the campaign ledger — the live path since 2026-09-09, §7). No field was renamed for that change. |
 | `funding.provider` | yes | CAMT | `square`. A campaign has one provider. |
 | `funding.tiers[]` | yes | page buttons, CAMT, `jobs/square_links.py` | `label` (the amount as shown), `description` (what the amount means, in words), `amount_cents`, `url`, `square_link_id`. `url` is `https://square.link/u/<code>` with no tracking parameters — the `<code>` is the identity the ADR-0011 registry is keyed on, so the manager's repo scan finds it. `square_link_id` is Square's own payment-link id, kept so the V2 ingest can match orders to a tier without parsing URLs. **A `url` whose code is not in the registry with `tested: true` may not be published.** |
 | `beneficiary.program` | yes | CAMT | Which Cadenza Arthouse program receives the outcome. Free text today; becomes a registry pointer when programs are minted. |
@@ -158,21 +158,27 @@ same call the homepage uses for articles), falling back to probing `0001/campaig
   (referenced in the repo, unknown to Square) or a published `UNTESTED` one blocks the change.
 - Canonical form: `https://square.link/u/<code>`, no tracking parameters.
 
-## 7. Updating progress (V1 — by hand)
+## 7. Progress updates itself — CAMT (since 2026-09-09)
 
-1. Open the Square dashboard, find payments against the campaign's links (their names begin
-   `Campaign NNNN ·`).
-2. Edit `campaign.json`: `progress.raised_cents`, `progress.contributions`, `progress.as_of`
-   (UTC now). Leave `source: manual`.
-3. If the goal is met, set `status: funded` (still accepting) — or `closed` when it should stop.
-4. When the money buys something, **append** to `outcomes[]`.
-5. Validate — `py -3.11 -c "import json;json.load(open('campaign.json',encoding='utf-8'))"` —
-   then commit and push. The live site is the record.
+CAMT's ticketing ingest polls Square every ten minutes. A payment on a campaign link is an order
+whose line item begins `Campaign NNNN ·`; the ingest **records** it once in the campaign ledger
+(`F:\Mediaegistry\campaign_payments.yaml`, no buyer identity), **announces** it to the
+owner's phone (`campaign.paid`), then **rewrites this folder's `campaign.json`** — `progress`
+from the ledger with `source: square_ingest`, `status: funded` when the goal is met — and
+commits and pushes the site. The page shows the new figure within minutes of the gift. Contract on
+the CAMT side: `TICKETING.md`, *Campaign payments*.
 
-**V2 — CAMT.** When CAMT ingests Square payments for campaign links (the same ingest ticketing
-already runs), it writes `progress` with `source: square_ingest` and publishes the folder
-through the same git-push channel the ticker uses. The schema above is the contract it will
-write to; it does not change shape when that happens.
+**By hand, when needed** (the ledger is still the source):
+
+- `py -3.11 jobs	ickets.py campaign NNNN --dry` prints the ledger totals;
+  without `--dry` it rewrites `campaign.json` and pushes.
+- A refund: mark the ledger row `refunded: <iso>`, then run the command above.
+- `status: closed` (stop accepting) is a hand edit; CAMT only ever raises `active` → `funded`.
+- When the money buys something, **append** to `outcomes[]` by hand, validate
+  (`py -3.11 -c "import json;json.load(open('campaign.json',encoding='utf-8'))"`), commit, push.
+
+`progress.source: manual` is still valid for a campaign CAMT does not know about; the first
+CAMT-recorded gift flips it to `square_ingest` and it stays there.
 
 ## 8. Pre-publish checklist
 
