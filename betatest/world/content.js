@@ -143,8 +143,8 @@ class ContentLoader {
                 // cookie expired: the shell renders, the data does not. Show the
                 // lock page itself instead of a broken world; its own script
                 // reloads once the code is accepted.
-                if (!Content._locked) {
-                    Content._locked = true;
+                if (!ContentLoader._locked) {
+                    ContentLoader._locked = true;
                     const html = await res.text();
                     document.open(); document.write(html); document.close();
                 }
