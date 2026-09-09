@@ -162,7 +162,8 @@ same call the homepage uses for articles), falling back to probing `0001/campaig
 
 CAMT's ticketing ingest polls Square every ten minutes. A payment on a campaign link is an order
 whose line item begins `Campaign NNNN ·`; the ingest **records** it once in the campaign ledger
-(`F:\Mediaegistry\campaign_payments.yaml`, no buyer identity), **announces** it to the
+(`F:\Media
+egistry\campaign_payments.yaml`, no buyer identity), **announces** it to the
 owner's phone (`campaign.paid`), then **rewrites this folder's `campaign.json`** — `progress`
 from the ledger with `source: square_ingest`, `status: funded` when the goal is met — and
 commits and pushes the site. The page shows the new figure within minutes of the gift. Contract on
@@ -172,7 +173,7 @@ the CAMT side: `TICKETING.md`, *Campaign payments*.
 
 - `py -3.11 jobs	ickets.py campaign NNNN --dry` prints the ledger totals;
   without `--dry` it rewrites `campaign.json` and pushes.
-- A refund: mark the ledger row `refunded: <iso>`, then run the command above.
+- A refund: **nothing to do.** The same poll reads Square's refund list, reduces the gift by exactly the refunded amount (a full refund removes it), republishes the page, and sends a receipt-grade ping. Refund in Square wherever you like — dashboard, app, CAMT — the page follows within ten minutes. The command above forces it sooner.
 - `status: closed` (stop accepting) is a hand edit; CAMT only ever raises `active` → `funded`.
 - When the money buys something, **append** to `outcomes[]` by hand, validate
   (`py -3.11 -c "import json;json.load(open('campaign.json',encoding='utf-8'))"`), commit, push.
