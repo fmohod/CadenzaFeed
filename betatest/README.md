@@ -124,7 +124,10 @@ running with a hole in it. It never crashes on content.
 - **No HTML scraping** (DevNotes RULES 3): Records come through `ArchiveRecordBuilder`.
 - **Save = player state only, append-only** (RULES 6): `{ player, events[] }` in
   localStorage under `cadenza-arthouse-world`; visited / talked / terminal flags are
-  derived by replaying `events[]`.
+  derived by replaying `events[]`. Owner ruling, log 20260908-06: saves stay on the
+  player's own machine, *"just reference points to know where in the timeline"* they
+  are; nothing personal reaches a server, and a private window losing its save is
+  accepted. The world says so once, on the first visit in a browser (the beta notice).
 - **Consent.** A real person becomes an NPC only with the owner's per-person consent; a
   friend's animal only with the friend's recorded yes. V0's NPC is `npc:test-001`,
   `canon: developer-test`, on purpose. The player's home is a fictional Archive Office.
@@ -238,7 +241,9 @@ code at `/betatest/gate?c=` is 403. One wrinkle the first test found: a browser 
 the game open before the gate went up still holds `index.html` for ten minutes (the site's
 `max-age=600`), so the shell renders and then the data comes back as the lock page. The
 content loader now handles that: a 401 HTML answer to any content fetch replaces the
-document with the lock page itself, whose own script reloads once the code is accepted.
+document with the lock page itself. Since 2026-09-11 the lock page is a zero-JavaScript
+form (television browsers, log 20260908-06): submitting navigates to `/betatest/gate?c=`,
+which answers 303 into the game with the cookie set, or 303 back to `/betatest/?bad=1`.
 
 ## Getting around
 
@@ -302,6 +307,21 @@ certain time you can possibly travel between them."* The model:
 - **Time travel** is built in its first form (see *Time*, above); what remains is content
   for more times and places, historical geometry where today's is wrong, and the rules
   for what the archive itself says was there once its own record (1999 on) is reached.
+- **Universe B is this world's fiction** (owner, logs 20260907-02, 20260908-05,
+  20260911-01, 20260911-02; the framework is recorded in CAMT `FUTURE_IDEAS.md`, "The IP
+  ruling"). Universe A is the real world the registry describes; Universe B is where the
+  studio's animals are people with their own lives, voiced by real actors in Universe A,
+  and where the story strands live (first named: a crooked-cop comedy, filmed like a
+  sitcom). The canon mechanics of how the two universes touch are queued for a design
+  pass, not decided here; nothing in this folder mints canon.
+- **Party and animal behaviour** (owner, log 20260911-02): recognisable animal behaviour as
+  mechanics — a party member who runs *"eleven and a half steps ahead"* and waits where
+  you were going (Ella), the confused head-tilt, the rest of the cutes. Needs the party
+  system first, which needs NPC placement first. Recorded so the behaviour is designed in,
+  not bolted on.
+- **Televisions** (owner, log 20260908-06): the lock page is a plain HTML form so a TV
+  browser's on-screen keyboard can submit the code; the game itself has not been walked on
+  a television yet, and remote-microphone input stays open.
 
 ## Not in V0 (deliberately)
 

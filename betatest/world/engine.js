@@ -55,6 +55,19 @@ class WorldEngine {
         }
         if (!placed) this.enter(m.start.space, m.start.spawn, null, true);
 
+        // First visit in this browser: the beta disclaimer the owner asked for
+        // (log 20260908-06). Saves are browser-local reference points; nothing
+        // about the player is sent anywhere. Shown once per browser, because
+        // a save exists from here on.
+        if (!saved) {
+            this.dialogue.show('', [
+                'This world is in beta.',
+                'Your progress saves in this browser only. Nothing about you is sent to a server.',
+                'A private window forgets everything when it closes.',
+            ]);
+            this.persist();   // a save now exists, so the notice is once per browser
+        }
+
         this.bus.on('terminal.opened', () => { this.paused = true; });
         this.bus.on('terminal.closed', () => {
             this.paused = false;
