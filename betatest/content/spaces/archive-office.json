@@ -5,7 +5,8 @@
   "kind": "interior",
   "theme": "interior",
   "canon": "fiction",
-  "neighborhood": "third-ward",
+  "neighborhood": "orbit",
+  "_note": "The player's home. In orbit since 2026-09-12 (owner ruling, log 20260912-02: 'for my privacy and security ... change the archive office location from wherever it's at in Third Ward ... to a spaceship in orbit'). Same room, same terminal; only where it is changed.",
   "map": [
     "WWWWWwWWWwWW",
     "W#P=......#W",
@@ -35,7 +36,7 @@
       "id": "exit:front-door",
       "x": 11,
       "y": 4,
-      "label": "Front door",
+      "label": "Hatch to the deck",
       "to": {
         "space": "space:community-block",
         "spawn": "spawn:from-office"
@@ -93,7 +94,7 @@
       "label": "City map",
       "marker": false,
       "list": "places",
-      "text": "A map of Houston pinned to the wall. The pins are the places the archive can name in public:"
+      "text": "A map of Houston pinned to the wall, a long way below. The pins are the places the archive can name in public:"
     },
     {
       "id": "avatar:mirror",

@@ -47,6 +47,7 @@ class Renderer {
         ctx.fillStyle = '#0d0b08';
         ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         if (!space) return;
+        if (space.theme === 'station') this.drawStars(ctx);
 
         const cam = this.camera(space, player.px, player.py);
         const ts = cam.ts;
@@ -147,6 +148,7 @@ class Renderer {
         const interior = space.theme === 'interior';
         const checker = (x + y) % 2 === 0;
         const u = ts / 8; // one "pixel" of detail
+        if (space.theme === 'station' && this.drawStationTile(ctx, c, x, y, sx, sy, ts, u, checker)) return;
         switch (c) {
             case '.': ctx.fillStyle = interior ? (checker ? '#3b2f24' : '#40342a') : (checker ? '#8a8578' : '#847f72'); ctx.fillRect(sx, sy, ts, ts); break;
             case 'M': ctx.fillStyle = '#6b3a2e'; ctx.fillRect(sx, sy, ts, ts); ctx.strokeStyle = '#a07840'; ctx.lineWidth = u / 2; ctx.strokeRect(sx + u, sy + u, ts - 2 * u, ts - 2 * u); break;
@@ -169,6 +171,46 @@ class Renderer {
             case 'g': ctx.fillStyle = '#2f5a2c'; ctx.fillRect(sx, sy, ts, ts); ctx.fillStyle = '#c9436a'; ctx.fillRect(sx + 1.5 * u, sy + 2 * u, u, u); ctx.fillStyle = '#e0c040'; ctx.fillRect(sx + 5 * u, sy + 4.5 * u, u, u); ctx.fillStyle = '#3f7a3a'; ctx.fillRect(sx + 3 * u, sy + 6 * u, u, u); break;
             case '~': ctx.fillStyle = '#2c5f8a'; ctx.fillRect(sx, sy, ts, ts); ctx.fillStyle = (Math.floor((this.frame / 20) + x + y) % 3 === 0) ? '#3a76a8' : '#2c5f8a'; ctx.fillRect(sx + u, sy + 3 * u, 3 * u, u / 2); ctx.fillRect(sx + 4 * u, sy + 6 * u, 2.5 * u, u / 2); break;
             case 'X': default: ctx.fillStyle = '#0d0b08'; ctx.fillRect(sx, sy, ts, ts); break;
+        }
+    }
+
+    // Space around the station: a fixed field of stars in screen space and a
+    // faint blue limb of the Earth along the bottom edge. Static on purpose.
+    drawStars(ctx) {
+        const W = this.canvas.width, H = this.canvas.height;
+        ctx.fillStyle = '#05060a'; ctx.fillRect(0, 0, W, H);
+        for (let i = 0; i < 140; i++) {
+            const x = (i * 7919) % W, y = (i * 104729) % H;
+            ctx.fillStyle = i % 9 === 0 ? '#ffffff' : (i % 4 === 0 ? '#9fb4d8' : '#6c7a94');
+            ctx.fillRect(x, y, i % 9 === 0 ? 2 : 1, i % 9 === 0 ? 2 : 1);
+        }
+        const g = ctx.createLinearGradient(0, H * 0.82, 0, H);
+        g.addColorStop(0, 'rgba(40,90,160,0)'); g.addColorStop(1, 'rgba(60,130,210,0.35)');
+        ctx.fillStyle = g; ctx.fillRect(0, H * 0.82, W, H * 0.18);
+    }
+
+    // The station (owner, log 20260912-02): the same tile codes as a street,
+    // read as decks, corridors and a greenhouse, with space where a street has
+    // nothing. Walkability is the code's, unchanged; this is only the picture.
+    // Returns false for any code it does not restyle, so the street painter
+    // still draws that one.
+    drawStationTile(ctx, c, x, y, sx, sy, ts, u, checker) {
+        switch (c) {
+            case 'X': {   // the void: black, with a star now and then, fixed per tile
+                ctx.fillStyle = '#05060a'; ctx.fillRect(sx, sy, ts, ts);
+                const h = (x * 7919 + y * 104729) % 29;
+                if (h < 3) { ctx.fillStyle = h === 0 ? '#ffffff' : '#9fb4d8'; ctx.fillRect(sx + ((x * 31 + y * 17) % 7) * u, sy + ((x * 13 + y * 23) % 7) * u, u / 2, u / 2); }
+                return true;
+            }
+            case '.': case 'S': ctx.fillStyle = checker ? '#5b6169' : '#565c64'; ctx.fillRect(sx, sy, ts, ts); ctx.fillStyle = 'rgba(0,0,0,0.15)'; ctx.fillRect(sx, sy + ts - u / 2, ts, u / 2); return true;
+            case 'R': ctx.fillStyle = checker ? '#2e343e' : '#2b303a'; ctx.fillRect(sx, sy, ts, ts); ctx.fillStyle = 'rgba(255,255,255,0.05)'; ctx.fillRect(sx, sy, ts, u / 3); return true;
+            case '-': ctx.fillStyle = '#2e343e'; ctx.fillRect(sx, sy, ts, ts); ctx.fillStyle = '#3aa0c9'; ctx.fillRect(sx + u, sy + ts / 2 - u / 3, ts * 0.5, u * 0.7); return true;
+            case 'G': ctx.fillStyle = checker ? '#2f6b4e' : '#2b6448'; ctx.fillRect(sx, sy, ts, ts); ctx.fillStyle = '#3f8a5f'; ctx.fillRect(sx + 2 * u, sy + 3 * u, u, u); ctx.fillRect(sx + 5 * u, sy + 6 * u, u, u); ctx.fillStyle = 'rgba(160,220,255,0.10)'; ctx.fillRect(sx, sy, ts, u / 3); return true;
+            case 'F': ctx.fillStyle = checker ? '#2f6b4e' : '#2b6448'; ctx.fillRect(sx, sy, ts, ts); ctx.fillStyle = '#8a94a0'; ctx.fillRect(sx, sy + 3 * u, ts, u * 0.6); ctx.fillRect(sx + u, sy + 2 * u, u * 0.6, 4 * u); ctx.fillRect(sx + 6 * u, sy + 2 * u, u * 0.6, 4 * u); return true;
+            case 'B': ctx.fillStyle = '#46505c'; ctx.fillRect(sx, sy, ts, ts); ctx.fillStyle = '#58636f'; ctx.fillRect(sx, sy, ts, u / 2); ctx.fillStyle = '#9fd3ff'; ctx.beginPath(); ctx.arc(sx + ts / 2, sy + 3.5 * u, 1.4 * u, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = '#2b303a'; ctx.lineWidth = Math.max(1, u / 3); ctx.stroke(); return true;
+            case 'D': ctx.fillStyle = '#46505c'; ctx.fillRect(sx, sy, ts, ts); ctx.fillStyle = '#2b303a'; ctx.fillRect(sx + 1.5 * u, sy + u, 5 * u, 7 * u); ctx.strokeStyle = '#3aa0c9'; ctx.lineWidth = Math.max(1, u / 3); ctx.strokeRect(sx + 1.5 * u, sy + u, 5 * u, 7 * u); return true;
+            case 'W': ctx.fillStyle = '#1c2128'; ctx.fillRect(sx, sy, ts, ts); ctx.fillStyle = '#2e343e'; ctx.fillRect(sx, sy, ts, u); return true;
+            default: return false;   // trees, plazas, garden beds, water keep their street look
         }
     }
 
@@ -202,6 +244,7 @@ class Renderer {
     // painter (/platform/sprites/critters.js, published from CAMT jobs/flute.py),
     // or the plain figure when no critter is named or the module is absent.
     drawActor(ctx, sx, sy, ts, facing, sprite, moving) {
+        if (sprite && sprite.image) { this.drawImageSprite(ctx, sx, sy, ts, sprite); return; }
         const lib = window.CADENZA_CRITTERS;
         const ch = sprite && sprite.critter && lib && lib.CHARS.find(c => c.id === sprite.critter);
         if (!ch) { this.drawFigure(ctx, sx, sy, ts, facing, (sprite && sprite.color) || '#7fb3d5', moving); return; }
@@ -216,6 +259,26 @@ class Renderer {
         if (facing === 'left') ctx.scale(-1, 1);
         lib.drawCritter(ctx, ch, ts * 0.36 * (ch.scale || 1), false, false);
         ctx.restore();
+    }
+
+    // A picture as a body: `sprite.image` is a path under betatest/ (the CAMT
+    // NPC is the studio logo on a coin, generated from the real logo file).
+    // `float: true` hovers it. Nothing here is a person; pictures of real people
+    // never enter the world this way (README: consent).
+    drawImageSprite(ctx, sx, sy, ts, sprite) {
+        this._images = this._images || new Map();
+        let img = this._images.get(sprite.image);
+        if (!img) { img = new Image(); img.src = sprite.image; this._images.set(sprite.image, img); }
+        const u = ts / 8;
+        ctx.fillStyle = 'rgba(0,0,0,0.35)';
+        ctx.beginPath(); ctx.ellipse(sx + ts / 2, sy + ts - u / 2, 2.8 * u, u, 0, 0, Math.PI * 2); ctx.fill();
+        if (!img.complete || !img.naturalWidth) return;
+        const size = ts * (sprite.scale || 1.4);
+        const hover = sprite.float ? Math.sin(this.frame / 22) * 0.6 * u - 1.5 * u : 0;
+        const prev = ctx.imageSmoothingEnabled;
+        ctx.imageSmoothingEnabled = false;
+        ctx.drawImage(img, Math.round(sx + ts / 2 - size / 2), Math.round(sy + ts * 0.9 - size + hover), size, size);
+        ctx.imageSmoothingEnabled = prev;
     }
 
     // A small figure: head, body, two legs. `moving` bobs the legs.

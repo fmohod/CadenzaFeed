@@ -199,7 +199,22 @@ class WorldEngine {
         this.daylightNow = null;
         this.hudWeather.textContent = '';
         const c = this.spaceCoords(space, data, true);
-        if (!c) return;
+        if (!c) {
+            // Nowhere on Earth: the station and its rooms (owner, log 20260912-02).
+            // No sky to fetch, so the HUD carries a UTC clock and nothing else.
+            const n = data.neighborhood && this.content.neighborhoods.get(data.neighborhood);
+            if (n && n.region === 'orbit') {
+                const tick = () => {
+                    if (this.space !== space) return;
+                    const t = new Date().toISOString().slice(11, 16);
+                    this.hudWeather.textContent = `Aboard ${space.name}: ${t} UTC · low Earth orbit`;
+                };
+                clearInterval(this._sunTimer);
+                this._sunTimer = setInterval(tick, 30000);
+                tick();
+            }
+            return;
+        }
         const tz = this.spaceTimeZone(data);
         const eraDate = data.era_date || null;     // a dated era: that day's sun, at this hour
         const tickSun = () => {

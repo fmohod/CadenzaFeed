@@ -1,25 +1,38 @@
 {
   "schema": 1,
-  "_note": "The world manifest. Spaces are playable geometry (content/spaces/). PLACES ARE NOT AUTHORED HERE: content/places.json is written by CAMT's publish job from the archive registry (only publication: public entities), so a place in the game is always a real registry entity and nobody authors locations twice (owner ruling 2026-09-03). `bindings` is the join: which Space represents which Place, by registry slug. A Space with no binding is fiction and is labelled so. Each neighborhood carries `timezone` (IANA) so the game's clock reads the place's own time. TIME: a binding is a point or span on the timeline. `era` is 'present' (unset) or an ISO date; `valid: {from, to}` is the span that space stands for. One place may bind several spaces, one per time. The bus stop lists places whose binding covers the date the player is standing in, so two places that both existed on a date can be travelled between (owner, 2026-09-03: 'locations exist accurately on a timeline').",
+  "_note": "The world manifest. Spaces are playable geometry (content/spaces/). PLACES ARE NOT AUTHORED HERE: content/places.json is written by CAMT's publish job from the archive registry (only publication: public entities), so a place in the game is always a real registry entity and nobody authors locations twice (owner ruling 2026-09-03). `bindings` is the join: which Space represents which Place, by registry slug. A Space with no binding is fiction and is labelled so. Each neighborhood carries `timezone` (IANA) so the game's clock reads the place's own time. TIME: a binding is a point or span on the timeline. `era` is 'present' (unset) or an ISO date; `valid: {from, to}` is the span that space stands for. One place may bind several spaces, one per time. The bus stop lists places whose binding covers the date the player is standing in, so two places that both existed on a date can be travelled between (owner, 2026-09-03: 'locations exist accurately on a timeline'). PRIVACY (owner ruling, log 20260912-02): the player's home is a space station in orbit, not anywhere on Earth; the only Earth places in the game are the public registry entities in places.json, and no place near where the owner lives is ever added because it is nearby.",
   "start": {
     "space": "space:archive-office",
     "spawn": "spawn:default"
   },
   "neighborhoods": [
     {
-      "slug": "third-ward",
-      "name": "Third Ward",
-      "region": "houston",
-      "anchor": {
-        "lat": 29.724,
-        "lon": -95.36,
-        "precision": "neighborhood",
-        "note": "approximate centroid, for orientation only; becomes a registry region node when one is minted"
-      },
+      "slug": "orbit",
+      "name": "Low Earth orbit",
+      "region": "orbit",
+      "anchor": null,
+      "_note": "Not on Earth, on purpose (owner, 2026-09-12: 'for my privacy and security'). No coordinates, no weather, a UTC clock.",
       "spaces": [
         "space:community-block",
         "space:archive-office",
         "space:corner-store"
+      ],
+      "timezone": "UTC"
+    },
+    {
+      "slug": "third-ward",
+      "name": "Third Ward",
+      "region": "houston",
+      "anchor": {
+        "lat": 29.7358859,
+        "lon": -95.365145,
+        "precision": "neighborhood",
+        "note": "anchored on Emancipation Park, a public registry place; becomes a registry region node when one is minted"
+      },
+      "spaces": [
+        "space:emancipation-park",
+        "space:peggy-park",
+        "space:third-ward-chess-park"
       ],
       "timezone": "America/Chicago"
     },
@@ -74,6 +87,18 @@
   "places_file": "places.json",
   "bindings": [
     {
+      "place": "emancipation-park",
+      "space": "space:emancipation-park"
+    },
+    {
+      "place": "peggy-park",
+      "space": "space:peggy-park"
+    },
+    {
+      "place": "third-ward-chess-park",
+      "space": "space:third-ward-chess-park"
+    },
+    {
       "place": "discovery-green",
       "space": "space:discovery-green"
     },
@@ -103,6 +128,9 @@
     "archive-office",
     "community-block",
     "corner-store",
+    "emancipation-park",
+    "peggy-park",
+    "third-ward-chess-park",
     "discovery-green",
     "eleanor-tinsley-park",
     "strawberry-park",
@@ -110,11 +138,13 @@
     "macroplaza-mall-1982"
   ],
   "npcs": [
-    "test-001"
+    "test-001",
+    "camt"
   ],
   "hub": {
     "space": "space:community-block",
     "spawn": "spawn:from-downtown",
-    "label": "Third Ward — Community Block"
+    "label": "Shuttle up to the Station",
+    "_note": "The way back up from Earth. Owner, 2026-09-12: the mechanic for getting between the station and the ground is still to be figured out; until then the shuttle is a bus stop that goes up."
   }
 }

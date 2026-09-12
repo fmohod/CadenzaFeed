@@ -1,0 +1,12 @@
+{
+  "schema": 1,
+  "id": "npc:camt",
+  "name": "Cadenza Arthouse Media Tools",
+  "canon": "fiction",
+  "sprite": { "image": "content/sprites/camt-coin.png", "float": true },
+  "_note": "The studio's own tools, as a character aboard the station (owner, log 20260912-02). Character design comes later; for now it is the real Cadenza Arthouse logo stamped on a big floating coin, rendered from F:\\Apps\\Libraries\\assets\\logo.png by a script, never hand-drawn. Its lines are placeholders too. What it is NOT yet: a live model. That is the 'AI models as NPCs' idea in CAMT FUTURE_IDEAS, and the Metal Gear codec-style call the owner described is recorded there as well.",
+  "dialogue": [
+    { "if": { "terminal_opened": true }, "lines": ["Station systems nominal.", "You have been at the terminal. Everything filed there happened down below.", "The drop shuttle is the way down. The way back up is still being worked out."] },
+    { "lines": ["Station systems nominal.", "I keep the archive. The office is through the hatch on the left.", "The drop shuttle is the way down. The way back up is still being worked out."] }
+  ]
+}

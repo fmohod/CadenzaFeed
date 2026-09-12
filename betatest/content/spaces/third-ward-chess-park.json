@@ -1,0 +1,44 @@
+{
+  "schema": 1,
+  "id": "space:third-ward-chess-park",
+  "name": "Third Ward Chess Park",
+  "kind": "exterior",
+  "theme": "street",
+  "canon": "documentary",
+  "era": "present",
+  "era_label": "Now",
+  "neighborhood": "third-ward",
+  "_note": "HAND-AUTHORED. The registry's position (ent_406c07dd1040: 29.7369, -95.3601, VERIFIED from the owner's own phone GPS, 2026-07-05) is real; OpenStreetMap has no named feature here, so this layout is illustrative — a community garden with chess tables at McGowen St and Live Oak St — not surveyed. Replace it with a generated space if geometry ever lands. Owner, log 20260912-02: one of the three Third Ward places that replace the fictional block.",
+  "anchor": {
+    "lat_max": 29.737171,
+    "lon_min": -95.360566,
+    "metres_per_tile": 5.0
+  },
+  "map": [
+    "RRRRRRRRRRRRRRRRRR",
+    "RRRRRRRRRRRRRRRRRR",
+    "SSSSSSSSSSSSSSSSSS",
+    "RSFFFFFFSFFFFFFFFF",
+    "RSGGTGGGSGGGGGTGGF",
+    "RSGggggGSGpppGgggF",
+    "RSGggggGSGp=pGgggF",
+    "RSGGGGGGSGpppGGGGF",
+    "RSGp=pGGSGGGGp=pGF",
+    "RSGpppGTSTGGGpppGF",
+    "RSGGGGGGGGGGGGGGGF",
+    "RSFFFFFFFFFFFFFFFF"
+  ],
+  "spawns": [
+    { "id": "spawn:default", "x": 8, "y": 2, "facing": "down" },
+    { "id": "spawn:from-block", "x": 8, "y": 2, "facing": "down" }
+  ],
+  "exits": [],
+  "interactables": [
+    { "id": "travel:bus-stop", "type": "travel", "x": 9, "y": 2, "label": "Bus stop", "spawn": "spawn:from-block", "solid": true },
+    { "id": "timegate:here", "type": "timegate", "x": 10, "y": 2, "label": "A gate in the air", "solid": true },
+    { "id": "examine:chess-tables", "type": "examine", "x": 4, "y": 8, "label": "Chess tables", "marker": false, "text": ["Concrete tables with boards set into them.", "Somebody left a game half played."] },
+    { "id": "examine:garden-beds", "type": "examine", "x": 4, "y": 5, "label": "Garden beds", "marker": false, "text": ["Raised beds, watered this morning.", "A community garden, kept by the people who use it."] },
+    { "id": "examine:corner-sign", "type": "examine", "x": 2, "y": 4, "label": "Street sign", "marker": false, "text": ["McGowen St and Live Oak St."] }
+  ],
+  "npcs": []
+}

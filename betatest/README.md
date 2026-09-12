@@ -131,6 +131,15 @@ running with a hole in it. It never crashes on content.
 - **Consent.** A real person becomes an NPC only with the owner's per-person consent; a
   friend's animal only with the friend's recorded yes. V0's NPC is `npc:test-001`,
   `canon: developer-test`, on purpose. The player's home is a fictional Archive Office.
+- **Privacy** (owner ruling, log 20260912-02, 2026-09-12). The player's home is **not on
+  Earth**: the Archive Office and the station around it sit in low Earth orbit, with no
+  coordinates, no weather and a UTC clock. The only Earth places in the game are the public
+  registry entities in `places.json`, each asked for by name; *"I don't want my local
+  Wendy's to appear either, because that's kind of creepy … I don't want people to figure
+  out where I live."* So: nothing is ever added to the world because it is near him, no
+  neighborhood anchor is ever a private point (each is a public park), and the fictional
+  *Third Ward block* that used to hold the office is now the station (same id, same
+  layout, different theme) so no fiction stands in for a real neighborhood.
 - **Names.** "Cadenza Arthouse", always both words. The games division has no name yet
   and this folder does not mint one.
 - **Vanilla HTML/CSS/JS, no build step.**
@@ -245,9 +254,40 @@ document with the lock page itself. Since 2026-09-11 the lock page is a zero-Jav
 form (television browsers, log 20260908-06): submitting navigates to `/betatest/gate?c=`,
 which answers 303 into the game with the cookie set, or 303 back to `/betatest/?bad=1`.
 
+## The Station, and the ground
+
+Since 2026-09-12 (owner ruling, log 20260912-02) the hub is **The Station — Forward
+Base**: the old fictional block, kept tile for tile (`space:community-block`, so saves
+standing on it still resolve), rethemed as *"a small, small mini town, like a forward
+operating base orbiting the Earth"* with a greenhouse deck, the Archive Office through
+one hatch and the Commissary (the old Corner Store) through the other. `theme: "station"`
+is a renderer palette over the same tile codes plus a starfield; walkability is
+unchanged. Its neighborhood is `orbit` (`region: "orbit"`, `anchor: null`, `timezone:
+UTC`): no coordinates, so no weather is fetched and the HUD shows a UTC clock.
+
+Aboard it lives the studio's own tools as a character, `npc:camt` ("Cadenza Arthouse
+Media Tools"). Character design comes later; for now it is the real Cadenza Arthouse logo
+stamped on a floating gold coin (`content/sprites/camt-coin.png`, generated from
+`F:\Apps\Libraries\assets\logo.png` by a script, never hand-drawn), drawn through the new
+`sprite.image` path in the renderer. Its lines are placeholders. It is not a live model;
+that idea, and the codec-style call the owner described, are recorded in CAMT
+`FUTURE_IDEAS.md`.
+
+**The way down and the way up.** The station's **Drop shuttle** is the travel chooser
+(below). Every Earth bus stop offers **"Shuttle up to the Station"** (the `hub` entry).
+The owner said the mechanic for getting between orbit and the ground *"we're going to
+have to figure out"*; until he does, the shuttle is a bus stop that goes up, and nothing
+else pretends to be the answer.
+
+**Third Ward is three real places now**, minted public on his instruction: Emancipation
+Park and Peggy Park (both generated from OpenStreetMap the usual way) and the Third Ward
+Chess Park, whose position is the registry's own verified reading but which OpenStreetMap
+does not know, so its space is hand-authored and says so in its `_note`. The neighborhood
+anchor moved from an approximate centroid to Emancipation Park.
+
 ## Getting around
 
-The bus stop on the community block (`type: "travel"`) is a chooser built at runtime from
+The Drop shuttle on the station (`type: "travel"`) is a chooser built at runtime from
 the bindings: every real place that has a playable space, by its registry name, and
 "Stay here". Nothing lists destinations by hand; bind a place and it appears. Each
 generated park has a bus stop back. The dialogue box gained a menu mode for this
@@ -267,7 +307,7 @@ certain time you can possibly travel between them."* The model:
   it**. Owner, 2026-09-03, after playing: *"buses only move you around the current time
   you're in; portals move you through time only; buses through space only."* So the
   **bus stop** lists only places whose binding covers the date you are standing in (the
-  fictional block is a present-day place and is offered only in the present), and in a
+  station is a present-day place and is offered only in the present), and in a
   time with no other bound place it says so and points at the gate. Arriving anywhere by
   bus never rewrites the era. The **gate** (`type: "timegate"`, one tile from every
   generated bus stop) lists the other times of *this* place and drops you on the same

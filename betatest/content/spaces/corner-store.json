@@ -1,11 +1,11 @@
 {
   "schema": 1,
   "id": "space:corner-store",
-  "name": "Corner Store",
+  "name": "Station Commissary",
   "kind": "interior",
   "theme": "interior",
   "canon": "fiction",
-  "neighborhood": "third-ward",
+  "neighborhood": "orbit",
   "map": [
     "WWWWwWWWWwWW",
     "W#########.W",
@@ -25,7 +25,7 @@
   ],
   "interactables": [
     { "id": "examine:counter", "type": "examine", "x": 4, "y": 3, "label": "Counter", "marker": false, "text": ["Nobody is behind the counter yet.", "A bell sits next to the register. You leave it alone."] },
-    { "id": "examine:shelf", "type": "examine", "x": 5, "y": 1, "label": "Shelf", "marker": false, "text": ["Canned goods, hot sauce, a row of candles."] }
+    { "id": "examine:shelf", "type": "examine", "x": 5, "y": 1, "label": "Shelf", "marker": false, "text": ["Canned goods, hot sauce, a row of candles.", "Somebody shipped all of this up here."] }
   ],
   "npcs": []
 }

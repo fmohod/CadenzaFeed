@@ -1,12 +1,12 @@
 {
   "schema": 1,
   "id": "space:community-block",
-  "name": "Third Ward — Community Block",
+  "name": "The Station — Forward Base",
   "kind": "exterior",
-  "theme": "street",
+  "theme": "station",
   "canon": "fiction",
-  "neighborhood": "third-ward",
-  "_note": "A hand-authored block. No real address is depicted; the neighborhood anchor in world.json is for orientation only.",
+  "neighborhood": "orbit",
+  "_note": "Was 'Third Ward — Community Block', a hand-authored fictional street. Owner ruling, log 20260912-02: for his privacy the player's home leaves Third Ward for a space station in orbit, and this block becomes that station — 'a small, small mini town, like a forward operating base orbiting the Earth' with a campus — so the layout stays as it was and the theme changes. The id is kept so saves standing here still resolve.",
   "map": [
     "GGGGTGGGGGGGGGGGGGGGGTGGGGGGGG",
     "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGG",
@@ -68,7 +68,7 @@
       "id": "exit:store-door",
       "x": 15,
       "y": 13,
-      "label": "Corner Store",
+      "label": "Commissary",
       "to": {
         "space": "space:corner-store",
         "spawn": "spawn:from-street"
@@ -81,10 +81,10 @@
       "type": "examine",
       "x": 8,
       "y": 10,
-      "label": "Flyer on a pole",
+      "label": "Notice board",
       "text": [
-        "A flyer, sun-faded, stapled over older flyers.",
-        "Whatever it announced has already happened."
+        "A notice board by the deck hatch, pinned over older notices.",
+        "Whatever it announced has already happened, somewhere below."
       ]
     },
     {
@@ -92,10 +92,22 @@
       "type": "examine",
       "x": 18,
       "y": 2,
-      "label": "Park fence",
+      "label": "Greenhouse rail",
       "marker": false,
       "text": [
-        "A low fence around a patch of grass someone keeps mowed."
+        "A rail around the greenhouse deck. Someone keeps the grass cut, even up here."
+      ]
+    },
+    {
+      "id": "examine:viewport",
+      "type": "examine",
+      "x": 26,
+      "y": 15,
+      "label": "Viewport",
+      "marker": false,
+      "text": [
+        "Earth, turning below. Houston is under the cloud somewhere.",
+        "The drop shuttle is the only way down for now."
       ]
     },
     {
@@ -103,7 +115,7 @@
       "type": "travel",
       "x": 22,
       "y": 9,
-      "label": "Bus stop",
+      "label": "Drop shuttle",
       "spawn": "spawn:from-block",
       "solid": true
     }
@@ -113,6 +125,12 @@
       "id": "npc:test-001",
       "x": 10,
       "y": 10,
+      "facing": "down"
+    },
+    {
+      "id": "npc:camt",
+      "x": 12,
+      "y": 15,
       "facing": "down"
     }
   ]
