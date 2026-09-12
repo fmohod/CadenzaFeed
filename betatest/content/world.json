@@ -15,7 +15,9 @@
       "spaces": [
         "space:community-block",
         "space:archive-office",
-        "space:corner-store"
+        "space:corner-store",
+        "space:library",
+        "space:library-multipurpose-room"
       ],
       "timezone": "UTC"
     },
@@ -128,6 +130,8 @@
     "archive-office",
     "community-block",
     "corner-store",
+    "library",
+    "library-multipurpose-room",
     "emancipation-park",
     "peggy-park",
     "third-ward-chess-park",

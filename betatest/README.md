@@ -273,6 +273,24 @@ stamped on a floating gold coin (`content/sprites/camt-coin.png`, generated from
 that idea, and the codec-style call the owner described, are recorded in CAMT
 `FUTURE_IDEAS.md`.
 
+**The campus has a registry identity.** Owner, 2026-09-12, to the software manager
+session: the studio's online chat room *"would exist in the RPG in the space station …
+where our archive campus is"*, as the **Library Multipurpose Room**, and every session
+held there is that room's history. So the campus is the one piece of fiction with
+registry entities, of kind `virtual` (the location model's own word for a place that is
+online), `internal_only`, parent-linked, and the RPG's rooms are their addresses:
+
+| registry entity | slug | game space |
+|---|---|---|
+| `ent_c87c133caad8` The Station | `station-campus` | `space:community-block` |
+| `ent_368ef850c808` The Library | `station-library` | `space:library` |
+| `ent_752c5eeeb371` Library Multipurpose Room | `library-multipurpose-room` | `space:library-multipurpose-room` |
+
+CAMT files each session's log under the room's entity id; the room in the game shows
+only that the room exists (notes never travel). The Library is the third door on the
+deck, the Multipurpose Room is through the back of the Library. They are not bound in
+`world.json` because they are not public places and the bus never lists them.
+
 **The way down and the way up.** The station's **Drop shuttle** is the travel chooser
 (below). Every Earth bus stop offers **"Shuttle up to the Station"** (the `hub` entry).
 The owner said the mechanic for getting between orbit and the ground *"we're going to

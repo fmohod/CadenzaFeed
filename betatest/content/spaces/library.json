@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "id": "space:library",
+  "name": "The Library",
+  "kind": "interior",
+  "theme": "interior",
+  "canon": "fiction",
+  "neighborhood": "orbit",
+  "_note": "The station campus's Library (owner, 2026-09-12, to the software manager session: the capture-page chat room 'would exist in the RPG in the space station that's orbiting Earth, where our archive campus is ... this can be a library'). Registry: ent for this building is recorded in CAMT (kind: virtual, internal_only); the space id here is its address in the game.",
+  "map": [
+    "WWWWWWWDWWWWWWW",
+    "W#####...#####W",
+    "W.............W",
+    "W#####...#####W",
+    "W.............W",
+    "W....=====....W",
+    "W.............W",
+    "W#####.......DW",
+    "WWWWWWWWWWWWWWW"
+  ],
+  "spawns": [
+    { "id": "spawn:default", "x": 12, "y": 7, "facing": "left" },
+    { "id": "spawn:from-deck", "x": 12, "y": 7, "facing": "left" },
+    { "id": "spawn:from-multipurpose", "x": 7, "y": 1, "facing": "down" }
+  ],
+  "exits": [
+    { "id": "exit:deck-door", "x": 13, "y": 7, "label": "Hatch to the deck", "to": { "space": "space:community-block", "spawn": "spawn:from-library" } },
+    { "id": "exit:multipurpose-door", "x": 7, "y": 0, "label": "Multipurpose Room", "to": { "space": "space:library-multipurpose-room", "spawn": "spawn:from-library" } }
+  ],
+  "interactables": [
+    { "id": "examine:stacks", "type": "examine", "x": 3, "y": 1, "label": "Stacks", "marker": false, "text": ["Binders and bound volumes, shelved by year.", "Everything in here happened somewhere below."] },
+    { "id": "examine:reading-table", "type": "examine", "x": 7, "y": 5, "label": "Reading table", "marker": false, "text": ["A long table. Nobody is reading right now.", "The Multipurpose Room is through the door at the back."] }
+  ],
+  "npcs": []
+}

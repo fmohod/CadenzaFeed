@@ -1,0 +1,32 @@
+{
+  "schema": 1,
+  "id": "space:library-multipurpose-room",
+  "name": "Library Multipurpose Room",
+  "kind": "interior",
+  "theme": "interior",
+  "canon": "fiction",
+  "neighborhood": "orbit",
+  "_note": "The room where the studio's online sessions happen (owner, 2026-09-12: 'we would call it the room of the building that it was in ... the library multipurpose room ... we're gonna save every chat log or session log that happens in there under that room's room history'). CAMT keeps that room log under the registry entity for this room (kind: virtual); this space is the room's address in the game. Nothing from those logs is shown here: notes never travel.",
+  "map": [
+    "WWWWWwWWWWWW",
+    "W..........W",
+    "W.==....==.W",
+    "W..........W",
+    "W.==....==.W",
+    "W.........PW",
+    "W..........W",
+    "WWWWWDWWWWWW"
+  ],
+  "spawns": [
+    { "id": "spawn:default", "x": 5, "y": 6, "facing": "up" },
+    { "id": "spawn:from-library", "x": 5, "y": 6, "facing": "up" }
+  ],
+  "exits": [
+    { "id": "exit:library-door", "x": 5, "y": 7, "label": "Back to the Library", "to": { "space": "space:library", "spawn": "spawn:from-multipurpose" } }
+  ],
+  "interactables": [
+    { "id": "examine:room-log", "type": "examine", "x": 10, "y": 5, "label": "Room log", "marker": false, "text": ["A console by the wall. Every session held in this room is kept in its history.", "What was said stays in the archive; this screen only shows that the room was used."] },
+    { "id": "examine:tables", "type": "examine", "x": 2, "y": 2, "label": "Tables", "marker": false, "text": ["Folding tables, set for a session.", "The chairs are still pushed in."] }
+  ],
+  "npcs": []
+}

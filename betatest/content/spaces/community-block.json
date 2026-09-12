@@ -21,7 +21,7 @@
     "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSS",
     "BBBBBBBSSSSBBBBBBBBSSSSGGGGGGG",
     "BBBBBBBSSSSBBBBBBBBSSSSGTGGGGG",
-    "BBBDBBBSSSSBBBBDBBBSSSSGGGGGGG",
+    "BBBDBBBSSSSBBBBDBBDSSSSGGGGGGG",
     "SSSSSSSSSSSSSSSSSSSSSSSSGGGGGG",
     "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGG",
     "GGTGGGGGGGGGGGGGGGGGGGGGGGTGGG",
@@ -51,6 +51,12 @@
       "x": 22,
       "y": 10,
       "facing": "up"
+    },
+    {
+      "id": "spawn:from-library",
+      "x": 18,
+      "y": 14,
+      "facing": "down"
     }
   ],
   "exits": [
@@ -72,6 +78,16 @@
       "to": {
         "space": "space:corner-store",
         "spawn": "spawn:from-street"
+      }
+    },
+    {
+      "id": "exit:library-door",
+      "x": 18,
+      "y": 13,
+      "label": "The Library",
+      "to": {
+        "space": "space:library",
+        "spawn": "spawn:from-deck"
       }
     }
   ],
