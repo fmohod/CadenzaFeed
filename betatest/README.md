@@ -380,6 +380,20 @@ certain time you can possibly travel between them."* The model:
 - **Televisions** (owner, log 20260908-06): the lock page is a plain HTML form so a TV
   browser's on-screen keyboard can submit the code; the game itself has not been walked on
   a television yet, and remote-microphone input stays open.
+- **The look, and MonoGame** (owner, log 20260913-02): *"I like the placeholder, like
+  version one of how it looks now. I think it's kind of cool actually, a retro look, so we
+  may not have to even change it at all."* He noticed MonoGame (Stardew Valley's engine)
+  because one framework exports many ways, and ruled: install it *"only if it makes sense
+  for the purpose of developing it."* Assessment on record: it does not, yet. This game is
+  plain web with no build step, which is what lets it run behind the Cloudflare gate on a
+  phone, a television browser and a cast screen from one URL, and share CAIN and the
+  sprite export with the rest of the site. MonoGame is C# with a per-platform build, so
+  adopting it is a rewrite that gives up the browser path. The day a native or console
+  build is actually wanted is the day to revisit; nothing about the current look needs it.
+- **Beta tester feedback is filed under "Universe B"** (owner, 2026-09-13, to the software
+  manager session): the tester portal's product menu names the RPG *Universe B*, and
+  entries filed there are feedback, never rulings, even when he files one himself. Whoever
+  carries the game reads them by product in CAMT; nothing from them travels here.
 
 ## Not in V0 (deliberately)
 
