@@ -354,6 +354,40 @@ certain time you can possibly travel between them."* The model:
   dated at month precision and the overlay says so. Set the day in one field when a
   dated source names it.
 
+## The Watchers of Universe B — design canon (owner, logs 20260913-03 and -06), not built
+
+His working title for the released game, and the shape of the player in it:
+
+- **The player is a Watcher.** No player accounts, no player-to-player messaging, no
+  microphones — *"that way it's also safe for people."* A Watcher comes down into
+  Universe B and watches: *"they just float around and look at stuff."* He floated
+  dropping the interact button for regular players; the beta keeps it, because the beta
+  is his developer walk. Everything the Watcher sees is already in the archive: *"Universe
+  B is just like a visual renderer … a different presentation layer, just like a video
+  reel is or a newspaper article."* The game receives what he does on the back end and
+  the Watcher experiences it. This settles the multiplayer question of 2026-09-03: there
+  is no relay to build, because there is nothing for players to say to each other.
+- **The Multipurpose Room is his.** The station's chat room is his developer space,
+  *"my chat room for my developer stuff"*, and may never be open to regular players. Its
+  session logs might later be *"where NPC texts can pull from."* The station door stays;
+  what is behind it is a separate question from the Watcher's game.
+- **Backstory** is a Book of Enoch analogy: the Watchers came down among people. He will
+  not rewrite that text (*"this is the archive and it's a real text from the real world"*),
+  and the production backstory need not name it directly; it only has to make it make
+  sense that you are walking around Houston.
+- **Party mechanics** are Chrono Cross and Chrono Trigger: a party of characters, control
+  passing between them, *"maybe sometimes you're controlling a protagonist character,
+  maybe sometimes you're controlling other characters."* Rocco's Flutie Cats arc is a
+  side quest. His own reported stories become replayable side arcs, *"and then it can be
+  factual"*; well-documented historical events are recreated so a Watcher can watch them
+  — *"that's the purpose of time traveling."* The time layer already built is the floor
+  this stands on.
+- **The real animals' health is an in-game stat**: vet visits, flea medicine, tracked from
+  life. Later, people may pay for a vet visit in-game and see it reflected. Costumes and
+  skins for the animals are future purchasable content, sold in the merch store on
+  cadenzaarthouse.studio, never on a game page, so *"the game can just be about the game
+  and its IP"* and cadenzaarthouse.com keeps the serious work.
+
 ## Roadmap the owner has stated (2026-09-03) — recorded, not built
 
 - **Input devices and an options menu.** VR headset controllers, mouse, keyboard, touch,
