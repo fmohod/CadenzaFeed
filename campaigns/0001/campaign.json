@@ -16,10 +16,10 @@
     "count": 10
   },
   "progress": {
-    "raised_cents": 0,
-    "successful_contributions": 0,
-    "as_of": "2026-09-03T02:19:05Z",
-    "source": "manual"
+    "raised_cents": 5000,
+    "successful_contributions": 1,
+    "as_of": "2026-09-18T19:20:58Z",
+    "source": "square_ingest"
   },
   "funding": {
     "provider": "square",
