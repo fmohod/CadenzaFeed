@@ -46,6 +46,7 @@ campaigns/
     index.html        ← the campaign page (§4)
     campaign.json     ← THE RECORD — canonical, machine-readable (§3)
     thumb.jpg         ← 1200×630 share image (Open Graph / cards)
+    flutiecats.js     ← 0001 only: the Flutie Cats flying game (§4)
     images/           ← optional photographs; same publication rules as articles
 ```
 
@@ -125,6 +126,15 @@ Copy `0001/index.html` and change the content. The page is:
 
 `?thanks=1` on the URL shows the thank-you block; every Square link's `redirect_url` points
 back at the campaign page with that parameter.
+
+**0001 only: the Flutie Cats flying game** *(added 2026-09-18, at the owner's request)*. Between
+the goal block and the give tiers, 0001 carries a small game: `flutiecats.js`, with its styles
+in the page's own `<style>` block. It is not part of the template: a campaign copied from 0001
+drops the `fc-embed` section, that `<style>` block and the script tag unless the owner asks for
+the game there too. What it must keep doing: stay hidden with scripts off; run and sound nothing
+until the visitor presses Play; take keys and touches only while it has focus and a game is
+live; make no network request and store nothing (the best score lasts for the visit); never
+cover, move focus to, or change the give tiers.
 
 ### What may not appear on a campaign page
 
