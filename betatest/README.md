@@ -388,6 +388,55 @@ His working title for the released game, and the shape of the player in it:
   cadenzaarthouse.studio, never on a game page, so *"the game can just be about the game
   and its IP"* and cadenzaarthouse.com keeps the serious work.
 
+## The ship, the world map, and the layers — structure from logs 20260913-07 and 20260914-01
+
+He asked for the structure to be organized now and built later (*"we don't have to build it
+yet … start organizing the structure"*). The one exception is stated as a need: *"walking
+around this is painful, it just takes too long … I need to have a general overworld map."*
+
+**The ship (09-14).** The way between orbit and the ground, left open on 09-12, is now
+decided: one ship, his, the only thing in Universe B that travels time (*"there's only
+going to be one ship that can do time travel, and I already have that ship"*). It flies a
+**world map of the real Earth**, to scale, and a full circuit of the equator takes about a
+minute (he priced it with his assistant: 1.5 million mph, and accepted that as fiction).
+It lands straight down like an elevator, only where a ship its size could really stand: a
+big ring or cone, *"three tour buses side by side"* through it, so parks yes, streets no.
+Teleporters cover the rest of the planet, as in Chrono Trigger. Horses and cars later.
+Boss Lady, a real mobile mechanic, was named as an NPC who services the ship; **she is a
+real person and enters only after her consent** (*"we probably have to send her an
+email"*). Livingston, Texas was named as a place. Houston's own radical years (riots, the
+Civil War era) are to be reenacted, which is what the time layer is for.
+*Build order when he says go:* world map with the ship over real coordinates, a landing
+list that is exactly the bound places, the station as the ship's home; the bus stop then
+becomes the ship's ramp. The engine's timeline and bindings already carry the rest.
+
+**The layers (09-13, his Spider-Verse framing: one world, many expressions, the archive
+as the operational layer).** Recorded as structure, each a renderer over the same content:
+1. *Terminals.* In-game terminals run the same CAIN a real person runs; later an avatar
+   may work a real station. Already the seam this game is built on.
+2. *Camera entity.* A player or thing with a camera: simplest, the same top-down view;
+   fuller, a 360° view for a headset (his Quest 3); or a flat screen in front of the viewer.
+3. *Matching artifacts.* A QR code at a real place opens that place in the game, and the
+   same code exists in the game, at the same spot.
+4. *GPS layer.* Pokémon Go style: the phone knows where it is, the camera knows where it
+   points, markers at real places that also exist in the game. First test he named: the
+   ship landing at Emancipation Park, seen from the park through a phone or glasses.
+5. *Built places in VR.* The Library and the Multipurpose Room explorable on a headset or
+   through pass-through glasses.
+6. *Live data.* Weather and the clock already render at real places; a 3D open world may
+   come later and every layer must still interoperate.
+
+**The Multipurpose Room (09-14).** First floor of the Library, panel discussions, no cap
+on people at first, with a control room off to the side (operator's console, DJ booth,
+audio and video) holding the terminal where he logs into the room's session. He wants to
+experience the built chat room before saying more; the room here stays as it is.
+
+**Virtual events (09-15).** Later, an event in Universe B may sell and check tickets through
+the same Cadenza Arthouse ticketing and a CAIN kiosk in-game. Not designed here.
+
+**Not Universe B (09-17).** The flea-pandemic ending is another universe in the multiverse
+framework, not this one.
+
 ## Roadmap the owner has stated (2026-09-03) — recorded, not built
 
 - **Input devices and an options menu.** VR headset controllers, mouse, keyboard, touch,
