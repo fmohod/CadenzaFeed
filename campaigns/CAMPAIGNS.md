@@ -147,15 +147,32 @@ same call the homepage uses for articles), falling back to probing `0001/campaig
 
 ## 6. Square links — governed by ADR-0011
 
-- **Only reusable `quick_pay` links.** A single-use order link, once paid, shows every later
-  visitor the first buyer's confirmation; never publish one. All four links for 0001 were
-  created through the Checkout API as `quick_pay` with `redirect_url` back to the page.
-- **Every published link is registered** in `F:\Media\registry\square_links.yaml` via
-  `py -3.11 jobs\square_links.py save` (CAMT), and **fresh-visitor tested** — opened in a
-  browser with no history, showing a real card-entry checkout — with `tested: true` and a
-  dated note before it goes live.
+- **Only reusable links, and only the Square Dashboard makes them.** *(Amended 2026-09-18, in the
+  open.)* This rule used to say "only reusable `quick_pay` links", on the belief that an API-made
+  `quick_pay` link is reusable. It is not. Square's Quick Pay Checkout documentation: "The buyer can
+  use the payment link only once." All four original 0001 links were API-made; the owner's real $50
+  gift on 2026-09-18 consumed the $50 one, which from then on sent every visitor straight to his
+  confirmation redirect without charging them. A reusable link is made in the Square Dashboard
+  (Payment links, Create link), resolves to `checkout.square.site/merchant/<id>/checkout/<checkout id>`
+  and opens a fresh order for each buyer. An API-made link resolves to `.../order/<order id>`: one
+  order, one buyer. **Never publish a link that resolves to `/order/`.**
+- **Title every campaign link `Campaign NNNN · <beneficiary> · <tier>`.** The ingest knows a gift by
+  its line-item name (`CAMPAIGN_LINE_RE` in CAMT's core), and Square takes that name from the link
+  title. A gift under any other title reaches the Attention Desk instead of the total.
+- **Every link redirects to `/campaigns/NNNN/?thanks=1`** (the Dashboard's "Redirect to a website
+  after checkout"), which shows the page's thank-you note.
+- **A tier may let the giver type the amount** (a Dashboard "Accept a donation" link). Its
+  `amount_cents` is `null`; the ingest takes the amount from the order.
+- **Every published link is registered** in `F:\Media\registry\square_links.yaml` and
+  **fresh-visitor tested** before it goes live: it resolves to a `/checkout/` URL and, opened in a
+  browser with no history, shows the right title and amount. `tested: true` and a dated note record
+  that. `jobs\square_links.py` reads Square's payment-links API, which does not list
+  Dashboard-made links, so it reports them as unknown to Square; until the manager tests a link by
+  resolving it, a Dashboard link that passed the fresh-visitor test is recorded by hand.
 - **Run the manager before any change that adds, moves or removes a link.** A `DEAD` link
-  (referenced in the repo, unknown to Square) or a published `UNTESTED` one blocks the change.
+  (referenced in the repo, unknown to Square) or a published `UNTESTED` one blocks the change. The
+  one exception is a Dashboard link that passed the fresh-visitor test above: the manager cannot see
+  Dashboard links, so it calls them `DEAD` falsely.
 - Canonical form: `https://square.link/u/<code>`, no tracking parameters.
 
 ## 7. Progress updates itself — CAMT (since 2026-09-09)

@@ -90,6 +90,8 @@
 .cmp-tier:hover .lbl, .cmp-tier:focus-visible .lbl { color: #cfc8bc; }
 .cmp-tier.featured { border-color: #A07840; box-shadow: 0 0 0 1px #A07840 inset; }
 .cmp-tier.featured .lbl { color: #A07840; }
+.cmp-tier-any { grid-column: 1 / -1; flex-direction: row; flex-wrap: wrap; gap: 6px 14px; padding: 14px 10px; }
+.cmp-tier-any .amt { font-size: 1.7rem; }
 .cmp-reassure {
   font-family: 'IBM Plex Mono', monospace; font-size: 0.66rem; letter-spacing: 0.06em;
   text-transform: uppercase; color: #666; text-align: center; margin: 14px 0 0;
