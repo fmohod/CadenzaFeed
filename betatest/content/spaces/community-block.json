@@ -123,7 +123,7 @@
       "marker": false,
       "text": [
         "Earth, turning below. Houston is under the cloud somewhere.",
-        "The drop shuttle is the only way down for now."
+        "The ship is berthed at the ramp on the deck. It is the only way down, and the only thing here that moves through time."
       ]
     },
     {
@@ -131,7 +131,7 @@
       "type": "travel",
       "x": 22,
       "y": 9,
-      "label": "Drop shuttle",
+      "label": "The ship's ramp",
       "spawn": "spawn:from-block",
       "solid": true
     }

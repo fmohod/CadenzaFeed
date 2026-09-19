@@ -40,7 +40,8 @@ class SaveLog {
     }
 
     checkpoint(player) {
-        this.data.player = { space: player.space, x: player.x, y: player.y, facing: player.facing, era: player.era || 'present', avatar: player.avatar || null };
+        this.data.player = { space: player.space, x: player.x, y: player.y, facing: player.facing, era: player.era || 'present', avatar: player.avatar || null, ship: player.ship || null };
+        // `space: "ship"` means aloft; `ship` is where the one ship is, in degrees.
     }
 
     flush() {

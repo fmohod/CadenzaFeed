@@ -20,6 +20,7 @@ class WorldEngine {
         this.space = null;
         this.player = { space: null, x: 0, y: 0, facing: 'down', px: 0, py: 0, moving: false };
         this.state = { era: 'present', avatar: 'rocco' };   // the time the player is in, and who they walk as; part of the save.
+        this.ship = new ShipMode(this);                      // the one ship (owner, log 20260914-01); active = flying the world map
         // Rocco first, by the owner's ruling (Flutie Cats README): the first character everyone gets.
         this.flags = { visited: new Set(), talked: new Set(), terminalOpened: false };
         this.tween = null;      // { fromX, fromY, toX, toY, t }
@@ -48,9 +49,12 @@ class WorldEngine {
         if (saved && saved.player && saved.player.era) this.state.era = saved.player.era;
         if (saved && saved.player && saved.player.avatar) this.state.avatar = saved.player.avatar;
         this.player.avatar = this.state.avatar;
+        if (saved && saved.player && saved.player.ship && typeof saved.player.ship.lat === 'number') this.ship.pos = { lat: saved.player.ship.lat, lon: saved.player.ship.lon };
 
         let placed = false;
-        if (saved && saved.player && this.content.spaces.has(saved.player.space)) {
+        if (saved && saved.player && saved.player.space === 'ship') {
+            this.ship.board(null); placed = true;      // reload aloft: still aloft, same spot
+        } else if (saved && saved.player && this.content.spaces.has(saved.player.space)) {
             placed = this.enter(saved.player.space, null, saved.player, true);
         }
         if (!placed) this.enter(m.start.space, m.start.spawn, null, true);
@@ -261,6 +265,12 @@ class WorldEngine {
         const dt = Math.min(Math.max(0, (t - this._last) / 1000), 0.1);
         this._last = t;
         this.update(dt);
+        if (this.ship.active) {
+            this.renderer.frame++;
+            this.ship.render(this.renderer.ctx, this.renderer.canvas.width, this.renderer.canvas.height, this.renderer.frame);
+            if (!document.hidden) this._scheduleFrame();
+            return;
+        }
         this.renderer.render({
             space: this.space,
             player: this.player,
@@ -293,6 +303,8 @@ class WorldEngine {
             this.hudHint.textContent = '';
             return;
         }
+
+        if (this.ship.active) { this.ship.update(dt, pressed); return; }
 
         for (const a of pressed) {
             if (a === 'INTERACT') { this.interact(); return; }
@@ -427,11 +439,14 @@ class WorldEngine {
             return;
         }
         if (t.kind === 'travel') {
-            // A bus stop: every real place that has a playable space in the
-            // CURRENT era, from the registry export and the bindings — never a
-            // hard-wired list.
+            // The ship's ramp (owner, log 20260914-01): board the ship here, and
+            // it lifts off over this place. The direct list below stays as the
+            // teleporters he also named, every real place bound in the CURRENT
+            // era, from the registry export and the bindings — never hard-wired.
             const options = [];
             const hub = this.content.manifest.hub;
+            const here = this.space && this.spaceCoords(this.space, this.content.spaces.get(this.space.id));
+            options.push({ label: hub && hub.space === this.space.id ? 'Board the ship' : 'Board the ship (lifts off from here)', value: '__ship__' });
             const hubEra = (hub && hub.era) || 'present';
             if (hub && hub.space !== this.space.id && this.content.spaces.has(hub.space) && this.bindingActive({ era: hubEra }, this.state.era)) {
                 options.push({ label: hub.label || hub.space, value: hub.space, spawn: hub.spawn });
@@ -448,14 +463,14 @@ class WorldEngine {
                 // name); the present one by its registry name.
                 if (place && sp) options.push({ label: (b.era !== 'present' && sp.name) ? sp.name : place.name, value: b.space });
             }
-            if (!options.length) {
+            if (options.length === 1) {
                 const when = this.state.era === 'present' ? 'today' : `in ${this.space.eraLabel || this.state.era}`;
-                this.dialogue.show(t.item.label || 'Bus stop', [`No other place ${when} is on record yet.`, 'A bus only moves through space in the time you are in. The gate moves through time.']);
-                return;
+                options.push({ label: `(No other place ${when} is on record yet)`, value: null });
             }
             options.push({ label: 'Stay here', value: null });
             this.dialogue.choose(t.item.label || 'Bus stop', options, (spaceId) => {
                 if (!spaceId) return;
+                if (spaceId === '__ship__') { this.ship.board(here); return; }
                 const picked = options.find(o => o.value === spaceId);
                 this.enter(spaceId, (picked && picked.spawn) || t.item.spawn || 'spawn:from-block');
             });
@@ -465,7 +480,9 @@ class WorldEngine {
     }
 
     persist() {
-        this.save.checkpoint({ ...this.player, era: this.state.era, avatar: this.state.avatar });
+        const ship = { lat: +this.ship.pos.lat.toFixed(4), lon: +this.ship.pos.lon.toFixed(4) };
+        if (this.ship.active) this.save.checkpoint({ space: 'ship', x: 0, y: 0, facing: 'down', era: this.state.era, avatar: this.state.avatar, ship });
+        else this.save.checkpoint({ ...this.player, era: this.state.era, avatar: this.state.avatar, ship });
         this.save.flush();
     }
 }

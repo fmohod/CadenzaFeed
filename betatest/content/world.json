@@ -148,7 +148,7 @@
   "hub": {
     "space": "space:community-block",
     "spawn": "spawn:from-downtown",
-    "label": "Shuttle up to the Station",
-    "_note": "The way back up from Earth. Owner, 2026-09-12: the mechanic for getting between the station and the ground is still to be figured out; until then the shuttle is a bus stop that goes up."
+    "label": "Fly to the Station",
+    "_note": "The ship's home (owner, log 20260914-01: one ship, his, the only time machine). From the ground, 'Fly to the Station' at any ramp; from the station's ramp, board the ship over wherever it last was."
   }
 }

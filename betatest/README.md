@@ -406,9 +406,30 @@ Boss Lady, a real mobile mechanic, was named as an NPC who services the ship; **
 real person and enters only after her consent** (*"we probably have to send her an
 email"*). Livingston, Texas was named as a place. Houston's own radical years (riots, the
 Civil War era) are to be reenacted, which is what the time layer is for.
-*Build order when he says go:* world map with the ship over real coordinates, a landing
-list that is exactly the bound places, the station as the ship's home; the bus stop then
-becomes the ship's ramp. The engine's timeline and bindings already carry the rest.
+**Built 2026-09-19 on his go (*"Yes build my ship"*).** `world/ship.js` is a second mode
+of the engine: when the ship is aloft the world map draws instead of a space, the six
+actions steer it, and everything else is untouched.
+- The map is `content/geo/earth.png`, Natural Earth 1:110m land (public domain) rasterised
+  by `tools/earth_map.py` at 8 px per degree, equirectangular, wrapped across the
+  antimeridian, with a 30° graticule and a 10° scale bar so "to scale" is visible.
+- Speed is 6° per second in any direction: the equator in 60 s, Houston to Tokyo in
+  about 23 s. Latitude stops at ±85°.
+- **Landing** is exactly the real places bound in the player's time (the same
+  `bestBinding` the bus used), each at its space's anchor: INTERACT lists those within
+  60 km by distance, or lands straight down if there is one; nothing else is ever
+  standable. BACK opens the ship's own menu: return to the Station, or fly to any bound
+  place. Markers closer together than a marker share one ring and one label with a
+  count, so Houston reads as one place from orbit.
+- **The ramp.** Every `travel` stop is now the ship's ramp: *Board the ship* first (it
+  lifts off over that place), then the direct list of places as the teleporters he named,
+  then *Fly to the Station*. The station's stop is the ship's berth.
+- **Save:** `player.space === "ship"` means aloft; `player.ship = {lat, lon}` is where the
+  one ship is, always, so it waits where it was left. Events `ShipBoarded` and
+  `ShipLanded` go in the log. Reload while aloft comes back aloft on the same spot.
+- The HUD aboard shows a UTC clock and the ship's position; no weather, no sky.
+- *Not yet:* the ship's time controller (time travel stays with the gate on the ground
+  until he wants it in the cockpit), the ship drawn on the ground at the ramp, and the
+  AR landing seen from the park.
 
 **The layers (09-13, his Spider-Verse framing: one world, many expressions, the archive
 as the operational layer).** Recorded as structure, each a renderer over the same content:
