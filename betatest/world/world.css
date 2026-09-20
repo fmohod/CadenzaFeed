@@ -110,6 +110,9 @@ body.has-touch #hud-hint { display: none; }
     transition: opacity 0.35s ease;
 }
 body.controls-hidden #touch { display: none; }
+body.dlg-open #touch-dpad { display: none; }          /* a dialogue: A advances, B closes */
+body.dlg-open.dlg-menu #touch-dpad { display: grid; }  /* a menu: up/down move the cursor */
+body.dlg-open #touch { opacity: 1; }                  /* never faded while something waits on you */
 body.controls-idle #touch { opacity: 0.35; }
 #touch-dpad {
     position: absolute;

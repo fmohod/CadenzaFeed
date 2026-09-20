@@ -288,7 +288,13 @@ class WorldEngine {
         // hidden while a dialogue, a menu or the terminal owns the screen, faded
         // after a few seconds without a touch.
         const body = document.body;
-        body.classList.toggle('controls-hidden', this.paused || this.dialogue.open);
+        // Everything hides while the terminal owns the screen. While a dialogue
+        // is open only the d-pad hides (A advances, B closes); a menu brings the
+        // d-pad back to move the cursor. Tester report tester-20260920-02
+        // (Universe B): the controls vanishing read as a dead end.
+        body.classList.toggle('controls-hidden', this.paused);
+        body.classList.toggle('dlg-open', !this.paused && this.dialogue.open);
+        body.classList.toggle('dlg-menu', !this.paused && this.dialogue.open && this.dialogue.mode === 'choose');
         body.classList.toggle('controls-idle', performance.now() - (this.input.lastActivity || 0) > 4000);
         if (this.paused) { this.hudHint.textContent = ''; return; }
         const pressed = this.input.drainPressed();

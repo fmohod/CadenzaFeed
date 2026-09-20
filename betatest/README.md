@@ -498,6 +498,11 @@ framework, not this one.
   manager session): the tester portal's product menu names the RPG *Universe B*, and
   entries filed there are feedback, never rulings, even when he files one himself. Whoever
   carries the game reads them by product in CAMT; nothing from them travels here.
+  *First one acted on, 2026-09-20 (`bt-0003/tester-20260920-02`):* on a phone, a dialogue
+  made the touch controls vanish, which read as a dead end. Now a dialogue hides only the
+  d-pad and keeps A (advance) and B (close) at full opacity; a menu brings the d-pad back
+  for the cursor; the terminal still hides everything. The owner's rule from 2026-09-03,
+  controls only when they are what you need, is kept: A and B *are* what you need then.
 
 ## Not in V0 (deliberately)
 
