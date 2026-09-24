@@ -5,9 +5,18 @@
    campaign page, right above the give buttons. The flying game only (no
    lasers, no other mode), a standalone game just for this page. No
    background music and no flute controls: touch, mouse click and keyboard
-   only. The best score lasts for this visit only and is never tied to the
-   rest of the site. The sound effects are beeps and boops made by the
-   browser's own Web Audio oscillators; there is no audio file.
+   only. The sound effects are beeps and boops made by the browser's own Web
+   Audio oscillators; there is no audio file.
+
+   The high-score table (owner, 2026-09-24): the top ten scores made on this
+   page persist, with initials and the date, so everybody can see them. The
+   page is static, so the table lives in the Worker "campaign-board" (CAMT
+   shell\campaign-board.worker.js) at the same-origin path board, next to
+   this page: one GET when this script starts, and one POST when a run makes
+   the top ten and the player types initials and presses Save. What crosses
+   the network is initials (1-3 letters or digits), the score, and nothing
+   else; the server adds the date. The best score for the visit still lives
+   in this closure.
 
    How it behaves on a page that takes money:
      - Nothing runs and nothing sounds until the visitor presses Play. Until
@@ -18,8 +27,10 @@
        left alone.
      - It pauses when it scrolls out of view, when the tab is hidden, when
        focus leaves it or on Escape, and waits for Resume.
-     - No network request, no storage of any kind, no cookie. The score and
-       the best score live in this closure; a reload starts them at zero.
+     - Two requests to board (above) and no other; no storage in the
+       browser, no cookie. The score and the best score for the visit live
+       in this closure; a reload starts them at zero. If the board cannot be
+       reached the game plays exactly as before and the table says so.
      - The give buttons below it are plain links this file never touches.
      - With scripts off the section stays hidden, so the page is as before.
 
@@ -36,7 +47,8 @@
      - The character is sized to this small stage (CAT_R_FRAC) instead of
        the full game's full-screen catR, so Rocco reads at a few hundred
        pixels tall. His hitbox is never wider than his drawn body.
-     - No trail, no leaderboard, no select screen, no intro film.
+     - No trail, no select screen, no intro film. The leaderboard is this
+       page's own (above), not the full game's.
    ========================================================================== */
 (function () {
   "use strict";
@@ -52,6 +64,13 @@
   var elScore = document.getElementById("fc-score");
   var elBest = document.getElementById("fc-best");
   var elStatus = document.getElementById("fc-status");
+  var elBoard = document.getElementById("fc-board-body");
+  var elBoardSub = document.getElementById("fc-board-sub");
+  var formIn = document.getElementById("fc-initials");
+  var inIn = document.getElementById("fc-initials-in");
+  var inScore = document.getElementById("fc-initials-score");
+  var inSkip = document.getElementById("fc-initials-skip");
+  var inMsg = document.getElementById("fc-initials-msg");
 
   /* ---------------------------------------------------------------- art --
      Copied from the full game. The critters are painted parametrically, so
@@ -298,6 +317,7 @@
     setHUD();
     say("Game over. Score " + G.score + ". Best this visit " + G.best + ".");
     setTimeout(function () { if (mode === "over") showButton("Play again", false); }, 600);
+    if (qualifies(G.score)) offerInitials(G.score);
   }
 
   function pause(takeFocus) {
@@ -525,6 +545,128 @@
   }
   var sightT = 0;
 
+  /* --------------------------------------------------- the high scores --
+     The top ten made on this page, from the campaign-board Worker at the
+     same-origin path "board" (see the header). Loaded once, when this script
+     starts, so a reader sees the table without playing. A score that makes
+     the ten opens the initials form under the game; Save posts it, Skip
+     drops it. The give tiers are never touched by any of this. */
+  var BOARD_URL = "board";
+  var BOARD_TOP = 10;
+  var board = { ok: false, rows: [] };
+  var posting = false;
+
+  function fmtDate(iso) {
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) return "";
+    try { return d.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" }); }
+    catch (e) { return iso.slice(0, 10); }
+  }
+  function esc(str) {
+    return String(str).replace(/[&<>"]/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
+    });
+  }
+  function renderBoard(highlight) {
+    if (!elBoard) return;
+    if (!board.ok) {
+      elBoard.innerHTML = '<p class="fc-board-empty">The high scores are unavailable right now. The game still plays.</p>';
+      return;
+    }
+    if (!board.rows.length) {
+      elBoard.innerHTML = '<p class="fc-board-empty">No scores yet. The first run to clear a gate goes on the board.</p>';
+      return;
+    }
+    var rows = "";
+    for (var i = 0; i < board.rows.length && i < BOARD_TOP; i++) {
+      var r = board.rows[i];
+      var hl = (highlight && r.name === highlight.name && r.score === highlight.score && r.at === highlight.at);
+      rows += "<tr" + (hl ? ' class="fc-board-you"' : "") + "><td>" + (i + 1) + "</td><td>" + esc(r.name) +
+              "</td><td>" + esc(r.score) + "</td><td>" + esc(fmtDate(r.at)) + "</td></tr>";
+    }
+    elBoard.innerHTML = '<table><thead><tr><th scope="col">#</th><th scope="col">Initials</th>' +
+      '<th scope="col">Score</th><th scope="col">Date</th></tr></thead><tbody>' + rows + "</tbody></table>";
+  }
+  function takeBoard(d) {
+    if (!d || d.ok !== true || !Array.isArray(d.top)) return false;
+    board.ok = true;
+    board.rows = d.top.filter(function (r) {
+      return r && typeof r.name === "string" && typeof r.score === "number" && typeof r.at === "string";
+    });
+    return true;
+  }
+  function loadBoard() {
+    if (!elBoard || !window.fetch) { renderBoard(); return; }
+    fetch(BOARD_URL, { cache: "no-store", credentials: "omit" })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (d) { takeBoard(d); renderBoard(); })
+      .catch(function () { renderBoard(); });
+  }
+  // A run makes the table when there is room, or it beats the last row.
+  function qualifies(score) {
+    if (!board.ok || !formIn || score < 1) return false;
+    if (board.rows.length < BOARD_TOP) return true;
+    return score > board.rows[BOARD_TOP - 1].score;
+  }
+  function offerInitials(score) {
+    if (!formIn) return;
+    formIn.hidden = false;
+    inScore.textContent = String(score);
+    formIn.setAttribute("data-score", String(score));
+    inIn.value = ""; inMsg.textContent = "";
+    try { inIn.focus({ preventScroll: true }); } catch (e) { inIn.focus(); }
+    say("New high score, " + score + ". Type your initials and press Save, or Skip.");
+  }
+  function closeInitials(takeFocus) {
+    if (!formIn) return;
+    formIn.hidden = true;
+    inMsg.textContent = "";
+    if (takeFocus) showButton("Play again", true);
+  }
+  function postScore(name, score) {
+    if (posting) return;
+    posting = true;
+    inMsg.textContent = "Saving…";
+    fetch(BOARD_URL, { method: "POST", cache: "no-store", credentials: "omit",
+                       headers: { "Content-Type": "application/json" },
+                       body: JSON.stringify({ kind: "campaign_score", name: name, score: score }) })
+      .then(function (r) { return r.json().then(function (d) { return { status: r.status, d: d }; }); })
+      .then(function (x) {
+        posting = false;
+        if (x.status === 200 && takeBoard(x.d)) {
+          var mine = null;
+          if (x.d.rank) mine = board.rows[x.d.rank - 1] || null;
+          renderBoard(mine);
+          closeInitials(true);
+          say(x.d.rank ? "Saved. You are number " + x.d.rank + " on the board." : "Saved, but the board moved on and that score no longer makes the ten.");
+          return;
+        }
+        inMsg.textContent = (x.d && x.d.error) ? "Not saved: " + x.d.error + "." : "Not saved. Try again.";
+        try { inIn.focus({ preventScroll: true }); } catch (e) { inIn.focus(); }
+      })
+      .catch(function () {
+        posting = false;
+        inMsg.textContent = "Not saved: the board could not be reached.";
+      });
+  }
+  if (formIn) {
+    formIn.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var name = (inIn.value || "").trim().toUpperCase();
+      var score = parseInt(formIn.getAttribute("data-score"), 10) || 0;
+      if (!/^[A-Z0-9]{1,3}$/.test(name)) {
+        inMsg.textContent = "One to three letters or digits.";
+        try { inIn.focus({ preventScroll: true }); } catch (err) { inIn.focus(); }
+        return;
+      }
+      postScore(name, score);
+    });
+    inSkip.addEventListener("click", function () { closeInitials(true); });
+    inIn.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" || e.key === "Esc") { e.preventDefault(); closeInitials(true); }
+    });
+  }
+
   var rt = 0;
   window.addEventListener("resize", function () {
     clearTimeout(rt);
@@ -540,4 +682,5 @@
            { x: G.W * 0.9, top: G.H * 0.36, bot: G.H * 0.84 }];
   setHUD();
   render();
+  loadBoard();
 })();

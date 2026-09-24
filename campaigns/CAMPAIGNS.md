@@ -133,8 +133,25 @@ in the page's own `<style>` block. It is not part of the template: a campaign co
 drops the `fc-embed` section, that `<style>` block and the script tag unless the owner asks for
 the game there too. What it must keep doing: stay hidden with scripts off; run and sound nothing
 until the visitor presses Play; take keys and touches only while it has focus and a game is
-live; make no network request and store nothing (the best score lasts for the visit); never
-cover, move focus to, or change the give tiers.
+live; store nothing in the browser; never cover, move focus to, or change the give tiers.
+
+**The high-score table** *(added 2026-09-24, at the owner's request: a table that persists, so a
+score with initials on it stays there for everybody to see, with the date)*. Under the game's
+score line the page shows the top ten scores made on it, and a run that makes the ten opens a
+small form for the player's initials (Save or Skip). The table lives outside the repo, because
+the site is static: the Cloudflare Worker **`campaign-board`** (CAMT `shell\campaign-board.worker.js`,
+deployed by `shell\campaign-board.ps1`) answers `GET` and `POST /campaigns/NNNN/board` from a KV
+namespace, one key per campaign. **That is the game's only network traffic**: one read when the
+script starts, one write when a player saves, and nothing else. What crosses and what is kept:
+initials (one to three letters or digits, upper-cased), the score, and the moment the server
+received it. No name, no address, no cookie, no browser storage. Three characters identify no
+student, which is what keeps the table inside "What may not appear" below; the Worker also
+refuses a short list of initials nobody should read on a page that takes money. If the Worker
+is unreachable the game plays as before and the table says the scores are unavailable. The
+score is the browser's word (the Worker bounds it and checks the request came from this site,
+no more); this is a classroom board, not a contest with a prize. To remove an entry, edit the
+KV key `board:NNNN` in the Cloudflare dashboard. A campaign copied from 0001 that keeps the
+game also needs its own route bound: run the deploy script with its number.
 
 ### What may not appear on a campaign page
 

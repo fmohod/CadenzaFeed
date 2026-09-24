@@ -87,6 +87,42 @@
 }
 .fc-mute:hover, .fc-mute:focus-visible { background: #111111; color: #F6F2EB; }
 .fc-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+/* The initials form (a top-ten run) and the high-score table under the game. */
+.fc-initials {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px;
+  margin-top: 12px; padding: 12px 14px; border: 1px solid #A07840; background: #fff;
+  font-family: 'IBM Plex Mono', monospace; font-size: 0.78rem; letter-spacing: 0.04em;
+}
+.fc-initials[hidden] { display: none; }
+.fc-initials-h { color: #A07840; text-transform: uppercase; letter-spacing: 0.08em; }
+.fc-initials-h b { color: #111111; font-weight: 500; }
+.fc-initials label { color: #555; text-transform: uppercase; font-size: 0.7rem; }
+.fc-initials input {
+  width: 4.6em; min-height: 36px; padding: 4px 8px; text-align: center; text-transform: uppercase;
+  font-family: 'IBM Plex Mono', monospace; font-size: 1.1rem; letter-spacing: 0.25em;
+  color: #111111; background: #F6F2EB; border: 1px solid #111111;
+}
+.fc-initials button {
+  min-height: 36px; padding: 6px 14px; cursor: pointer; font: inherit; letter-spacing: inherit;
+  text-transform: uppercase; border: 1px solid #111111; background: #fff; color: #111111;
+}
+.fc-initials-save { background: #111111 !important; color: #F6F2EB !important; }
+.fc-initials button:hover, .fc-initials button:focus-visible { background: #A07840 !important; border-color: #A07840; color: #fff !important; }
+.fc-initials-msg { flex-basis: 100%; color: #555; }
+.fc-initials-msg:empty { display: none; }
+.fc-board { margin-top: 16px; }
+.fc-board-h {
+  font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; letter-spacing: 0.1em;
+  text-transform: uppercase; color: #A07840; margin: 0 0 6px;
+}
+.fc-board-sub { color: #555; letter-spacing: 0.06em; margin-left: 8px; }
+.fc-board table { width: 100%; max-width: 420px; border-collapse: collapse; font-size: 0.92rem; }
+.fc-board th, .fc-board td { text-align: left; padding: 6px 6px; border-bottom: 1px solid rgba(17,17,17,0.15); }
+.fc-board th { font-family: 'IBM Plex Mono', monospace; font-size: 0.66rem; letter-spacing: 0.08em; text-transform: uppercase; color: #555; }
+.fc-board td:nth-child(2) { font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.15em; }
+.fc-board td:nth-child(1), .fc-board td:nth-child(3) { font-variant-numeric: tabular-nums; }
+.fc-board tr.fc-board-you td { background: #fff7e6; font-weight: 700; }
+.fc-board-empty { color: #666; font-style: italic; font-size: 0.92rem; margin: 0; }
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -174,11 +210,12 @@
 
   <!-- The Flutie Cats flying game (flutiecats.js). Hidden until its script runs,
        so with scripts off the page is exactly as before. It plays nothing until
-       Play, makes no network request, stores nothing, and never touches the give
-       tiers below. -->
+       Play and never touches the give tiers below. Its only network traffic is
+       the high-score table at ./board (the campaign-board Worker): one read when
+       the script starts, one write when a top-ten run saves its initials. -->
   <section class="fc-embed" id="fc-embed" aria-labelledby="fc-h" hidden>
     <p class="fc-kicker" id="fc-h">Flutie Cats &nbsp;·&nbsp; the flying game</p>
-    <p class="fc-note">Starring Rocco, one of the real animals behind Flutie Cats. Hold to fly: touch, click, or the space bar. The only sounds are beeps, and your best score lasts until you leave this page.</p>
+    <p class="fc-note">Starring Rocco, one of the real animals behind Flutie Cats. Hold to fly: touch, click, or the space bar. The only sounds are beeps. Make the top ten and you can put your initials on the board below, where they stay for everyone to see.</p>
     <div class="fc-stage" id="fc-stage" tabindex="-1" role="application" aria-label="Flutie Cats flying game. Hold the space bar or the up arrow to fly. Escape pauses.">
       <canvas id="fc-canvas" aria-hidden="true"></canvas>
       <button type="button" class="fc-play" id="fc-play">Play</button>
@@ -189,6 +226,18 @@
       <button type="button" class="fc-mute" id="fc-mute">Sound: on</button>
     </div>
     <p class="fc-sr" id="fc-status" aria-live="polite"></p>
+    <form class="fc-initials" id="fc-initials" hidden autocomplete="off" aria-label="New high score: enter your initials">
+      <span class="fc-initials-h">New high score &mdash; <b id="fc-initials-score">0</b></span>
+      <label for="fc-initials-in">Your initials</label>
+      <input id="fc-initials-in" type="text" maxlength="3" pattern="[A-Za-z0-9]{1,3}" autocapitalize="characters" autocomplete="off" spellcheck="false" required>
+      <button type="submit" class="fc-initials-save">Save</button>
+      <button type="button" class="fc-initials-skip" id="fc-initials-skip">Skip</button>
+      <span class="fc-initials-msg" id="fc-initials-msg" role="status"></span>
+    </form>
+    <div class="fc-board" id="fc-board">
+      <p class="fc-board-h">High scores <span class="fc-board-sub" id="fc-board-sub">the top ten made on this page</span></p>
+      <div id="fc-board-body"><p class="fc-board-empty">Loading the high scores&hellip;</p></div>
+    </div>
   </section>
 
   <section class="cmp-give" id="give">
@@ -328,7 +377,7 @@
   }
 })();
 </script>
-<script src="flutiecats.js?v=20260918" defer></script>
+<script src="flutiecats.js?v=20260924" defer></script>
 
 </body>
 </html>
