@@ -71,6 +71,8 @@
   var inScore = document.getElementById("fc-initials-score");
   var inSkip = document.getElementById("fc-initials-skip");
   var inMsg = document.getElementById("fc-initials-msg");
+  var btnInstall = document.getElementById("fc-install");
+  var elInstallMsg = document.getElementById("fc-install-msg");
 
   /* ---------------------------------------------------------------- art --
      Copied from the full game. The critters are painted parametrically, so
@@ -390,9 +392,11 @@
     G.obs = G.obs.filter(function (o) { return o.x > -k.obsW; });
   }
 
+  // The arcade font the cabinet under the canvas uses (the page loads it);
+  // the pixel face runs wide, so the canvas draws it a size down.
   function text(str, x, y, px, weight, color) {
     cx.fillStyle = color;
-    cx.font = weight + " " + px + "px system-ui, -apple-system, 'Segoe UI', sans-serif";
+    cx.font = weight + " " + Math.round(px * 0.8) + "px 'Press Start 2P', 'IBM Plex Mono', monospace";
     cx.fillText(str, x, y);
   }
 
@@ -556,11 +560,22 @@
   var board = { ok: false, rows: [] };
   var posting = false;
 
+  // Arcade style: "SEP 24 '26". The full date sits in the cell's title.
+  var MONTHS = ["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"];
   function fmtDate(iso) {
     var d = new Date(iso);
     if (isNaN(d.getTime())) return "";
-    try { return d.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" }); }
+    return MONTHS[d.getMonth()] + " " + d.getDate() + " '" + String(d.getFullYear()).slice(-2);
+  }
+  function fullDate(iso) {
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) return "";
+    try { return d.toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" }); }
     catch (e) { return iso.slice(0, 10); }
+  }
+  function ordinal(n) {
+    var s = ["TH", "ST", "ND", "RD"], v = n % 100;
+    return n + (s[(v - 20) % 10] || s[v] || s[0]);
   }
   function esc(str) {
     return String(str).replace(/[&<>"]/g, function (c) {
@@ -570,21 +585,21 @@
   function renderBoard(highlight) {
     if (!elBoard) return;
     if (!board.ok) {
-      elBoard.innerHTML = '<p class="fc-board-empty">The high scores are unavailable right now. The game still plays.</p>';
+      elBoard.innerHTML = '<p class="fc-board-empty">High scores unavailable right now<br>The game still plays</p>';
       return;
     }
     if (!board.rows.length) {
-      elBoard.innerHTML = '<p class="fc-board-empty">No scores yet. The first run to clear a gate goes on the board.</p>';
+      elBoard.innerHTML = '<p class="fc-board-empty">No scores yet<br>Clear a gate to go on the board</p>';
       return;
     }
     var rows = "";
     for (var i = 0; i < board.rows.length && i < BOARD_TOP; i++) {
       var r = board.rows[i];
       var hl = (highlight && r.name === highlight.name && r.score === highlight.score && r.at === highlight.at);
-      rows += "<tr" + (hl ? ' class="fc-board-you"' : "") + "><td>" + (i + 1) + "</td><td>" + esc(r.name) +
-              "</td><td>" + esc(r.score) + "</td><td>" + esc(fmtDate(r.at)) + "</td></tr>";
+      rows += "<tr" + (hl ? ' class="fc-board-you"' : "") + "><td>" + ordinal(i + 1) + "</td><td>" + esc(r.name) +
+              "</td><td>" + esc(r.score) + '</td><td title="' + esc(fullDate(r.at)) + '">' + esc(fmtDate(r.at)) + "</td></tr>";
     }
-    elBoard.innerHTML = '<table><thead><tr><th scope="col">#</th><th scope="col">Initials</th>' +
+    elBoard.innerHTML = '<table><thead><tr><th scope="col">Rank</th><th scope="col">Name</th>' +
       '<th scope="col">Score</th><th scope="col">Date</th></tr></thead><tbody>' + rows + "</tbody></table>";
   }
   function takeBoard(d) {
@@ -667,6 +682,62 @@
     });
   }
 
+  /* ------------------------------------------------ home-screen shortcut --
+     "Save to home screen" (owner, 2026-09-24): a way back to the game later.
+     Chrome, Edge and Android fire beforeinstallprompt when the page's
+     manifest qualifies; the button then opens the browser's own install
+     prompt. Everywhere else (iPhone Safari, Firefox, desktop Safari) there is
+     no prompt to open, so the button shows the one-line instruction for that
+     device instead. Hidden when the page is already running as an installed
+     app. No storage, no network: the manifest is a plain link in the head. */
+  var installPrompt = null;
+  function standalone() {
+    try {
+      return (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) ||
+             window.navigator.standalone === true;
+    } catch (e) { return false; }
+  }
+  function installHint() {
+    var ua = navigator.userAgent || "";
+    var ios = /iPhone|iPad|iPod/.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    if (ios) return "On iPhone or iPad: tap Share, then \u201cAdd to Home Screen\u201d.";
+    if (/Android/.test(ua)) return "In your browser menu, choose \u201cAdd to Home screen\u201d or \u201cInstall app\u201d.";
+    var mac = /Mac/.test(navigator.platform || "");
+    return "Bookmark this page (" + (mac ? "\u2318D" : "Ctrl+D") + "), or drag the icon in the address bar onto your desktop.";
+  }
+  function showInstallMsg(text) {
+    if (!elInstallMsg) return;
+    elInstallMsg.textContent = text;
+    elInstallMsg.hidden = false;
+  }
+  if (btnInstall && !standalone()) {
+    btnInstall.hidden = false;
+    window.addEventListener("beforeinstallprompt", function (e) {
+      e.preventDefault();                  // keep the browser's own banner quiet; the button asks
+      installPrompt = e;
+    });
+    window.addEventListener("appinstalled", function () {
+      installPrompt = null;
+      btnInstall.hidden = true;
+      showInstallMsg("Saved. Flutie Cats is on your home screen.");
+    });
+    btnInstall.addEventListener("mousedown", function (e) { e.preventDefault(); });
+    btnInstall.addEventListener("click", function () {
+      if (installPrompt) {
+        var p = installPrompt; installPrompt = null;
+        try {
+          p.prompt();
+          if (p.userChoice && p.userChoice.then)
+            p.userChoice.then(function (r) {
+              if (!r || r.outcome !== "accepted") { installPrompt = p; showInstallMsg(installHint()); }
+            }, function () { showInstallMsg(installHint()); });
+        } catch (e) { showInstallMsg(installHint()); }
+        return;
+      }
+      showInstallMsg(installHint());
+    });
+  }
+
   var rt = 0;
   window.addEventListener("resize", function () {
     clearTimeout(rt);
@@ -677,6 +748,10 @@
      One still frame so the reader sees the game, not a black box: Rocco and
      two trunks. No loop runs until Play. */
   embed.hidden = false;
+  // repaint the still frame once the arcade font arrives, so the first
+  // "hold to fly" is not drawn in the fallback face
+  if (document.fonts && document.fonts.ready && document.fonts.ready.then)
+    document.fonts.ready.then(function () { if (!looping) render(); }, function () {});
   sizeGame();
   G.obs = [{ x: G.W * 0.66, top: G.H * 0.16, bot: G.H * 0.64 },
            { x: G.W * 0.9, top: G.H * 0.36, bot: G.H * 0.84 }];

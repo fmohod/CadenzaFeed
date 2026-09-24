@@ -12,6 +12,10 @@
 <meta name="campaign-id" content="0001">
 
 <link rel="canonical" href="https://cadenzaarthouse.com/campaigns/0001/">
+<!-- The game's home-screen shortcut (the cabinet's "Save to home screen" button):
+     a small web app manifest scoped to this page, so a phone or Chrome/Edge can
+     install it as "Flutie Cats" and come straight back to the game. -->
+<link rel="manifest" href="manifest.json">
 
 <!-- Open Graph -->
 <meta property="og:type" content="website">
@@ -68,64 +72,104 @@
 .fc-stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 .fc-play {
   position: absolute; left: 50%; top: 62%; transform: translate(-50%, -50%);
-  min-height: 48px; padding: 10px 34px 8px; cursor: pointer; white-space: nowrap;
-  font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; letter-spacing: 0.06em; line-height: 1;
-  background: #F6F2EB; color: #111111; border: 1px solid #F6F2EB;
+  min-height: 48px; padding: 14px 30px 12px; cursor: pointer; white-space: nowrap;
+  font-family: 'Press Start 2P', 'IBM Plex Mono', monospace; font-size: 1rem; letter-spacing: 0.04em; line-height: 1;
+  text-transform: uppercase; background: #e8c860; color: #0b0d0f; border: 2px solid #e8c860;
+  box-shadow: 4px 4px 0 #000;
 }
-.fc-play:hover, .fc-play:focus-visible { background: #A07840; border-color: #A07840; color: #fff; }
+.fc-play:hover, .fc-play:focus-visible { background: #f2f0ea; border-color: #f2f0ea; color: #0b0d0f; outline: none; }
 .fc-play[hidden] { display: none; }
-.fc-hud {
-  display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px; margin-top: 8px;
-  font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; letter-spacing: 0.06em;
-  text-transform: uppercase; color: #555;
-}
-.fc-hud b { color: #111111; font-weight: 500; }
-.fc-mute {
-  margin-left: auto; min-height: 36px; padding: 6px 14px; cursor: pointer;
-  font: inherit; letter-spacing: inherit; text-transform: inherit;
-  color: #111111; background: #fff; border: 1px solid #111111;
-}
-.fc-mute:hover, .fc-mute:focus-visible { background: #111111; color: #F6F2EB; }
 .fc-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-/* The initials form (a top-ten run) and the high-score table under the game. */
+
+/* The cabinet: everything under the canvas (score line, initials entry, the
+   high-score table) sits in one dark panel that continues the game window,
+   in the arcade pixel font, with a faint scanline texture. IDs unchanged. */
+.fc-cab {
+  position: relative; background: #0b0d0f; color: #e8e6e3;
+  border: 1px solid #111111; border-top: 0;
+  font-family: 'Press Start 2P', 'IBM Plex Mono', monospace; font-size: 11px; line-height: 1.6;
+  text-transform: uppercase;
+}
+.fc-cab::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: repeating-linear-gradient(0deg, rgba(255,255,255,0.028) 0 1px, rgba(0,0,0,0) 1px 3px);
+}
+.fc-cab > * { position: relative; z-index: 1; }
+.fc-hud {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px 22px;
+  padding: 12px 14px 10px; border-bottom: 1px dashed #2a3036;
+  color: #8a9096; letter-spacing: 0.02em;
+}
+.fc-hud b { color: #e8c860; font-weight: 400; }
+.fc-mute {
+  margin-left: auto; min-height: 36px; padding: 8px 12px 7px; cursor: pointer;
+  font: inherit; letter-spacing: inherit; text-transform: inherit;
+  color: #e8c860; background: #171b1f; border: 2px solid #e8c860; border-radius: 0;
+  box-shadow: 3px 3px 0 #000;
+}
+.fc-mute:hover, .fc-mute:focus-visible { background: #e8c860; color: #0b0d0f; outline: none; }
+.fc-install { margin-left: 0; }
+.fc-install[hidden] { display: none; }
+.fc-install-msg {
+  margin: 0; padding: 10px 14px; border-bottom: 1px dashed #2a3036;
+  color: #7dc87d; font-size: 9px; line-height: 1.9;
+}
+.fc-install-msg[hidden] { display: none; }
+@media (min-width: 481px) { .fc-hud .fc-mute { margin-left: auto; } .fc-hud .fc-install { margin-left: 0; } }
 .fc-initials {
-  display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px;
-  margin-top: 12px; padding: 12px 14px; border: 1px solid #A07840; background: #fff;
-  font-family: 'IBM Plex Mono', monospace; font-size: 0.78rem; letter-spacing: 0.04em;
+  display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px;
+  margin: 12px 14px 0; padding: 12px 14px; border: 2px solid #e8c860; background: #14181b;
+  box-shadow: inset 0 0 0 2px #0b0d0f, 0 0 0 2px #2a3036;
 }
 .fc-initials[hidden] { display: none; }
-.fc-initials-h { color: #A07840; text-transform: uppercase; letter-spacing: 0.08em; }
-.fc-initials-h b { color: #111111; font-weight: 500; }
-.fc-initials label { color: #555; text-transform: uppercase; font-size: 0.7rem; }
+.fc-initials-h { color: #e8c860; animation: fc-blink 1.1s steps(2, start) infinite; }
+.fc-initials-h b { color: #e8e6e3; font-weight: 400; }
+.fc-initials label { color: #8a9096; }
 .fc-initials input {
-  width: 4.6em; min-height: 36px; padding: 4px 8px; text-align: center; text-transform: uppercase;
-  font-family: 'IBM Plex Mono', monospace; font-size: 1.1rem; letter-spacing: 0.25em;
-  color: #111111; background: #F6F2EB; border: 1px solid #111111;
+  width: 4.4em; min-height: 40px; padding: 6px 4px 4px; text-align: center; text-transform: uppercase;
+  font: inherit; font-size: 16px; letter-spacing: 0.3em;
+  color: #e8e6e3; background: #0b0d0f; border: 2px solid #e8c860; border-radius: 0; caret-color: #e8c860;
 }
+.fc-initials input:focus { outline: none; box-shadow: 0 0 0 2px #0b0d0f, 0 0 0 4px #e8c860; }
 .fc-initials button {
-  min-height: 36px; padding: 6px 14px; cursor: pointer; font: inherit; letter-spacing: inherit;
-  text-transform: uppercase; border: 1px solid #111111; background: #fff; color: #111111;
+  min-height: 40px; padding: 8px 14px 7px; cursor: pointer; font: inherit; letter-spacing: inherit;
+  text-transform: uppercase; border: 2px solid #e8c860; border-radius: 0; box-shadow: 3px 3px 0 #000;
+  background: #171b1f; color: #e8c860;
 }
-.fc-initials-save { background: #111111 !important; color: #F6F2EB !important; }
-.fc-initials button:hover, .fc-initials button:focus-visible { background: #A07840 !important; border-color: #A07840; color: #fff !important; }
-.fc-initials-msg { flex-basis: 100%; color: #555; }
+.fc-initials-save { background: #e8c860; color: #0b0d0f; }
+.fc-initials button:hover, .fc-initials button:focus-visible { background: #f2f0ea; border-color: #f2f0ea; color: #0b0d0f; outline: none; }
+.fc-initials-msg { flex-basis: 100%; color: #e8839b; font-size: 10px; }
 .fc-initials-msg:empty { display: none; }
-.fc-board { margin-top: 16px; }
+.fc-board { padding: 14px 14px 16px; }
 .fc-board-h {
-  font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; letter-spacing: 0.1em;
-  text-transform: uppercase; color: #A07840; margin: 0 0 6px;
+  margin: 0 0 10px; color: #e8c860; text-align: center; letter-spacing: 0.08em; font-size: 13px;
+  text-shadow: 2px 2px 0 #000;
 }
-.fc-board-sub { color: #555; letter-spacing: 0.06em; margin-left: 8px; }
-.fc-board table { width: 100%; max-width: 420px; border-collapse: collapse; font-size: 0.92rem; }
-.fc-board th, .fc-board td { text-align: left; padding: 6px 6px; border-bottom: 1px solid rgba(17,17,17,0.15); }
-.fc-board th { font-family: 'IBM Plex Mono', monospace; font-size: 0.66rem; letter-spacing: 0.08em; text-transform: uppercase; color: #555; }
-.fc-board td:nth-child(2) { font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.15em; }
-.fc-board td:nth-child(1), .fc-board td:nth-child(3) { font-variant-numeric: tabular-nums; }
-.fc-board tr.fc-board-you td { background: #fff7e6; font-weight: 700; }
-.fc-board-empty { color: #666; font-style: italic; font-size: 0.92rem; margin: 0; }
+.fc-board-sub { display: block; margin-top: 6px; color: #8a9096; font-size: 9px; letter-spacing: 0.04em; }
+.fc-board table { width: 100%; border-collapse: collapse; }
+.fc-board th, .fc-board td { text-align: left; padding: 7px 6px 5px; white-space: nowrap; }
+.fc-board th { color: #8a9096; font-weight: 400; font-size: 9px; border-bottom: 2px solid #2a3036; }
+.fc-board td { border-bottom: 1px solid #1b2025; }
+.fc-board td:nth-child(2) { letter-spacing: 0.3em; }
+.fc-board td:nth-child(3), .fc-board th:nth-child(3) { text-align: right; }
+.fc-board td:nth-child(4) { color: #8a9096; font-size: 9px; }
+.fc-board tr:nth-child(1) td { color: #e8c860; }
+.fc-board tr:nth-child(2) td { color: #c9ced3; }
+.fc-board tr:nth-child(3) td { color: #d98a3a; }
+.fc-board tr.fc-board-you td { color: #7dc87d; animation: fc-blink 1.1s steps(2, start) infinite; }
+.fc-board-empty { margin: 0; text-align: center; color: #8a9096; font-size: 10px; line-height: 1.9; }
+@keyframes fc-blink { to { opacity: 0.35; } }
+@media (prefers-reduced-motion: reduce) { .fc-initials-h, .fc-board tr.fc-board-you td { animation: none; } }
+@media (max-width: 480px) {
+  .fc-cab { font-size: 9px; }
+  .fc-hud { gap: 8px 14px; padding: 10px 10px 8px; }
+  .fc-board { padding: 12px 8px 14px; }
+  .fc-board th, .fc-board td { padding: 6px 4px 4px; }
+  .fc-board td:nth-child(2) { letter-spacing: 0.2em; }
+}
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
 
 <body>
@@ -220,24 +264,28 @@
       <canvas id="fc-canvas" aria-hidden="true"></canvas>
       <button type="button" class="fc-play" id="fc-play">Play</button>
     </div>
-    <div class="fc-hud">
-      <span>Score <b id="fc-score">0</b></span>
-      <span>Best this visit <b id="fc-best">0</b></span>
-      <button type="button" class="fc-mute" id="fc-mute">Sound: on</button>
+    <div class="fc-cab">
+      <div class="fc-hud">
+        <span>Score <b id="fc-score">0</b></span>
+        <span>Best <b id="fc-best">0</b></span>
+        <button type="button" class="fc-mute" id="fc-mute">Sound: on</button>
+        <button type="button" class="fc-mute fc-install" id="fc-install" hidden>&#8681; Save to home screen</button>
+      </div>
+      <p class="fc-install-msg" id="fc-install-msg" hidden></p>
+      <form class="fc-initials" id="fc-initials" hidden autocomplete="off" aria-label="New high score: enter your initials">
+        <span class="fc-initials-h">New high score <b id="fc-initials-score">0</b></span>
+        <label for="fc-initials-in">Initials</label>
+        <input id="fc-initials-in" type="text" maxlength="3" pattern="[A-Za-z0-9]{1,3}" autocapitalize="characters" autocomplete="off" spellcheck="false" required>
+        <button type="submit" class="fc-initials-save">Save</button>
+        <button type="button" class="fc-initials-skip" id="fc-initials-skip">Skip</button>
+        <span class="fc-initials-msg" id="fc-initials-msg" role="status"></span>
+      </form>
+      <div class="fc-board" id="fc-board">
+        <p class="fc-board-h">&#9733; High scores &#9733; <span class="fc-board-sub" id="fc-board-sub">Top ten on this page</span></p>
+        <div id="fc-board-body"><p class="fc-board-empty">Loading&hellip;</p></div>
+      </div>
     </div>
     <p class="fc-sr" id="fc-status" aria-live="polite"></p>
-    <form class="fc-initials" id="fc-initials" hidden autocomplete="off" aria-label="New high score: enter your initials">
-      <span class="fc-initials-h">New high score &mdash; <b id="fc-initials-score">0</b></span>
-      <label for="fc-initials-in">Your initials</label>
-      <input id="fc-initials-in" type="text" maxlength="3" pattern="[A-Za-z0-9]{1,3}" autocapitalize="characters" autocomplete="off" spellcheck="false" required>
-      <button type="submit" class="fc-initials-save">Save</button>
-      <button type="button" class="fc-initials-skip" id="fc-initials-skip">Skip</button>
-      <span class="fc-initials-msg" id="fc-initials-msg" role="status"></span>
-    </form>
-    <div class="fc-board" id="fc-board">
-      <p class="fc-board-h">High scores <span class="fc-board-sub" id="fc-board-sub">the top ten made on this page</span></p>
-      <div id="fc-board-body"><p class="fc-board-empty">Loading the high scores&hellip;</p></div>
-    </div>
   </section>
 
   <section class="cmp-give" id="give">
@@ -377,7 +425,7 @@
   }
 })();
 </script>
-<script src="flutiecats.js?v=20260924" defer></script>
+<script src="flutiecats.js?v=20260924b" defer></script>
 
 </body>
 </html>
