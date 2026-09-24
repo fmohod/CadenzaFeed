@@ -153,6 +153,16 @@ no more); this is a classroom board, not a contest with a prize. To remove an en
 KV key `board:NNNN` in the Cloudflare dashboard. A campaign copied from 0001 that keeps the
 game also needs its own route bound: run the deploy script with its number.
 
+*Look and the shortcut (2026-09-24, owner's ask):* the score line, the initials entry and the
+table sit in one dark "cabinet" panel under the canvas, in the arcade pixel font Press Start 2P
+(added to the page's existing Google Fonts request; monospace fallback), with 1st/2nd/3rd in
+gold, silver and bronze and the player's new row blinking (`prefers-reduced-motion` stops it).
+The cabinet also carries **Save to home screen**: `manifest.json` in the folder (scoped to this
+page, `start_url` back to the game, the Flutie Cats icons copied beside it) lets Chrome, Edge and
+Android install the page as "Flutie Cats"; the button opens that prompt where the browser offers
+one and otherwise shows the device's own one-line instruction. Hidden when already installed.
+No storage and no request beyond the manifest link in the head.
+
 ### What may not appear on a campaign page
 
 - **A student's name, photograph, voice, quote, or anything that identifies one.** The
