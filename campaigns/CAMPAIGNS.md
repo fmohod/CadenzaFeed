@@ -46,6 +46,7 @@ campaigns/
     index.html        ← the campaign page (§4)
     campaign.json     ← THE RECORD — canonical, machine-readable (§3)
     thumb.jpg         ← 1200×630 share image (Open Graph / cards)
+    randy.png         ← 0001 only: Randy for the game's share picture (296×600)
     flutiecats.js     ← 0001 only: the Flutie Cats flying game (§4)
     images/           ← optional photographs; same publication rules as articles
 ```
@@ -142,9 +143,10 @@ small form for the player's initials (Save or Skip). The table lives outside the
 the site is static: the Cloudflare Worker **`campaign-board`** (CAMT `shell\campaign-board.worker.js`,
 deployed by `shell\campaign-board.ps1`) answers `GET` and `POST /campaigns/NNNN/board` from a KV
 namespace, one key per campaign. **That is the game's only network traffic**: one read when the
-script starts, one write when a player saves, and nothing else. What crosses and what is kept:
-initials (one to three letters or digits, upper-cased), the score, and the moment the server
-received it. No name, no address, no cookie, no browser storage. Three characters identify no
+script starts, one write when a run ends (the lifetime counters, below), one write when a player
+saves, and nothing else. What crosses and what is kept: initials (one to three letters or digits,
+upper-cased), the score, and the moment the server received it. No name, no address, no cookie,
+no browser storage. Three characters identify no
 student, which is what keeps the table inside "What may not appear" below; the Worker also
 refuses a short list of initials nobody should read on a page that takes money. If the Worker
 is unreachable the game plays as before and the table says the scores are unavailable. The
@@ -162,6 +164,30 @@ page, `start_url` back to the game, the Flutie Cats icons copied beside it) lets
 Android install the page as "Flutie Cats"; the button opens that prompt where the browser offers
 one and otherwise shows the device's own one-line instruction. Hidden when already installed.
 No storage and no request beyond the manifest link in the head.
+
+*Lifetime counters (2026-09-24, owner's ask: "how many times, and lifelong stats the game has
+total", updated every time somebody plays):* one line under the table, for everybody who has ever
+played here: flights, time in the air, trees cleared, flaps. The same Worker keeps them, in a
+second KV key per campaign (`stats:NNNN`, four whole numbers only ever added to). Every run posts
+one record when it ends, scored or not: seconds in the air, gates cleared, presses, each bounded
+by the Worker. Nothing in it says who flew. The line is hidden until the first run and whenever the
+Worker is away.
+
+*Share (2026-09-24, owner's ask: a share button with a picture of the score, for X, Facebook and
+TikTok, with a rotating outrageous headline):* after a run that scored, the cabinet shows a
+1200×630 picture drawn in the browser on a canvas: Randy in his suit with his flute (`randy.png`
+in the folder, the same art flutiecats.com uses for him), a headline picked at random from a
+short list in `flutiecats.js` ("This game is so infuriating I can't believe it's free", and so
+on), the score, the initials if they were saved, and this page's address. **The picture never
+leaves the browser until the visitor presses a button, and the page loads no social script.**
+*Share…* opens the device's own share sheet (Web Share), with the picture attached where the
+browser allows files (phones; the sheet then offers X, Facebook, TikTok and the rest). *X* and
+*Facebook* on a device without that open the site's own compose page in a new tab with the text
+and the link, after saving the picture to the visitor's downloads so it can be attached. *TikTok*
+has no web compose page: on a phone it is the share sheet, elsewhere the saved picture and a
+one-line hint. *Save picture* saves it. The headline list is the only editorial text in the
+feature; keep it family-safe, this is a page that asks strangers for money, and never let it name
+a student, a school or a district (below).
 
 ### What may not appear on a campaign page
 
