@@ -18,6 +18,25 @@
    else; the server adds the date. The best score for the visit still lives
    in this closure.
 
+   The lifetime counters (owner, later the same day): under the table, one
+   line of all-time totals for everybody who has ever played here: flights,
+   time in the air, trees cleared, flaps. The same Worker keeps them; every
+   run posts one small record when it ends (seconds in the air, gates
+   cleared, presses), scored or not, and the reply carries the new totals.
+   Nothing in that record says who flew.
+
+   Share (owner, same ask): after a run that scored, the cabinet offers a
+   picture to post: Randy in his suit, a headline drawn at random from
+   HEADLINES, the score, the initials if they were saved, and this page's
+   address. It is drawn on a canvas here, from randy.png in this folder, and
+   never leaves the browser until the visitor presses a button. Share uses
+   the device's own share sheet (Web Share, with the picture where the
+   browser allows files); X and Facebook open that site's compose page in a
+   new tab with the text and the link, and save the picture first so it can
+   be attached; TikTok has no web compose, so it is the share sheet on a
+   phone and a saved picture plus a one-line hint elsewhere. No social
+   script is loaded on this page, ever.
+
    How it behaves on a page that takes money:
      - Nothing runs and nothing sounds until the visitor presses Play. Until
        then the stage is one painted frame: no animation loop, no audio
@@ -27,10 +46,14 @@
        left alone.
      - It pauses when it scrolls out of view, when the tab is hidden, when
        focus leaves it or on Escape, and waits for Resume.
-     - Two requests to board (above) and no other; no storage in the
-       browser, no cookie. The score and the best score for the visit live
-       in this closure; a reload starts them at zero. If the board cannot be
-       reached the game plays exactly as before and the table says so.
+     - Requests to board (above) and no other: one read at start, one write
+       when a run ends, one write on Save. No storage in the browser, no
+       cookie. The score and the best score for the visit live in this
+       closure; a reload starts them at zero. If the board cannot be reached
+       the game plays exactly as before and the table says so.
+     - The share buttons open nothing and send nothing until pressed, and
+       load no third-party code: they are links to X's and Facebook's own
+       compose pages and the browser's share sheet.
      - The give buttons below it are plain links this file never touches.
      - With scripts off the section stays hidden, so the page is as before.
 
@@ -66,6 +89,11 @@
   var elStatus = document.getElementById("fc-status");
   var elBoard = document.getElementById("fc-board-body");
   var elBoardSub = document.getElementById("fc-board-sub");
+  var elStats = document.getElementById("fc-stats");
+  var elShare = document.getElementById("fc-share");
+  var elShareImg = document.getElementById("fc-share-img");
+  var elShareH = document.getElementById("fc-share-h");
+  var elShareMsg = document.getElementById("fc-share-msg");
   var formIn = document.getElementById("fc-initials");
   var inIn = document.getElementById("fc-initials-in");
   var inScore = document.getElementById("fc-initials-score");
@@ -191,7 +219,7 @@
   var mode = "idle";
   var G = { W: 0, H: 0, k: null, rx: 0, ry: 0, y: 0, vy: 0, airT: 0,
             held: false, holdUntil: 0, dead: false, deadAt: 0,
-            score: 0, best: 0, obs: [], toNext: 1.2, t: 0 };
+            score: 0, best: 0, obs: [], toNext: 1.2, t: 0, flaps: 0 };
 
   function isLive() { return mode === "ready" || mode === "flying" || mode === "over"; }
 
@@ -279,7 +307,7 @@
 
   function reset() {
     G.y = G.H * 0.45; G.vy = 0; G.airT = 0; G.held = false; G.holdUntil = 0;
-    G.dead = false; G.score = 0; G.obs = []; G.toNext = 1.2;
+    G.dead = false; G.score = 0; G.obs = []; G.toNext = 1.2; G.flaps = 0;
     setHUD();
   }
 
@@ -319,7 +347,10 @@
     setHUD();
     say("Game over. Score " + G.score + ". Best this visit " + G.best + ".");
     setTimeout(function () { if (mode === "over") showButton("Play again", false); }, 600);
+    postRun(Math.round(G.airT), G.score, G.flaps);
     if (qualifies(G.score)) offerInitials(G.score);
+    else if (G.score > 0) offerShare(G.score, "");
+    else hideShare();
   }
 
   function pause(takeFocus) {
@@ -341,7 +372,7 @@
     }
     if (mode === "ready") mode = "flying";
     if (mode !== "flying") return;
-    G.held = true;
+    G.held = true; G.flaps++;
     G.holdUntil = now + TAP_HOLD_S * 1000;
     if (G.vy > 0) G.vy = 0;                // this embed: a press catches a fall
     sfx.flap();
@@ -603,6 +634,7 @@
       '<th scope="col">Score</th><th scope="col">Date</th></tr></thead><tbody>' + rows + "</tbody></table>";
   }
   function takeBoard(d) {
+    if (d && takeStats(d.stats)) renderStats();
     if (!d || d.ok !== true || !Array.isArray(d.top)) return false;
     board.ok = true;
     board.rows = d.top.filter(function (r) {
@@ -653,6 +685,7 @@
           if (x.d.rank) mine = board.rows[x.d.rank - 1] || null;
           renderBoard(mine);
           closeInitials(true);
+          offerShare(score, name);
           say(x.d.rank ? "Saved. You are number " + x.d.rank + " on the board." : "Saved, but the board moved on and that score no longer makes the ten.");
           return;
         }
@@ -676,10 +709,232 @@
       }
       postScore(name, score);
     });
-    inSkip.addEventListener("click", function () { closeInitials(true); });
+    inSkip.addEventListener("click", function () { closeInitials(true); offerShare(parseInt(formIn.getAttribute("data-score"), 10) || 0, ""); });
     inIn.addEventListener("keydown", function (e) {
       if (e.key === "Escape" || e.key === "Esc") { e.preventDefault(); closeInitials(true); }
     });
+  }
+
+
+  /* ------------------------------------------------ lifetime counters --
+     Everybody, all time: flights, time in the air, trees cleared, flaps.
+     Read with the board; one POST when a run ends, with the reply's totals
+     drawn straight in. Silent when the Worker is away. */
+  var stats = { ok: false, runs: 0, seconds: 0, gates: 0, flaps: 0 };
+  function takeStats(st) {
+    if (!st || typeof st !== "object") return false;
+    var keys = ["runs", "seconds", "gates", "flaps"];
+    for (var i = 0; i < keys.length; i++)
+      if (typeof st[keys[i]] !== "number" || !(st[keys[i]] >= 0)) return false;
+    stats.ok = true; stats.runs = st.runs; stats.seconds = st.seconds; stats.gates = st.gates; stats.flaps = st.flaps;
+    return true;
+  }
+  function fmtNum(n) { return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
+  function fmtTime(sec) {
+    if (sec < 60) return fmtNum(sec) + " sec";
+    var m = Math.round(sec / 60);
+    if (m < 60) return fmtNum(m) + " min";
+    var h = Math.floor(m / 60);
+    return fmtNum(h) + " hr " + (m % 60) + " min";
+  }
+  function renderStats() {
+    if (!elStats) return;
+    if (!stats.ok || !stats.runs) { elStats.hidden = true; return; }
+    elStats.innerHTML = "Everyone, all time &nbsp;&middot;&nbsp; <b>" + fmtNum(stats.runs) + "</b> flight" + (stats.runs === 1 ? "" : "s") +
+      " &nbsp;&middot;&nbsp; <b>" + fmtTime(stats.seconds) + "</b> in the air" +
+      " &nbsp;&middot;&nbsp; <b>" + fmtNum(stats.gates) + "</b> tree" + (stats.gates === 1 ? "" : "s") + " cleared" +
+      " &nbsp;&middot;&nbsp; <b>" + fmtNum(stats.flaps) + "</b> flap" + (stats.flaps === 1 ? "" : "s");
+    elStats.hidden = false;
+  }
+  function postRun(seconds, gates, flaps) {
+    if (!window.fetch) return;
+    var body = { kind: "campaign_run", seconds: Math.max(0, Math.min(600, seconds)),
+                 gates: Math.max(0, Math.min(999, gates)), flaps: Math.max(0, Math.min(5000, flaps)) };
+    try {
+      fetch(BOARD_URL, { method: "POST", cache: "no-store", credentials: "omit", keepalive: true,
+                         headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) })
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (d) { if (d && takeStats(d.stats)) renderStats(); })
+        .catch(function () {});
+    } catch (e) {}
+  }
+
+  /* --------------------------------------------------------- share it --
+     A picture of the score to post, drawn here from randy.png and the
+     page's own words. See the header for what each button does. */
+  var HEADLINES = [
+    "This game is so infuriating I can't believe it's free",
+    "I flew a cat into a tree for charity and I'd do it again",
+    "Rocco deserved a better pilot",
+    "Local cat cannot stop hitting trees. Experts baffled",
+    "I have never been this angry at a pixel",
+    "One more go, I said, forty minutes ago",
+    "A flute-powered cat has ruined my afternoon",
+    "They said it was for the kids. Nobody said it was hard",
+    "Rocco flies for the kids. I fly into trees",
+    "The hardest I've ever worked for a flute I don't get to keep",
+    "Beat this or the cat wins",
+    "My thumb has filed a complaint"
+  ];
+  var SHARE_URL = (function () {
+    var og = document.querySelector('meta[property="og:url"]');
+    if (og && og.content) return og.content;
+    return location.origin + location.pathname.replace(/index\.html$/, "");
+  })();
+  var SHARE_TITLE = "Flutie Cats";
+  var share = { score: 0, name: "", headline: "", blob: null, url: null, seq: 0 };
+  var randyImg = null, randyState = "";
+  function loadRandy(cb) {
+    if (randyState === "ok") { cb(randyImg); return; }
+    if (randyState === "bad") { cb(null); return; }
+    var im = new Image();
+    im.onload = function () { randyImg = im; randyState = "ok"; cb(im); };
+    im.onerror = function () { randyState = "bad"; cb(null); };
+    im.src = "randy.png";
+  }
+  function pickHeadline() { return HEADLINES[Math.floor(Math.random() * HEADLINES.length)]; }
+  function shareText() {
+    return SHARE_TITLE + " high score: " + share.score + ". " + share.headline + ". " +
+           "Play it, beat it, and put a flute in a Houston kid's hands: " + SHARE_URL + " #FlutieCats";
+  }
+  function cardFont(px, weight) {
+    return (weight || "400") + " " + px + "px 'Press Start 2P', 'IBM Plex Mono', monospace";
+  }
+  function wrapLines(c, str, maxW) {
+    var words = str.split(" "), lines = [], line = "";
+    for (var i = 0; i < words.length; i++) {
+      var probe = line ? line + " " + words[i] : words[i];
+      if (c.measureText(probe).width > maxW && line) { lines.push(line); line = words[i]; }
+      else line = probe;
+    }
+    if (line) lines.push(line);
+    return lines;
+  }
+  function drawCard(randy) {
+    var Wc = 1200, Hc = 630;
+    var card = document.createElement("canvas");
+    card.width = Wc; card.height = Hc;
+    var c = card.getContext("2d");
+    c.fillStyle = "#0b0d0f"; c.fillRect(0, 0, Wc, Hc);
+    var glow = c.createRadialGradient(230, 330, 20, 230, 330, 420);
+    glow.addColorStop(0, "rgba(232,200,96,0.22)"); glow.addColorStop(1, "rgba(232,200,96,0)");
+    c.fillStyle = glow; c.fillRect(0, 0, Wc, Hc);
+    c.fillStyle = "#e8c860"; c.fillRect(0, Hc - 34, Wc, 3);        // the floor line
+    if (randy) {
+      var rh = 560, rw = Math.round(randy.width * rh / randy.height);
+      c.drawImage(randy, 70, Hc - 34 - rh + 8, rw, rh);
+    }
+    var x = 450, y = 92;
+    c.textBaseline = "alphabetic"; c.textAlign = "left";
+    c.shadowColor = "#000"; c.shadowOffsetX = 5; c.shadowOffsetY = 5; c.shadowBlur = 0;
+    c.font = cardFont(52, "400"); c.fillStyle = "#e8e6e3";
+    c.fillText("FLUTIE ", x, y);
+    var w1 = c.measureText("FLUTIE ").width;
+    c.fillStyle = "#e8c860"; c.fillText("CATS", x + w1, y);
+    c.shadowOffsetX = 0; c.shadowOffsetY = 0;
+    c.font = cardFont(19, "400"); c.fillStyle = "#e8e6e3";
+    var lines = wrapLines(c, "“" + share.headline.toUpperCase() + "”", Wc - x - 60);
+    y = 150;
+    for (var i = 0; i < lines.length && i < 4; i++) { c.fillText(lines[i], x, y); y += 32; }
+    y = Math.max(y + 26, 300);
+    c.font = cardFont(18, "400"); c.fillStyle = "#8a9096";
+    c.fillText("HIGH SCORE", x, y);
+    c.shadowOffsetX = 6; c.shadowOffsetY = 6;
+    c.font = cardFont(112, "400"); c.fillStyle = "#e8c860";
+    c.fillText(String(share.score), x - 4, y + 122);
+    c.shadowOffsetX = 0; c.shadowOffsetY = 0;
+    if (share.name) {
+      c.font = cardFont(26, "400"); c.fillStyle = "#7dc87d";
+      c.fillText(share.name.split("").join(" "), x + 8 + c.measureText(String(share.score)).width * 4.3, y + 122);
+    }
+    c.font = cardFont(15, "400"); c.fillStyle = "#e8e6e3";
+    c.fillText("PLAY IT. BEAT IT. PUT A FLUTE IN A KID'S HANDS.", x, Hc - 92);
+    c.fillStyle = "#8a9096";
+    c.fillText(SHARE_URL.replace(/^https?:\/\//, "").toUpperCase(), x, Hc - 60);
+    // scanlines, like the cabinet
+    c.fillStyle = "rgba(255,255,255,0.035)";
+    for (var sy = 0; sy < Hc; sy += 3) c.fillRect(0, sy, Wc, 1);
+    return card;
+  }
+  function buildCard() {
+    var seq = ++share.seq;
+    loadRandy(function (randy) {
+      if (seq !== share.seq) return;
+      var card;
+      try { card = drawCard(randy); } catch (e) { return; }
+      var done = function (blob) {
+        if (seq !== share.seq || !blob) return;
+        if (share.url) { try { URL.revokeObjectURL(share.url); } catch (e) {} }
+        share.blob = blob; share.url = URL.createObjectURL(blob);
+        if (elShareImg) { elShareImg.src = share.url; elShareImg.alt = "Share picture: Randy in his suit with his flute, " + SHARE_TITLE + " high score " + share.score; }
+      };
+      if (card.toBlob) card.toBlob(done, "image/png");
+      else { try { var d = card.toDataURL("image/png"), bin = atob(d.split(",")[1]), arr = new Uint8Array(bin.length); for (var i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i); done(new Blob([arr], { type: "image/png" })); } catch (e) {} }
+    });
+  }
+  function offerShare(score, name) {
+    if (!elShare || !document.createElement("canvas").getContext) return;
+    if (score !== share.score || !share.headline) share.headline = pickHeadline();
+    share.score = score; share.name = name || "";
+    if (elShareH) elShareH.textContent = "“" + share.headline + "”";
+    if (elShareMsg) { elShareMsg.textContent = ""; elShareMsg.hidden = true; }
+    elShare.hidden = false;
+    buildCard();
+  }
+  function hideShare() { if (elShare) elShare.hidden = true; }
+  function shareMsg(text) { if (elShareMsg) { elShareMsg.textContent = text; elShareMsg.hidden = false; } }
+  function shareFile() {
+    try { return share.blob ? new File([share.blob], "flutie-cats-score-" + share.score + ".png", { type: "image/png" }) : null; }
+    catch (e) { return null; }
+  }
+  function canShareFiles() {
+    var f = shareFile();
+    try { return !!(f && navigator.share && navigator.canShare && navigator.canShare({ files: [f] })); }
+    catch (e) { return false; }
+  }
+  function webShare() {
+    var data = { title: SHARE_TITLE + " high score " + share.score, text: shareText() };
+    if (canShareFiles()) data.files = [shareFile()]; else data.url = SHARE_URL;
+    try {
+      navigator.share(data).then(function () { shareMsg("Shared."); },
+                                function (e) { if (!e || e.name !== "AbortError") shareMsg("The share sheet did not open. Save the picture and post it yourself."); });
+    } catch (e) { shareMsg("The share sheet did not open. Save the picture and post it yourself."); }
+  }
+  function saveCard() {
+    if (!share.url) { shareMsg("The picture is still drawing. Try again in a moment."); return false; }
+    var a = document.createElement("a");
+    a.href = share.url; a.download = "flutie-cats-score-" + share.score + ".png";
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    return true;
+  }
+  function openCompose(url) {
+    var w = window.open(url, "_blank", "noopener,noreferrer");
+    if (!w) shareMsg("The browser blocked the new tab. Allow pop-ups for this page and try again.");
+  }
+  function shareTo(where) {
+    if (where === "share") { webShare(); return; }
+    if (canShareFiles()) { webShare(); return; }        // a phone: the sheet has X, Facebook and TikTok in it
+    if (where === "save") { if (saveCard()) shareMsg("Saved to your downloads."); return; }
+    var saved = saveCard();
+    if (where === "x") {
+      openCompose("https://twitter.com/intent/tweet?text=" + encodeURIComponent(shareText()));
+      shareMsg(saved ? "The picture is saved to your downloads. Attach it to the post." : "");
+    } else if (where === "facebook") {
+      openCompose("https://www.facebook.com/sharer/sharer.php?u=" + encodeURIComponent(SHARE_URL) + "&quote=" + encodeURIComponent(shareText()));
+      shareMsg(saved ? "The picture is saved to your downloads. Add it to the post." : "");
+    } else if (where === "tiktok") {
+      shareMsg(saved ? "TikTok posts from its app: the picture is saved to your downloads. Send it to your phone and post it from there." : "");
+    }
+  }
+  if (elShare) {
+    elShare.addEventListener("click", function (e) {
+      var b = e.target && e.target.closest ? e.target.closest("button[data-share]") : null;
+      if (!b) return;
+      e.preventDefault();
+      shareTo(b.getAttribute("data-share"));
+    });
+    var btnWeb = elShare.querySelector('button[data-share="share"]');
+    if (btnWeb && !navigator.share) btnWeb.hidden = true;
   }
 
   /* ------------------------------------------------ home-screen shortcut --
