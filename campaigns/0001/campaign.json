@@ -2,13 +2,13 @@
   "schema_version": 1,
   "id": "0001",
   "title": "Ten flutes. Ten kids who can take one home.",
-  "summary": "A beginner flute class at a Houston middle school has instruments for two hours a day and none at night. $1,000 buys ten student flutes that Cadenza Arthouse owns and lends out, so a kid practices at home this term and hands the flute to the next kid when they move on.",
+  "summary": "Play the flying game, then help put a flute in a kid's hands. Campaign 0001 buys ten student flutes in one order for the Cadenza Arthouse Instrument Library, which lends them to Houston kids to practice at home and passes each one to the next kid.",
   "author": "Frankie Mohammed",
   "status": "active",
   "created": "2026-09-02",
   "closes": null,
   "goal": {
-    "amount_cents": 100000,
+    "amount_cents": 112285,
     "currency": "USD"
   },
   "objective": {
@@ -26,35 +26,35 @@
     "tiers": [
       {
         "label": "$25",
-        "description": "A quarter of a flute",
+        "description": "$23.97 reaches the library after Square's fee",
         "amount_cents": 2500,
         "url": "https://square.link/u/07doP4c1",
         "square_link_id": "XAOBFIGIP4AVYCCR4T3MBI3B"
       },
       {
         "label": "$50",
-        "description": "Half a flute",
+        "description": "$48.25 reaches the library after Square's fee",
         "amount_cents": 5000,
         "url": "https://square.link/u/bLS3Pk7A",
         "square_link_id": "34P6LWZBLIUBFDWYAUCHPSJB"
       },
       {
         "label": "$100",
-        "description": "One flute",
+        "description": "$96.80 reaches the library after Square's fee",
         "amount_cents": 10000,
         "url": "https://square.link/u/z8ifvdNF",
         "square_link_id": "BLHZMLFUBND5CQKTARZHA4LS"
       },
       {
         "label": "$250",
-        "description": "Two and a half flutes",
+        "description": "$242.45 reaches the library after Square's fee",
         "amount_cents": 25000,
         "url": "https://square.link/u/tDvEVZsq",
         "square_link_id": "MZOO4J6SKC7KG7HSYAYC4IVL"
       },
       {
         "label": "Your amount",
-        "description": "The giver types in any amount",
+        "description": "The giver types in any amount of $25 or more",
         "amount_cents": null,
         "url": "https://square.link/u/gcQ8tJVN",
         "square_link_id": "XCEWEMFADA65L2OKPACDLCCV"
