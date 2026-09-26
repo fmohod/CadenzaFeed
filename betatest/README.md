@@ -314,15 +314,26 @@ Harmon's: You · Need · Go · Struggle · Find · Suffer · Return · Change.
   the people in these stories are whichever word the animal telling it uses. (The words
   themselves are his to give; see the open questions.)
 - **The years, as he gave them:** Rocco came home in **March 2016** from the Houston animal
-  shelter on Canino Road; he died at the **end of September 2024** (exact day pending: he
-  told Brad Stewart by text). The **travel trailer chapter ran February 2020 to about summer
+  shelter on Canino Road; he died the **night of 30 September 2024** and was buried the
+  morning of 1 October (settled from his own text to a friend that day, read from his phone
+  at his instruction). The **travel trailer chapter ran February 2020 to about summer
   2021**, at a private address that stays out of the game; then he left Rocco with Johnny and
-  lived out of his car between Texas, Denver and California. Randy's first kitten pictures in
-  Pasadena are from **22 October 2024**, so Randy arrived after Rocco died, which is why they
-  never met. Ghost's date of death is pending. Smokey's litter belongs to the trailer years.
-- **Where and how (his agreement pending on 6 to 8):** the household as fictional interiors
-  bound to no place; progress per Watcher in the browser save, shared through the party door
-  only for that session; finishing an animal's arc unlocks that animal in the mirror.
+  lived out of his car between Texas, Denver and California. **Randy's first picture is in
+  Livingston, 17 October 2024** (corrected from 22 October, Pasadena), so Randy arrived after
+  Rocco died, which is why they never met. **Ghost's last picture alive is 19 January 2024**;
+  she died sometime after that, and then Rocco. Smokey's litter belongs to the trailer years.
+- **Ghost's death is in the story.** Both Ghost and Rocco were presumably hit by cars; nobody
+  saw either; in both cases only the body was found. Rocco was found still alive, taken to the
+  emergency vet, and put down in his arms. Told the way the runner tells the site: gently, and
+  the truth.
+- **Where:** fictional interiors bound to no place, framed as a **memory flashback in Texas**,
+  no street names or addresses, ever.
+- **Progress:** *"we have to figure out a way that players don't lose their progress when they
+  come back."* Open design point (below). Party sharing stays session-only.
+- **Finishing an animal's arc unlocks that animal in the mirror:** yes.
+- **The words for humans** (his pool, his to assign): *People*, *Two-footers*, *"Dos Patas"*,
+  *humans*, and other clever puns that refer to people. Regional: the Spanish one belongs
+  where Spanish is spoken in the household's world.
 
 **Party-size timelines that fall out of this:** the household's origin spans years, so one
 player relives one thread, two play Smokey and Rocco in the trailer years, three add the
