@@ -95,7 +95,7 @@ the record, and the ADR-0011 manager's repo scan is what catches a mismatch.
 | `status` | yes | index (ordering + label), page | `active` · `funded` · `closed`. `funded` = goal reached, still accepting; `closed` = no longer accepting. |
 | `created` | yes | CAMT | `YYYY-MM-DD` the campaign went live. |
 | `closes` | yes | CAMT, page (future) | `YYYY-MM-DD` or `null`. Null means open-ended. |
-| `goal.amount_cents`, `goal.currency` | yes | index, page | The money target, in cents. |
+| `goal.amount_cents`, `goal.currency` | yes | index, page | The money target, in cents. **The goal is the gross figure to raise, Square's fee included** (since 2026-09-26, 0001's correction): a goal set at what the purchase costs comes up short by the fee, because the goal is what people give and the cost is what arrives. The story states the net cost, the fee, and the gross goal, in that order. The page shows cents when the goal has them. |
 | `objective.label`, `objective.count` | no | index, page | What the money buys, countable. **Deliberately separate from the goal**: the schema does not assert that `goal ÷ count` is the price of one unit — that figure belongs in the story. Omit the block for a campaign with no natural unit; the page then shows a percentage. |
 | `progress.raised_cents` | yes | index, page | What has come in. **Square is the truth; this is a dated copy of it.** |
 | `progress.successful_contributions` | yes | page, CAMT | Count of **completed Square payments** against the campaign's links — not people, not attempts. Named precisely so it is never read as either. |
@@ -120,7 +120,7 @@ Copy `0001/index.html` and change the content. The page is:
    give from this block without scrolling past it.
 4. The story, in `.cmp-story`. Headed sections; the author's own observations; no claim that
    could damage a named party without the CAS §12 treatment.
-5. **Where the money goes** — a list, including the processing fee and what happens over goal.
+5. **Where the money goes** — a list, including the processing fee and what happens over goal. Since 2026-09-26 it also states what each tier delivers after the fee (the give tiers' labels say the same), the smallest amount asked for and why, and a real way out for anyone who would rather not give: play, share, and that is enough. **No copy may imply a fixed price per unit** once the unit is bought in a batch; the story carries the arithmetic.
 6. **The ledger** — rendered from `outcomes[]`, "No purchases yet" until there are some.
 7. The italic provenance line (who wrote it, from what, over what dates, what is deliberately
    not named) and the "About this page" note that says a campaign is an appeal, not reporting.
@@ -226,6 +226,8 @@ same call the homepage uses for articles), falling back to probing `0001/campaig
   after checkout"), which shows the page's thank-you note.
 - **A tier may let the giver type the amount** (a Dashboard "Accept a donation" link). Its
   `amount_cents` is `null`; the ingest takes the amount from the order.
+  0001's minimum is $25 (owner, 2026-09-25: the flat 30 cents loses 9% of a $5 gift); the page says
+  so, and the Dashboard link's minimum, where Square offers one, should agree.
 - **Every published link is registered** in `F:\Media\registry\square_links.yaml` and
   **fresh-visitor tested** before it goes live: it resolves to a `/checkout/` URL and, opened in a
   browser with no history, shows the right title and amount. `tested: true` and a dated note record
