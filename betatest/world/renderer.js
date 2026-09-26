@@ -71,7 +71,10 @@ class Renderer {
         // Things on the map, in y order so nearer things draw over farther ones.
         const figures = [];
         for (const i of space.interactables) figures.push({ y: i.y, draw: () => this.drawInteractable(ctx, i, i.x * ts - cam.x, i.y * ts - cam.y, ts) });
-        for (const n of space.npcs) figures.push({ y: n.y, draw: () => this.drawActor(ctx, n.x * ts - cam.x, n.y * ts - cam.y, ts, n.facing, n.def.sprite || {}, false) });
+        for (const n of space.npcs) {
+            const nx = (typeof n.px === 'number' ? n.px : n.x), ny = (typeof n.py === 'number' ? n.py : n.y);
+            figures.push({ y: ny, draw: () => this.drawActor(ctx, nx * ts - cam.x, ny * ts - cam.y, ts, n.facing, n.def.sprite || {}, !!n.moving, !!n.fluteUp) });
+        }
         figures.push({ y: player.py, draw: () => this.drawActor(ctx, player.px * ts - cam.x, player.py * ts - cam.y, ts, player.facing, { critter: player.avatar, color: '#F6F2EB' }, player.moving) });
         figures.sort((a, b) => a.y - b.y).forEach(f => f.draw());
 
@@ -243,7 +246,7 @@ class Renderer {
     // Who stands on a tile: one of the studio's real animals through the shared
     // painter (/platform/sprites/critters.js, published from CAMT jobs/flute.py),
     // or the plain figure when no critter is named or the module is absent.
-    drawActor(ctx, sx, sy, ts, facing, sprite, moving) {
+    drawActor(ctx, sx, sy, ts, facing, sprite, moving, fluteUp = false) {
         if (sprite && sprite.image) { this.drawImageSprite(ctx, sx, sy, ts, sprite); return; }
         const lib = window.CADENZA_CRITTERS;
         const ch = sprite && sprite.critter && lib && lib.CHARS.find(c => c.id === sprite.critter);
@@ -257,8 +260,24 @@ class Renderer {
         const bob = moving ? (Math.floor(this.frame / 6) % 2 ? -u * 0.3 : 0) : 0;
         ctx.translate(sx + ts / 2, sy + ts * 0.58 + bob);
         if (facing === 'left') ctx.scale(-1, 1);
-        lib.drawCritter(ctx, ch, ts * 0.36 * (ch.scale || 1), false, false);
+        const r = ts * 0.36 * (ch.scale || 1);
+        lib.drawCritter(ctx, ch, r, false, fluteUp);
+        if (sprite.outfit === 'suit') {
+            // The business-suit version (owner, log 20260925-07), drawn over the
+            // shared body until the production suit art arrives: jacket, collar, tie.
+            const v = r / 8;
+            ctx.fillStyle = '#2b3550'; ctx.fillRect(-6.5 * v, -1.5 * v, 8.5 * v, 5.5 * v);
+            ctx.fillStyle = '#f2f0ea'; ctx.fillRect(0.6 * v, -1.5 * v, 1.6 * v, 2.2 * v);
+            ctx.fillStyle = '#a03030'; ctx.fillRect(1.0 * v, -0.4 * v, 0.9 * v, 2.6 * v);
+        }
         ctx.restore();
+        if (fluteUp) {
+            // a note rises while he plays
+            const k = (this.frame % 40) / 40;
+            ctx.fillStyle = `rgba(246,242,235,${1 - k})`;
+            ctx.font = `${Math.max(10, ts * 0.5)}px monospace`;
+            ctx.fillText('♪', sx + ts * 0.7, sy - ts * 0.1 - k * ts * 0.5);
+        }
     }
 
     // A picture as a body: `sprite.image` is a path under betatest/ (the CAMT

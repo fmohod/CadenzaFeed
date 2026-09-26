@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "id": "npc:randy",
+  "name": "Randy Boy",
+  "canon": "fiction",
+  "sprite": { "critter": "randy", "outfit": "suit" },
+  "wander": {
+    "step_seconds": [0.6, 2.0],
+    "flute_seconds": [10, 30],
+    "stay_seconds": [45, 120],
+    "away_seconds": [8, 40],
+    "appear_chance_on_enter": 0.6
+  },
+  "_note": "Randy Boy, the owner's own cat, as his Universe B self (owner, log 20260925-07): 'the business suit version of Randy walking around with the flute ... an NPC that just casually walks around the world, every now and again he might lift his flute up and play something ... you can go up and talk to him and right now the only response you get is Randy the cat looks at you and then plays a little flute diddy ... he'll disappear at random and leave the room ... just a wandering entity NPC.' Version one: no dialogue by his instruction. The body is the shared painter's Randy (platform/sprites/critters.js, from CAMT jobs/flute.py); the suit is a game-side overlay until the production suit art arrives through the Flutie Cats asset route. Consent: the owner's own animal, placed on his ruling.",
+  "dialogue": [
+    { "lines": ["Randy Boy looks at you.", "He lifts the flute and plays a little something, then goes on his way."] }
+  ]
+}

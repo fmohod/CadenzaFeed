@@ -21,6 +21,7 @@ class WorldEngine {
         this.player = { space: null, x: 0, y: 0, facing: 'down', px: 0, py: 0, moving: false };
         this.state = { era: 'present', avatar: 'rocco' };   // the time the player is in, and who they walk as; part of the save.
         this.ship = new ShipMode(this);                      // the one ship (owner, log 20260914-01); active = flying the world map
+        this.roamers = [];                                   // wandering NPCs (owner, log 20260925-07: Randy Boy); filled in start()
         // Rocco first, by the owner's ruling (Flutie Cats README): the first character everyone gets.
         this.flags = { visited: new Set(), talked: new Set(), terminalOpened: false };
         this.tween = null;      // { fromX, fromY, toX, toY, t }
@@ -46,6 +47,7 @@ class WorldEngine {
 
         const saved = this.save.load();
         this.flags = this.save.replay();
+        for (const def of this.content.npcs.values()) if (def.wander) this.roamers.push(new Roamer(this, def));
         if (saved && saved.player && saved.player.era) this.state.era = saved.player.era;
         if (saved && saved.player && saved.player.avatar) this.state.avatar = saved.player.avatar;
         this.player.avatar = this.state.avatar;
@@ -128,6 +130,7 @@ class WorldEngine {
         this.tween = null;
         this.tapQueue = [];
         Object.assign(this.player, { space: spaceId, x, y, facing, px: x, py: y, moving: false });
+        for (const r of this.roamers) r.onEnter(space);
         // The player's time is player state and only the gate changes it. A bus
         // moves through space within the current time; a space never rewrites the
         // era on arrival (owner, 2026-09-03: "buses only move you around the current
@@ -311,6 +314,7 @@ class WorldEngine {
         }
 
         if (this.ship.active) { this.ship.update(dt, pressed); return; }
+        for (const r of this.roamers) r.update(dt);
 
         for (const a of pressed) {
             if (a === 'INTERACT') { this.interact(); return; }
@@ -368,6 +372,10 @@ class WorldEngine {
     interact() {
         const t = this.facingTarget();
         if (!t) return;
+        if (t.kind === 'npc' && t.npc.def.wander) {
+            const r = this.roamers.find(r => r.id === t.npc.id);
+            if (r) { r.talk(this.player); return; }
+        }
         if (t.kind === 'npc') {
             const lines = DialogueBox.resolve(t.npc.def, this.flags);
             // Face the player while talking; restore afterwards.
