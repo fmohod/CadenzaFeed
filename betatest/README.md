@@ -272,6 +272,63 @@ somewhere ... at one time"* (his words) in another year for the others to get th
 The engine already has the time layer and the party; what it needs is quest state shared
 through the party door and a first event chosen by him. Nothing minted here.
 
+### What already fits the circle (read 2026-09-26 from `F:\Apps\Flutie Cats\CHARACTERS.md`,
+### his logs 20260907-02 and 20260925-03/-04/-05, and the Flutie Cats runner's beats)
+
+The canon is real animals and real events, so every arc below is factual, and the steps are
+Harmon's: You · Need · Go · Struggle · Find · Suffer · Return · Change.
+
+- **Smokey, the household's origin — a complete circle already.** You: a kitten on a
+  construction site, 2021. Need: warmth, food. Go: the machines, the night. Struggle: the
+  site. Find: someone starts leaving food out. Suffer: nine lives, the cold. Return: a
+  friend of Valerie's carries her out. Change: she becomes the mama. The Flutie Cats runner
+  ("Before the House") already plays Go → Return; what Universe B can add is the second
+  circle: the **travel trailer chapter** with Rocco, the litter, Ghost — *"the origin of the
+  household"* and the only place her story and Rocco's overlap.
+- **Randy, Charlotte → Randy — a complete circle.** You: a cousin's "girl" cat in Livingston,
+  carried around. Need: to be fed. Go: into Frankie's care. Struggle: worms, too small.
+  Find: deworming, food. Suffer: neutered, loses "Charlotte". Return: a big healthy handsome
+  boy. Change: the suit, the flute, the author's stand-in. Livingston is already a named
+  place (log 20260914-01).
+- **Rocco — a circle with a broken Return.** The tail taken *"before he was able to make
+  decisions for himself"*; dead because *"he made decisions for himself and tried to cross the
+  street."* He exists only within his years, and he and Randy never met, so a Watcher reaches
+  him only through the time layer. That is the tragedy the time machine is for.
+- **Ella — a comic circle that never closes.** Need: a new side hustle. Go, Struggle, Find,
+  then Suffer by her own carelessness, Return, and *no* Change; repeatable forever, with Star
+  as the accomplice who only misbehaves in Ella's company. Side quests, not the main line.
+- **Elvis — Change already happened offstage** (*"a son of a bitch"*, now *"good cat"*), with a
+  mystery background and Missy, who ran. A quest hook, not a quest.
+- **Xica and Ghost — the rule about the door.** Ghost's death is why the cats come in at night;
+  Xica is the kitten who tests the rule two doors down. A Suffer step for the household, to be
+  told as gently as the runner tells the site.
+- **Star** — arrived through a Christmas photo shoot with a named real person; thin material,
+  and consent decides whether the person appears.
+
+**Rulings, 2026-09-26 (owner, in session):**
+- **Quest one is Smokey's household origin. Watchers play as the animals.**
+- **Humans are never named in Universe B.** The animals call people *"the humans"* or *"the
+  people"*, and **each animal has its own word for them**, which can change by region — his
+  reference is *The Walking Dead*, where nobody says "zombie" and every group has its own
+  word. So the consent question for real people mostly dissolves: no human appears by name;
+  the people in these stories are whichever word the animal telling it uses. (The words
+  themselves are his to give; see the open questions.)
+- **The years, as he gave them:** Rocco came home in **March 2016** from the Houston animal
+  shelter on Canino Road; he died at the **end of September 2024** (exact day pending: he
+  told Brad Stewart by text). The **travel trailer chapter ran February 2020 to about summer
+  2021**, at a private address that stays out of the game; then he left Rocco with Johnny and
+  lived out of his car between Texas, Denver and California. Randy's first kitten pictures in
+  Pasadena are from **22 October 2024**, so Randy arrived after Rocco died, which is why they
+  never met. Ghost's date of death is pending. Smokey's litter belongs to the trailer years.
+- **Where and how (his agreement pending on 6 to 8):** the household as fictional interiors
+  bound to no place; progress per Watcher in the browser save, shared through the party door
+  only for that session; finishing an animal's arc unlocks that animal in the mirror.
+
+**Party-size timelines that fall out of this:** the household's origin spans years, so one
+player relives one thread, two play Smokey and Rocco in the trailer years, three add the
+litter and Ghost, four add Randy's arrival — each Watcher as a different animal in a
+different year (his Chrono Cross party control), meeting at Find, which is the trailer.
+
 ## Randy Boy, the wandering NPC (owner, log 20260925-07; built 2026-09-26)
 
 *"He's an NPC that just casually walks around the world, every now and again he might lift
