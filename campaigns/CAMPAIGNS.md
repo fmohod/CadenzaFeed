@@ -45,11 +45,12 @@ campaigns/
   0001/
     index.html        ← the campaign page (§4)
     campaign.json     ← THE RECORD — canonical, machine-readable (§3)
-    share-card.jpg    ← 1200×630 share image (Open Graph / cards). NEVER overwritten: link-preview
-                        scrapers and the Cloudflare edge cache by URL (query strings ignored), so a
-                        changed card gets a NEW filename and the old file stays where it is, unreferenced.
-                        0001's first card was thumb.jpg (2026-09-02), retired 2026-09-26 because it
-                        carried a dollar figure that moved; a share image states no figure.
+    share-card.jpg    ← the share image, 1200×630 (Open Graph / cards), NAMED BY the record's
+                        `share_image` (§3). NEVER overwritten: link-preview scrapers and the Cloudflare
+                        edge cache by URL (query strings ignored), so a changed card gets a NEW filename,
+                        the record is pointed at it, and the old file stays where it is. 0001's first
+                        card was thumb.jpg (2026-09-02), retired 2026-09-26 because it carried a dollar
+                        figure that moved; a share image states no figure.
     randy.png         ← 0001 only: Randy for the game's share picture (296×600)
     flutiecats.js     ← 0001 only: the Flutie Cats flying game (§4)
     images/           ← optional photographs; same publication rules as articles
@@ -62,14 +63,15 @@ of any financial or progress value** — the page renders those from the record 
 because a stranger must be able to pay with scripts off; each must equal the `url` of a tier in
 the record, and the ADR-0011 manager's repo scan is what catches a mismatch.
 
-## 3. `campaign.json` — the record (schema_version 1)
+## 3. `campaign.json` — the record (schema_version 2)
 
 ```json
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "id": "0001",
   "title": "Ten flutes. Ten kids who can take one home.",
   "summary": "One or two sentences. Reused by the section index card and by CAMT.",
+  "share_image": "share-card.jpg",
   "author": "Frankie Mohammed",
   "status": "active",
   "created": "2026-09-02",
@@ -91,10 +93,11 @@ the record, and the ADR-0011 manager's repo scan is what catches a mismatch.
 
 | Field | Required | Consumer | Notes |
 |---|---|---|---|
-| `schema_version` | yes | everything | Integer. **Additive-only**: fields are added, never renamed, removed or repurposed. Bump when a field is added. |
+| `schema_version` | yes | everything | Integer. **Additive-only**: fields are added, never renamed, removed or repurposed. Bump when a field is added. 1 → 2 on 2026-09-26 for `share_image`. |
 | `id` | yes | index, page, CAMT | The folder name. Stable identity; the title may change, the id never does. |
 | `title` | yes | index card, page | The headline. |
 | `summary` | yes | index card, CAMT | One or two sentences. |
+| `share_image` | no | index card, page meta | The filename of the campaign's share image inside its folder, e.g. `share-card.jpg` (1200×630; the page's `og:image`, `twitter:image` and JSON-LD `image` name the same file). **The record names its own picture** because the filename is allowed to change: a share image is never overwritten (scrapers and the edge cache by URL), so a changed card gets a new filename and the record points at it. Absent, the index falls back to `thumb.jpg`, the convention before this field existed (0001 used it 2026-09-02 to 2026-09-26). Added 2026-09-26, after 0001's card was replaced and the index template was found hardcoding `thumb.jpg`: a rule the code cannot express is a rule that gets broken by someone following the code. |
 | `author` | yes | page meta, CAMT | The person whose first-person account the page is. |
 | `status` | yes | index (ordering + label), page | `active` · `funded` · `closed`. `funded` = goal reached, still accepting; `closed` = no longer accepting. |
 | `created` | yes | CAMT | `YYYY-MM-DD` the campaign went live. |
@@ -271,7 +274,7 @@ CAMT-recorded gift flips it to `square_ingest` and it stays there.
 
 - [ ] Folder is the next sequential 4-digit number; `id` matches it.
 - [ ] `campaign.json` parses; `schema_version` present; every required field filled.
-- [ ] the share image (`share-card.jpg`) present, 1200×630, matching `og:image:width`/`height`, no dollar figure in it; a replacement gets a new filename.
+- [ ] The file named in `share_image` exists in the folder at 1200×630, matches `og:image:width`/`height`, and is the file `og:image`, `twitter:image` and the JSON-LD `image` name; it carries no dollar figure. A replacement gets a new filename and a new `share_image`; the old file stays.
 - [ ] Meta line declares the type of work; author and start date present.
 - [ ] Give tiers above the story; every `href` is in `funding.tiers[]` and equal to it.
 - [ ] Every Square link is reusable, registered, and `tested: true`.

@@ -78,7 +78,7 @@
       <!-- No-JS fallback: the first campaign, linked plainly. -->
       <noscript>
         <a class="cmp-card" href="0001/">
-          <img src="0001/thumb.jpg" alt="Campaign 0001 — Cadenza Arthouse Instrument Library">
+          <img src="0001/share-card.jpg" alt="Campaign 0001 — Cadenza Arthouse Instrument Library">
           <div class="cmp-card-body">
             <span class="k">Campaign 0001</span>
             <h2>Ten flutes. Ten kids who can take one home.</h2>
@@ -146,7 +146,7 @@
       : '';
     return `
       <a class="cmp-card" href="${c.id}/">
-        <img src="${c.id}/thumb.jpg" alt="${c.title.replace(/"/g, '&quot;')}" loading="lazy">
+        <img src="${c.id}/${c.share_image || 'thumb.jpg'}" alt="${c.title.replace(/"/g, '&quot;')}" loading="lazy">
         <div class="cmp-card-body">
           <span class="k">Campaign ${c.id} · ${status}</span>
           <h2>${c.title}</h2>
