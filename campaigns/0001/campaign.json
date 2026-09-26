@@ -1,7 +1,8 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "id": "0001",
   "title": "Ten flutes. Ten kids who can take one home.",
+  "share_image": "share-card.jpg",
   "summary": "Play the flying game, then help put a flute in a kid's hands. Campaign 0001 buys ten student flutes in one order for the Cadenza Arthouse Instrument Library, which lends them to Houston kids to practice at home and passes each one to the next kid.",
   "author": "Frankie Mohammed",
   "status": "active",
