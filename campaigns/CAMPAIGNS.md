@@ -45,7 +45,11 @@ campaigns/
   0001/
     index.html        ← the campaign page (§4)
     campaign.json     ← THE RECORD — canonical, machine-readable (§3)
-    thumb.jpg         ← 1200×630 share image (Open Graph / cards)
+    share-card.jpg    ← 1200×630 share image (Open Graph / cards). NEVER overwritten: link-preview
+                        scrapers and the Cloudflare edge cache by URL (query strings ignored), so a
+                        changed card gets a NEW filename and the old file stays where it is, unreferenced.
+                        0001's first card was thumb.jpg (2026-09-02), retired 2026-09-26 because it
+                        carried a dollar figure that moved; a share image states no figure.
     randy.png         ← 0001 only: Randy for the game's share picture (296×600)
     flutiecats.js     ← 0001 only: the Flutie Cats flying game (§4)
     images/           ← optional photographs; same publication rules as articles
@@ -267,7 +271,7 @@ CAMT-recorded gift flips it to `square_ingest` and it stays there.
 
 - [ ] Folder is the next sequential 4-digit number; `id` matches it.
 - [ ] `campaign.json` parses; `schema_version` present; every required field filled.
-- [ ] `thumb.jpg` present, 1200×630.
+- [ ] the share image (`share-card.jpg`) present, 1200×630, matching `og:image:width`/`height`, no dollar figure in it; a replacement gets a new filename.
 - [ ] Meta line declares the type of work; author and start date present.
 - [ ] Give tiers above the story; every `href` is in `funding.tiers[]` and equal to it.
 - [ ] Every Square link is reusable, registered, and `tested: true`.
