@@ -75,6 +75,11 @@ class Renderer {
             const nx = (typeof n.px === 'number' ? n.px : n.x), ny = (typeof n.py === 'number' ? n.py : n.y);
             figures.push({ y: ny, draw: () => this.drawActor(ctx, nx * ts - cam.x, ny * ts - cam.y, ts, n.facing, n.def.sprite || {}, !!n.moving, !!n.fluteUp) });
         }
+        // The other Watchers of a local party (owner, log 20260923-03): faint,
+        // in the same room and time, never solid, never spoken to.
+        for (const o of scene.others || []) {
+            figures.push({ y: o.y, draw: () => { ctx.save(); ctx.globalAlpha = 0.6; this.drawActor(ctx, o.x * ts - cam.x, o.y * ts - cam.y, ts, o.facing, { critter: o.avatar, color: '#9fb4d8' }, false); ctx.restore(); } });
+        }
         figures.push({ y: player.py, draw: () => this.drawActor(ctx, player.px * ts - cam.x, player.py * ts - cam.y, ts, player.facing, { critter: player.avatar, color: '#F6F2EB' }, player.moving) });
         figures.sort((a, b) => a.y - b.y).forEach(f => f.draw());
 

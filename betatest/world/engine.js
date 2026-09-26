@@ -22,6 +22,7 @@ class WorldEngine {
         this.state = { era: 'present', avatar: 'rocco' };   // the time the player is in, and who they walk as; part of the save.
         this.ship = new ShipMode(this);                      // the one ship (owner, log 20260914-01); active = flying the world map
         this.roamers = [];                                   // wandering NPCs (owner, log 20260925-07: Randy Boy); filled in start()
+        this.party = new Party(this);                        // four Watchers on one Wi-Fi (owner, log 20260923-03); dormant on the public site
         // Rocco first, by the owner's ruling (Flutie Cats README): the first character everyone gets.
         this.flags = { visited: new Set(), talked: new Set(), terminalOpened: false };
         this.tween = null;      // { fromX, fromY, toX, toY, t }
@@ -268,6 +269,7 @@ class WorldEngine {
         const dt = Math.min(Math.max(0, (t - this._last) / 1000), 0.1);
         this._last = t;
         this.update(dt);
+        this.party.tick(dt);
         if (this.ship.active) {
             this.renderer.frame++;
             this.ship.render(this.renderer.ctx, this.renderer.canvas.width, this.renderer.canvas.height, this.renderer.frame);
@@ -281,6 +283,7 @@ class WorldEngine {
             weather: this.weatherNow,
             daylight: this.daylightNow,
             eraStyle: this.space && this.space.eraStyle,
+            others: this.space ? this.party.inRoom(this.space.id, this.state.era) : [],
             target: this.dialogue.open || this.paused ? null : this.facingTarget(),
         });
         if (!document.hidden) this._scheduleFrame();

@@ -236,6 +236,42 @@ Canon timeline for later: in the real-world universe an animal exists in-game on
 its real lifetime, which the timeline model already supports (a placement is a binding
 with a `valid` span).
 
+## The party: four Watchers on one Wi-Fi (owner, log 20260923-03; built 2026-09-26)
+
+*"Four people can exist within Universe B locally at the same time ... on the same Wi-Fi
+... a max party of four ... no communication, maybe they can only communicate with NPCs."*
+Built as a **transient door in CAMT**, `jobs\party.py` (`core.SERVICES["party"]`, port
+8747, bound to the LAN, open only while he runs it). It serves this folder, `/platform/`
+and `/game/engine/record.js` straight from the CadenzaFeed working tree and nothing else,
+and relays where each player is. The game side is `world/party.js`: it wakes only when
+`/party/info` answers (on the public site that is a 404, so nothing changes there), joins a
+slot, posts its own room, tile, facing, avatar and time ten times a second when they
+change, and listens on a server-sent stream for the others. The renderer draws the other
+Watchers as faint figures in the same room and time; they never block a tile, never speak,
+never trigger anything, and NPCs stay local to each device (Randy wanders differently on
+every phone). A fifth join is refused with "party full"; a slot that goes quiet for fifteen
+seconds is free again; the door holds nothing on disk and forgets everything when it
+closes. No account, no chat, no save, no code: it exists only on his Wi-Fi while he says so.
+To play: run the job, scan the QR it prints, everyone lands in the same world.
+*Not this:* the online version (a relay somewhere public) is the "what that actually takes,
+if that takes servers" he deferred; the ship's world map does not yet show other ships.
+
+## The co-op side quest: four timelines by party size (design, not built)
+
+Owner, 2026-09-26, with the Dan Harmon story circle as the frame (his link, boords.com):
+one side quest whose timeline differs by how many are playing, one to four, *"a custom
+storyline for each version or mode that you're playing in"* (log 20260923-03). The circle's
+eight steps are the spine of every version — You, Need, Go, Struggle, Find, Suffer, Return,
+Change, the top half order and the bottom half chaos — and the party size decides which
+timeline the Go step drops the party into, so the same quest is four different stories
+that all come home changed. Proposed shape, his to rule on: the quest is *one* Houston
+event on record (the archive is the source, so it is factual); a solo Watcher relives it
+as it happened; two split it into two viewpoints that must meet at Find; three and four add
+timelines on either side of it, so that Struggle needs *"somebody to flip a switch
+somewhere ... at one time"* (his words) in another year for the others to get through.
+The engine already has the time layer and the party; what it needs is quest state shared
+through the party door and a first event chosen by him. Nothing minted here.
+
 ## Randy Boy, the wandering NPC (owner, log 20260925-07; built 2026-09-26)
 
 *"He's an NPC that just casually walks around the world, every now and again he might lift
