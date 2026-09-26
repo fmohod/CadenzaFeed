@@ -236,6 +236,26 @@ Canon timeline for later: in the real-world universe an animal exists in-game on
 its real lifetime, which the timeline model already supports (a placement is a binding
 with a `valid` span).
 
+## Randy Boy, the wandering NPC (owner, log 20260925-07; built 2026-09-26)
+
+*"He's an NPC that just casually walks around the world, every now and again he might lift
+his flute up and play something ... you can go up and talk to him and right now the only
+response you get is: Randy the cat looks at you and then plays a little flute diddy ...
+he'll disappear at random and leave the room ... just a wandering entity NPC."* That is
+`world/roamer.js`, and any NPC whose definition carries `wander` is one. Randy
+(`content/npcs/randy.json`) is not placed in any space: when the player enters a room he
+is there six times in ten, otherwise he turns up within about forty seconds; he takes a
+step every second or two on walkable tiles, never onto a door, a stop or the player; every
+ten to thirty seconds he lifts the flute for a couple of seconds (a five-note pentatonic
+figure through WebAudio, heard within eight tiles once the page has had a gesture, a note
+glyph rising over him); after one to two minutes he leaves, and the cycle starts over in
+whatever room the player is in next. Talking to him: two lines by his instruction, no
+dialogue tree yet, then the tune, then he walks on. `NPCTalked` goes in the save log like
+any NPC. The body is the shared painter's Randy; the **business suit** is a game-side
+overlay (jacket, collar, tie) until the production suit art comes through the Flutie Cats
+asset route. Aboard the ship there are no rooms, so no roamers. The four-player local
+multiplayer he also asked for (log 20260923-03) is not this; it is recorded, not built.
+
 ## The address gate
 
 Owner, same log: `/betatest` sits behind the same Cloudflare gate as `/flutiecats`. A

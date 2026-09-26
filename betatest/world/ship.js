@@ -48,6 +48,7 @@ class ShipMode {
         this.active = true;
         const e = this.engine;
         e.space = null;
+        for (const r of e.roamers || []) r.onLeaveSpace();
         e.tween = null; e.tapQueue = [];
         e.hudSpace.textContent = 'The Ship';
         e.renderer.weatherNote = 'aloft';
