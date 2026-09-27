@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "id": "npc:the-people",
+  "name": "The people",
+  "canon": "memory",
+  "sprite": {
+    "color": "#c9b48a"
+  },
+  "_note": "The humans of the household, never named (owner ruling 2026-09-26): each animal has its own word for them; Smokey says 'the people'. Drawn as the plain figure, on purpose.",
+  "dialogue": [
+    {
+      "lines": [
+        "The people are busy with something on the little stove.",
+        "One of them scratches your ears without looking."
+      ]
+    }
+  ]
+}

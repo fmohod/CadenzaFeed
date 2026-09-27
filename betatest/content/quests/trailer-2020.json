@@ -1,0 +1,53 @@
+{
+  "schema": 1,
+  "id": "quest:trailer-2020",
+  "title": "The Trailer, 2020",
+  "arc": "smokey",
+  "play_as": "smokey",
+  "era": "2020-02-01",
+  "era_label": "February 2020",
+  "_note": "Quest one (owner ruling 2026-09-26): Smokey's household origin, on Dan Harmon's story circle, one step per beat. A memory flashback in Texas: fictional interiors, no street names, no addresses, no human named -- Smokey's word for people is 'the people', Rocco's is 'my people'. Canon from CHARACTERS.md and his logs: the travel trailer, February 2020 to about summer 2021, Smokey and Rocco and then the litter ('seven cats and a dog in a little travel trailer, it was chaotic'); the kittens went to friends and one stayed, Ghost. Ghost's and Rocco's deaths are 2024 and belong to a later quest, told gently. Party timelines: only the solo timeline is written; sizes 2-4 play it too until their timelines exist.",
+  "party": { "1": "written", "2": "not yet", "3": "not yet", "4": "not yet" },
+  "start": { "space": "space:memory-trailer", "spawn": "spawn:default" },
+  "placements": [
+    { "id": "npc:rocco", "space": "space:memory-trailer", "x": 8, "y": 4, "facing": "left", "from": 0, "to": 7 },
+    { "id": "npc:the-people", "space": "space:memory-trailer", "x": 2, "y": 2, "facing": "down", "from": 0, "to": 7 },
+    { "id": "npc:rocco", "space": "space:memory-lot", "x": 6, "y": 5, "facing": "down", "from": 2, "to": 4 },
+    { "id": "npc:kitten", "space": "space:memory-trailer", "x": 5, "y": 5, "facing": "down", "from": 4, "to": 7 },
+    { "id": "npc:kitten-2", "space": "space:memory-trailer", "x": 6, "y": 6, "facing": "left", "from": 4, "to": 5 },
+    { "id": "npc:kitten-3", "space": "space:memory-trailer", "x": 3, "y": 5, "facing": "right", "from": 4, "to": 5 },
+    { "id": "npc:kitten-4", "space": "space:memory-trailer", "x": 9, "y": 6, "facing": "up", "from": 4, "to": 5 }
+  ],
+  "steps": [
+    { "id": "you", "beat": "You",
+      "enter": { "space": "space:memory-trailer", "lines": ["February 2020. A travel trailer in a parking lot, somewhere in Texas.", "You are Smokey. Not long off the construction site. The people took you in.", "Rocco already lives here."] },
+      "objective": { "talk": "npc:rocco", "hint": "Say hello to Rocco" },
+      "talk_lines": ["Rocco looks you over. He has no tail; he does not need one.", "\"New here? My people feed at seven. Don't fight the bowl.\""] },
+    { "id": "need", "beat": "Need",
+      "objective": { "examine": "examine:warm-spot", "hint": "Find the warm spot" },
+      "done_lines": ["The warm spot by the heater. Yours, most nights.", "Something is different this week. You are going to need a place of your own. Soon."] },
+    { "id": "go", "beat": "Go",
+      "objective": { "enter": "space:memory-lot", "hint": "Go out into the lot" },
+      "enter": { "space": "space:memory-lot", "lines": ["The lot at night. Trucks, a fence, the road beyond it.", "Somewhere out here is a place a mother can hide a litter. Rocco followed you out."] } },
+    { "id": "struggle", "beat": "Struggle",
+      "objective": { "examine": "examine:crawlspace", "hint": "Look for somewhere dry" },
+      "done_lines": ["Under the trailer. Dry. Dark. Out of the wind.", "Rocco puts his nose in, then backs out and sits by the step. He will keep watch."] },
+    { "id": "find", "beat": "Find",
+      "objective": { "enter": "space:memory-trailer", "hint": "Go back inside" },
+      "enter": { "space": "space:memory-trailer", "lines": ["Spring. Four kittens, and then the trailer was full.", "Seven cats and a dog in a little travel trailer. It was chaotic.", "The people did not mind as much as they said they did."] } },
+    { "id": "suffer", "beat": "Suffer",
+      "objective": { "talk": "npc:the-people", "hint": "The people want to talk" },
+      "talk_lines": ["The people have been on the phone all week.", "\"Two are going to friends. The little white one is going to someone down the road.\"", "\"One is staying. We're keeping one.\"", "You watch them go, one at a time. That is what a mother does."] },
+    { "id": "return", "beat": "Return",
+      "objective": { "talk": "npc:kitten", "hint": "The one who stayed" },
+      "talk_lines": ["The one who stayed. Gray like you, and quieter.", "The people call her Ghost."] },
+    { "id": "change", "beat": "Change",
+      "objective": { "talk": "npc:rocco", "hint": "Tell Rocco" },
+      "talk_lines": ["Rocco, at the door, where he always is.", "\"So. You're the mama now.\"", "You are. Of this trailer, and of everything that came after it."] }
+  ],
+  "finish": {
+    "lines": ["The trailer years. That is where the household began.", "Smokey walks with you now: look in the mirror."],
+    "unlock": "smokey",
+    "return": { "space": "space:archive-office", "spawn": "spawn:default" }
+  }
+}

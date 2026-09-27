@@ -54,11 +54,17 @@ class SaveLog {
 
     // Rebuild derived flags from the log. Deterministic: same log → same flags.
     replay() {
-        const flags = { visited: new Set(), talked: new Set(), terminalOpened: false };
+        // `unlocked` starts with Rocco (the first character everyone gets, his
+        // ruling); an arc's completion adds its animal. `quests` is id -> {step, done}.
+        const flags = { visited: new Set(), talked: new Set(), terminalOpened: false, quests: {}, unlocked: new Set(['rocco']) };
         for (const ev of this.data.events) {
             if (ev.type === 'SpaceEntered' && ev.id) flags.visited.add(ev.id);
             else if (ev.type === 'NPCTalked' && ev.id) flags.talked.add(ev.id);
             else if (ev.type === 'TerminalOpened') flags.terminalOpened = true;
+            else if (ev.type === 'QuestStarted' && ev.id) flags.quests[ev.id] = flags.quests[ev.id] || { step: 0, done: false };
+            else if (ev.type === 'QuestStep' && ev.id) { const q = flags.quests[ev.id] || (flags.quests[ev.id] = { step: 0, done: false }); q.step = ev.step | 0; }
+            else if (ev.type === 'QuestDone' && ev.id) { const q = flags.quests[ev.id] || (flags.quests[ev.id] = { step: 0, done: false }); q.done = true; }
+            else if (ev.type === 'ArcUnlocked' && ev.id) flags.unlocked.add(ev.id);
         }
         return flags;
     }

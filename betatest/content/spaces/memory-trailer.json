@@ -1,0 +1,36 @@
+{
+  "schema": 1,
+  "id": "space:memory-trailer",
+  "name": "The Trailer",
+  "kind": "interior",
+  "theme": "interior",
+  "canon": "memory",
+  "neighborhood": "memory",
+  "era": "2020-02-01",
+  "era_label": "February 2020",
+  "era_style": { "tint": [255, 220, 170, 0.10], "grain": 0.25 },
+  "_note": "A memory flashback (owner ruling 2026-09-26): the travel trailer of February 2020 to summer 2021, as a fictional interior bound to no place. No address, no street, no coordinates, ever. Quest one plays here.",
+  "map": [
+    "WWWWwWWWWwWW",
+    "W=..M......W",
+    "W..........W",
+    "W#.........W",
+    "W..........W",
+    "W..........W",
+    "WZZ.......DW",
+    "WWWWWWWWWWWW"
+  ],
+  "spawns": [
+    { "id": "spawn:default", "x": 5, "y": 4, "facing": "down" },
+    { "id": "spawn:from-lot", "x": 9, "y": 6, "facing": "left" }
+  ],
+  "exits": [
+    { "id": "exit:door", "x": 10, "y": 6, "label": "Trailer door", "to": { "space": "space:memory-lot", "spawn": "spawn:from-trailer" } }
+  ],
+  "interactables": [
+    { "id": "examine:warm-spot", "type": "examine", "x": 4, "y": 1, "label": "The warm spot", "marker": false, "text": ["A rug by the little heater. Somebody is always on it."] },
+    { "id": "examine:bed", "type": "examine", "x": 1, "y": 6, "label": "The bed", "marker": false, "text": ["The people's bed. Also, at night, everyone's bed."] },
+    { "id": "examine:shelf", "type": "examine", "x": 1, "y": 3, "label": "Shelf", "marker": false, "text": ["Cans, a camera bag, a flute case."] }
+  ],
+  "npcs": []
+}

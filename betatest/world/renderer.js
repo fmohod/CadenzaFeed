@@ -265,7 +265,7 @@ class Renderer {
         const bob = moving ? (Math.floor(this.frame / 6) % 2 ? -u * 0.3 : 0) : 0;
         ctx.translate(sx + ts / 2, sy + ts * 0.58 + bob);
         if (facing === 'left') ctx.scale(-1, 1);
-        const r = ts * 0.36 * (ch.scale || 1);
+        const r = ts * 0.36 * (ch.scale || 1) * (sprite.scale || 1);   // sprite.scale: a kitten is the mother, smaller
         lib.drawCritter(ctx, ch, r, false, fluteUp);
         if (sprite.outfit === 'suit') {
             // The business-suit version (owner, log 20260925-07), drawn over the

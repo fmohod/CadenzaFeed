@@ -23,6 +23,7 @@ class WorldEngine {
         this.ship = new ShipMode(this);                      // the one ship (owner, log 20260914-01); active = flying the world map
         this.roamers = [];                                   // wandering NPCs (owner, log 20260925-07: Randy Boy); filled in start()
         this.party = new Party(this);                        // four Watchers on one Wi-Fi (owner, log 20260923-03); dormant on the public site
+        this.quest = new QuestRunner(this);                  // storylines as data, tracked in the save (owner, 2026-09-26)
         // Rocco first, by the owner's ruling (Flutie Cats README): the first character everyone gets.
         this.flags = { visited: new Set(), talked: new Set(), terminalOpened: false };
         this.tween = null;      // { fromX, fromY, toX, toY, t }
@@ -46,6 +47,14 @@ class WorldEngine {
             return;
         }
 
+        // A resume code on the URL rewrites the save before anything loads (a QR of
+        // the code is a save file). The parameter is dropped so a reload keeps going.
+        const resumeParam = new URLSearchParams(location.search).get('resume');
+        if (resumeParam) {
+            const why = ResumeCode.apply(this.save, resumeParam);
+            if (why) console.warn('[resume] ' + why);
+            try { const u = new URL(location.href); u.searchParams.delete('resume'); history.replaceState(null, '', u.toString()); } catch (e) { /* fine */ }
+        }
         const saved = this.save.load();
         this.flags = this.save.replay();
         for (const def of this.content.npcs.values()) if (def.wander) this.roamers.push(new Roamer(this, def));
@@ -61,6 +70,8 @@ class WorldEngine {
             placed = this.enter(saved.player.space, null, saved.player, true);
         }
         if (!placed) this.enter(m.start.space, m.start.spawn, null, true);
+        // An unfinished quest picks up at its step, in the room the save left the player.
+        if (this.quest.restore(this.flags) && this.space) this.quest.onEnter(this.space.id);
 
         // First visit in this browser: the beta disclaimer the owner asked for
         // (log 20260908-06). Saves are browser-local reference points; nothing
@@ -132,6 +143,7 @@ class WorldEngine {
         this.tapQueue = [];
         Object.assign(this.player, { space: spaceId, x, y, facing, px: x, py: y, moving: false });
         for (const r of this.roamers) r.onEnter(space);
+        if (this.quest) this.quest.refreshNpcs();
         // The player's time is player state and only the gate changes it. A bus
         // moves through space within the current time; a space never rewrites the
         // era on arrival (owner, 2026-09-03: "buses only move you around the current
@@ -145,6 +157,7 @@ class WorldEngine {
             this.save.record('SpaceEntered', spaceId);
         }
         if (!silent) this.persist();
+        if (this.quest && !silent) this.quest.onEnter(spaceId);
         return true;
     }
 
@@ -211,6 +224,11 @@ class WorldEngine {
             // Nowhere on Earth: the station and its rooms (owner, log 20260912-02).
             // No sky to fetch, so the HUD carries a UTC clock and nothing else.
             const n = data.neighborhood && this.content.neighborhoods.get(data.neighborhood);
+            if (n && n.region === 'memory') {
+                clearInterval(this._sunTimer);
+                this.hudWeather.textContent = `${space.eraLabel || 'Then'} · a memory, somewhere in Texas`;
+                return;
+            }
             if (n && n.region === 'orbit') {
                 const tick = () => {
                     if (this.space !== space) return;
@@ -327,7 +345,7 @@ class WorldEngine {
 
         this.step(dt);
         const target = this.facingTarget();
-        this.hudHint.textContent = target ? `[E] ${target.label}` : '';
+        this.hudHint.textContent = target ? `[E] ${target.label}` : this.quest.hint();
     }
 
     // Grid movement with a short tween so a step reads as walking, not teleporting.
@@ -379,6 +397,12 @@ class WorldEngine {
             const r = this.roamers.find(r => r.id === t.npc.id);
             if (r) { r.talk(this.player); return; }
         }
+        if (t.kind === 'npc' && this.quest.onTalk(t.npc)) {
+            t.npc.facing = { up: 'down', down: 'up', left: 'right', right: 'left' }[this.player.facing] || t.npc.facing;
+            this.flags.talked.add(t.npc.id);
+            this.save.record('NPCTalked', t.npc.id);
+            return;
+        }
         if (t.kind === 'npc') {
             const lines = DialogueBox.resolve(t.npc.def, this.flags);
             // Face the player while talking; restore afterwards.
@@ -402,7 +426,8 @@ class WorldEngine {
             // The mirror: walk as one of the studio's animals. The roster is the
             // shared painter's CHARS (unlocked ones), never a second list.
             const lib = window.CADENZA_CRITTERS;
-            const opts = lib ? lib.CHARS.filter(c => c.unlocked).map(c => ({ label: `${c.name} — ${c.sub}`, value: c.id })) : [];
+            // Rocco first, everyone else once their arc is finished (owner, 2026-09-26).
+            const opts = lib ? lib.CHARS.filter(c => c.unlocked && (c.id === 'rocco' || this.flags.unlocked.has(c.id))).map(c => ({ label: `${c.name} — ${c.sub}`, value: c.id })) : [];
             if (!opts.length) { this.dialogue.show(t.item.label || 'Mirror', ['Just you. The roster has not loaded.']); return; }
             opts.push({ label: 'Stay as you are', value: null });
             this.dialogue.choose(t.item.label || 'Mirror', opts, (id) => {
@@ -411,6 +436,36 @@ class WorldEngine {
                 this.player.avatar = id;
                 this.save.record('AvatarChosen', id);
                 this.persist();
+            });
+            return;
+        }
+        if (t.kind === 'examine' && this.quest.onExamine(t.item)) return;
+        if (t.kind === 'examine' && t.item.list === 'quests') {
+            // The album: the storylines, and where you stand in each.
+            const cat = this.quest.catalogue(this.flags);
+            if (!cat.length) { this.dialogue.show(t.item.label || 'Album', ['Empty pages. No stories yet.']); return; }
+            if (this.quest.active) { this.dialogue.show(t.item.label || 'Album', [`You are in the middle of ${this.quest.active.quest.title}.`, this.quest.hint()]); return; }
+            const opts = cat.map(c => ({ label: c.label, value: c.id }));
+            opts.push({ label: 'Close the album', value: null });
+            this.dialogue.choose(t.item.label || 'Album', opts, (id) => { if (id) this.quest.start(id); });
+            return;
+        }
+        if (t.kind === 'examine' && t.item.list === 'resume') {
+            // Progress that survives coming back, with no account (owner, 2026-09-26).
+            const opts = [{ label: 'Show my resume code', value: 'show' }, { label: 'Enter a resume code', value: 'enter' }, { label: 'Leave it', value: null }];
+            this.dialogue.choose(t.item.label || 'Resume', opts, (v) => {
+                if (v === 'show') {
+                    this.persist();
+                    const code = ResumeCode.fromEngine(this);
+                    try { navigator.clipboard && navigator.clipboard.writeText(code); } catch (e) { /* no clipboard */ }
+                    this.dialogue.show('Resume code', ['Write it down, or it is on your clipboard. Add it to the address as ?resume=', code]);
+                } else if (v === 'enter') {
+                    const code = window.prompt('Resume code:');
+                    if (!code) return;
+                    const why = ResumeCode.apply(this.save, code);
+                    if (why) { this.dialogue.show('Resume code', [why]); return; }
+                    location.reload();
+                }
             });
             return;
         }

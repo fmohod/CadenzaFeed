@@ -97,6 +97,25 @@
       "text": "A map of Houston pinned to the wall, a long way below. The pins are the places the archive can name in public:"
     },
     {
+      "id": "examine:album",
+      "type": "examine",
+      "x": 3,
+      "y": 0,
+      "label": "Photo album",
+      "marker": false,
+      "list": "quests",
+      "text": "An album on the shelf. Each page is a story the household actually lived."
+    },
+    {
+      "id": "examine:resume",
+      "type": "examine",
+      "x": 7,
+      "y": 0,
+      "label": "Resume console",
+      "marker": false,
+      "list": "resume"
+    },
+    {
       "id": "avatar:mirror",
       "type": "avatar",
       "x": 5,

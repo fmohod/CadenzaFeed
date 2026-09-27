@@ -75,13 +75,19 @@ class ContentLoader {
             if (err) { warn(`space "${file}" skipped: ${err}`); return; }
             content.spaces.set(data.id, data);
         });
+        content.quests = new Map();
+        const questLoads = (manifest.quests || []).map(async (file) => {
+            const q = await ContentLoader._json(`${base}quests/${file}.json`);
+            if (!q || q.schema !== 1 || typeof q.id !== 'string' || !q.id.startsWith('quest:') || !Array.isArray(q.steps) || !q.steps.length || !q.start) { warn(`quest "${file}" skipped: needs schema 1, id "quest:<slug>", start, steps[]`); return; }
+            content.quests.set(q.id, q);
+        });
         const npcLoads = (manifest.npcs || []).map(async (file) => {
             const data = await ContentLoader._json(`${base}npcs/${file}.json`);
             const err = ContentLoader.validateNpc(data);
             if (err) { warn(`npc "${file}" skipped: ${err}`); return; }
             content.npcs.set(data.id, data);
         });
-        await Promise.all([...spaceLoads, ...npcLoads]);
+        await Promise.all([...spaceLoads, ...npcLoads, ...questLoads]);
 
         // Cross-references: report, do not fail.
         for (const [id, space] of content.spaces) {

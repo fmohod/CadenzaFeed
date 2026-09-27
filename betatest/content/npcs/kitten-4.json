@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "id": "npc:kitten-4",
+  "name": "A kitten",
+  "canon": "memory",
+  "sprite": {
+    "critter": "smokey",
+    "scale": 0.55
+  },
+  "_note": "One of Smokey's litter, the trailer years. Drawn with Smokey's body at kitten scale.",
+  "dialogue": [
+    {
+      "lines": [
+        "A kitten, chewing the flute case strap."
+      ]
+    }
+  ]
+}

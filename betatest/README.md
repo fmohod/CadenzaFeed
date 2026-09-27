@@ -340,6 +340,44 @@ player relives one thread, two play Smokey and Rocco in the trailer years, three
 litter and Ghost, four add Randy's arrival — each Watcher as a different animal in a
 different year (his Chrono Cross party control), meeting at Find, which is the trailer.
 
+## The quest engine, and quest one (built 2026-09-26 on his go)
+
+**A quest is data**: `content/quests/<id>.json`, listed in `world.json` `quests[]`. Its
+`steps[]` are the eight beats of the circle, each with one **objective** — `talk` to an NPC,
+`examine` a thing, or `enter` a room — and the lines that play: `enter.lines` when the
+room is entered, `talk_lines` in the NPC's voice, `done_lines` on the examine. `placements[]`
+put NPCs into rooms for a range of steps (`from`, `to`), so a litter appears at Find and
+goes at Suffer; a placed NPC is marked `quest: true` and is re-applied whenever the step or
+the room changes. `play_as` swaps the avatar for the quest's length (Watchers play as the
+animals); `era` sets the player's time for the flashback; `finish` carries the closing
+lines, the `unlock`, and where to `return`. `world/quest.js` is the runner. The **album** in
+the office (`list: "quests"`) lists every quest and where you stand in it; the HUD hint
+carries the current beat and objective when nothing is in front of you.
+
+**Progress** is three save events — `QuestStarted`, `QuestStep`, `QuestDone` — plus
+`ArcUnlocked`, replayed on load like everything else, so a reload lands on the same step in
+the same room with the same NPCs. **Finishing an arc unlocks its animal in the mirror**;
+the mirror now offers Rocco and the unlocked ones only (his ruling, 2026-09-26).
+
+**The resume code** (`ResumeCode`, same file; the **Resume console** in the office): progress
+that survives coming back with no account anywhere. `UB1-<check>-<payload>` carries the
+checkpoint and the derived flags (rooms seen, NPCs talked to, quests, unlocked animals),
+not the log, so it stays short; the check is FNV-1a over the payload, so a typo is refused,
+not loaded. Show it (it also goes to the clipboard) or enter one; `?resume=<code>` on the
+URL loads it, so a QR of the code is a save file. Nothing about the person is in it.
+
+**Quest one, "The Trailer, 2020"** (`content/quests/trailer-2020.json`): Smokey's household
+origin on the circle, in two memory rooms bound to no place — The Trailer and The Lot at
+Night, neighborhood `memory` (no coordinates, no weather, the era label is the clock, a
+warm tint and grain). You: Smokey, new, meets Rocco. Need: the warm spot, and a place of
+her own soon. Go: the lot at night. Struggle: under the trailer, dry, and Rocco keeps
+watch. Find: spring, four kittens, *"seven cats and a dog in a little travel trailer."*
+Suffer: the people give three away, one at a time. Return: the one who stayed, Ghost.
+Change: *"You're the mama now."* Finish unlocks Smokey. Every line keeps his rules:
+no human named (Smokey says *"the people"*, Rocco says *"my people"*), no address, Rocco
+only in his years, Ghost's and Rocco's deaths left for the 2024 quest, told gently. Party
+timelines: only the solo one is written; a party of any size plays it until 2 to 4 exist.
+
 ## Randy Boy, the wandering NPC (owner, log 20260925-07; built 2026-09-26)
 
 *"He's an NPC that just casually walks around the world, every now and again he might lift

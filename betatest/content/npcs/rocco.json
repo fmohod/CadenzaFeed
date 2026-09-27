@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "id": "npc:rocco",
+  "name": "Rocco",
+  "canon": "memory",
+  "sprite": {
+    "critter": "rocco"
+  },
+  "_note": "Rocco, in his years only (March 2016 to 30 September 2024): he appears in memory flashbacks and never in the present. His word for people is 'my people'. Placed by quests, not by spaces.",
+  "dialogue": [
+    {
+      "lines": [
+        "Rocco sits by the door.",
+        "\"My people are out. They'll be back.\""
+      ]
+    }
+  ]
+}

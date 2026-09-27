@@ -84,6 +84,18 @@
         "space:macroplaza-mall-1982"
       ],
       "timezone": "America/Chicago"
+    },
+    {
+      "slug": "memory",
+      "name": "A memory",
+      "region": "memory",
+      "anchor": null,
+      "_note": "Flashbacks (owner, 2026-09-26): fictional interiors framed as a memory in Texas, bound to no place. No coordinates, no weather; the era label on the space is the clock.",
+      "spaces": [
+        "space:memory-trailer",
+        "space:memory-lot"
+      ],
+      "timezone": "America/Chicago"
     }
   ],
   "places_file": "places.json",
@@ -139,17 +151,28 @@
     "eleanor-tinsley-park",
     "strawberry-park",
     "macroplaza-mall",
-    "macroplaza-mall-1982"
+    "macroplaza-mall-1982",
+    "memory-trailer",
+    "memory-lot"
   ],
   "npcs": [
     "test-001",
     "camt",
-    "randy"
+    "randy",
+    "rocco",
+    "the-people",
+    "kitten",
+    "kitten-2",
+    "kitten-3",
+    "kitten-4"
   ],
   "hub": {
     "space": "space:community-block",
     "spawn": "spawn:from-downtown",
     "label": "Fly to the Station",
     "_note": "The ship's home (owner, log 20260914-01: one ship, his, the only time machine). From the ground, 'Fly to the Station' at any ramp; from the station's ramp, board the ship over wherever it last was."
-  }
+  },
+  "quests": [
+    "trailer-2020"
+  ]
 }

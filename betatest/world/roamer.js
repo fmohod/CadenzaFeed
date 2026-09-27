@@ -37,6 +37,8 @@ class Roamer {
     // The player walked into a room: the roamer may already be here.
     onEnter(space) {
         this.actor = null; this.tween = null; this.playing = 0; this.busy = false;
+        // A memory is a fixed year; a roamer of the present does not walk into it.
+        if (space.canon === 'memory') { this.space = null; return; }
         this.space = space;
         if (Math.random() < this.cfg.chance) this.appear(); else this.nextAppear = this.t + rand(...this.cfg.away);
     }

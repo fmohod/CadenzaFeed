@@ -1,0 +1,38 @@
+{
+  "schema": 1,
+  "id": "space:memory-lot",
+  "name": "The Lot at Night",
+  "kind": "exterior",
+  "theme": "street",
+  "canon": "memory",
+  "neighborhood": "memory",
+  "era": "2020-02-01",
+  "era_label": "February 2020",
+  "era_style": { "tint": [20, 30, 70, 0.38], "grain": 0.3 },
+  "_note": "A memory flashback: the parking lot around the trailer, at night, somewhere in Texas. Fiction bound to no place; no address. The road along the top is the one nobody talks about yet.",
+  "map": [
+    "RRRRRRRRRRRRRRRRRR",
+    "RRRRRRRRRRRRRRRRRR",
+    "FFFFFFFFFFFFFFFFFF",
+    "pppppppppppppppppp",
+    "ppppBBBBBBBpppppTp",
+    "ppppBBBDBBBpppppGp",
+    "ppppppppppppppGGGp",
+    "pTppppppppppppGGGp",
+    "pppppppppppppppppp",
+    "FFFFFFFFFFFFFFFFFF"
+  ],
+  "spawns": [
+    { "id": "spawn:default", "x": 7, "y": 6, "facing": "down" },
+    { "id": "spawn:from-trailer", "x": 7, "y": 6, "facing": "down" }
+  ],
+  "exits": [
+    { "id": "exit:trailer-door", "x": 7, "y": 5, "label": "Trailer door", "to": { "space": "space:memory-trailer", "spawn": "spawn:from-lot" } }
+  ],
+  "interactables": [
+    { "id": "examine:fence", "type": "examine", "x": 8, "y": 2, "label": "The fence", "marker": false, "text": ["Chain-link, and the road on the other side of it.", "Too close. Too loud."] },
+    { "id": "examine:truck", "type": "examine", "x": 15, "y": 4, "label": "A truck", "marker": false, "text": ["Somebody's truck, cold engine. Under it is wet."] },
+    { "id": "examine:crawlspace", "type": "examine", "x": 4, "y": 6, "label": "Under the trailer", "marker": true, "text": ["A gap under the trailer floor, behind the step."] }
+  ],
+  "npcs": []
+}
