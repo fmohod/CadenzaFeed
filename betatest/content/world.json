@@ -164,7 +164,9 @@
     "kitten",
     "kitten-2",
     "kitten-3",
-    "kitten-4"
+    "kitten-4",
+    "rocco-flying",
+    "rocco-jacket"
   ],
   "hub": {
     "space": "space:community-block",
@@ -174,5 +176,13 @@
   },
   "quests": [
     "trailer-2020"
-  ]
+  ],
+  "title": {
+    "name": "UNIVERSE B",
+    "sub": "a Cadenza Arthouse world · in beta",
+    "sub_plus": "a Cadenza Arthouse world · the household remembers",
+    "note": "",
+    "note_plus": "You have finished an arc. New game + keeps the animals you unlocked.",
+    "_note": "The title screen's words (owner, log 20260926-01: a title and loading screen, and a title that may load differently the second time through, like a new game plus)."
+  }
 }

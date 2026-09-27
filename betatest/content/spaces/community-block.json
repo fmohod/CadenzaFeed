@@ -148,6 +148,18 @@
       "x": 12,
       "y": 15,
       "facing": "down"
+    },
+    {
+      "id": "npc:rocco-flying",
+      "x": 24,
+      "y": 9,
+      "facing": "left"
+    },
+    {
+      "id": "npc:rocco-jacket",
+      "x": 26,
+      "y": 14,
+      "facing": "left"
     }
   ]
 }

@@ -16,7 +16,7 @@
          stylesheet last so the world wins for everything outside the overlay. -->
     <link rel="stylesheet" href="css/terminal.css?v=5">
     <link id="cain-interface-pack-css" rel="stylesheet" href="">
-    <link rel="stylesheet" href="world/world.css?v=6">
+    <link rel="stylesheet" href="world/world.css?v=7">
 </head>
 <body class="world-shell">
 
@@ -24,6 +24,15 @@
          content/. See README.md in this folder for the architecture and the
          acceptance tests this build has to pass. -->
     <canvas id="world-canvas" aria-label="Cadenza Arthouse world"></canvas>
+
+    <!-- THE TITLE: the door in, every time (owner, log 20260926-01). Loading screen first, then the menu. -->
+    <div id="title" hidden>
+        <div id="title-name">UNIVERSE B</div>
+        <div id="title-sub">loading…</div>
+        <div id="title-menu"></div>
+        <div id="title-note"></div>
+        <div id="title-foot">Cadenza Arthouse</div>
+    </div>
 
     <div id="hud" aria-live="polite">
         <div id="hud-space"></div>
@@ -91,7 +100,7 @@
     <script src="world/input.js?v=2"></script>
     <script src="world/content.js?v=6"></script>
     <script src="world/space.js?v=3"></script>
-    <script src="world/renderer.js?v=14"></script>
+    <script src="world/renderer.js?v=15"></script>
     <script src="world/dialogue.js?v=3"></script>
     <script src="world/save.js?v=5"></script>
     <script src="world/weather.js?v=3"></script>
@@ -101,7 +110,8 @@
     <script src="world/roamer.js?v=3"></script>
     <script src="world/party.js?v=1"></script>
     <script src="world/quest.js?v=2"></script>
-    <script src="world/engine.js?v=19"></script>
-    <script src="world/boot.js?v=2"></script>
+    <script src="world/title.js?v=2"></script>
+    <script src="world/engine.js?v=20"></script>
+    <script src="world/boot.js?v=3"></script>
 </body>
 </html>

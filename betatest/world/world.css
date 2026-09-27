@@ -167,7 +167,40 @@ body.controls-idle #touch { opacity: 0.35; }
     z-index: 8;
 }
 
-#fatal[hidden], #dialogue[hidden], #touch[hidden], #dev-badge[hidden], #cain-overlay[hidden] { display: none; }
+#fatal[hidden], #dialogue[hidden], #touch[hidden], #dev-badge[hidden], #cain-overlay[hidden], #title[hidden] { display: none; }
+
+/* The title: loading screen, then the menu (owner, log 20260926-01). */
+#title {
+    position: fixed;
+    inset: 0;
+    z-index: 15;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    background: radial-gradient(ellipse at 50% 70%, #16202e 0%, #05060a 60%);
+    color: #F6F2EB;
+    font-family: 'IBM Plex Mono', monospace;
+    text-align: center;
+    padding: 24px;
+}
+#title-name {
+    font-family: 'VT323', monospace;
+    font-size: clamp(56px, 14vw, 128px);
+    letter-spacing: 0.12em;
+    color: #F6F2EB;
+    text-shadow: 0 0 24px rgba(160, 120, 64, 0.55), 4px 4px 0 #A07840;
+    line-height: 1;
+}
+#title-sub { color: #9fb4d8; font-size: 14px; text-transform: uppercase; letter-spacing: 0.2em; }
+#title-menu { margin-top: 18px; font-size: 20px; line-height: 1.9; white-space: pre; }
+.title-row { cursor: pointer; color: #b8b2a8; }
+.title-row.on { color: #F6F2EB; animation: title-pulse 1.1s ease-in-out infinite; }
+#title-note { color: #A07840; font-size: 13px; min-height: 18px; max-width: 520px; }
+#title-foot { position: absolute; bottom: 22px; color: #6c7a94; font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase; }
+@keyframes title-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.45; } }
+body.title-open #hud, body.title-open #dialogue, body.title-open #touch { display: none; }
 #fatal {
     position: fixed;
     inset: 0;

@@ -1,0 +1,21 @@
+{
+  "schema": 1,
+  "id": "npc:rocco-flying",
+  "name": "Rocco",
+  "canon": "fiction",
+  "universe": "flutie-cats",
+  "universe_label": "from the flying game",
+  "sprite": {
+    "critter": "rocco"
+  },
+  "_note": "The flying-game Rocco (owner, 19:20 log 2026-09-26): 'the actual flying Rocco who's on the campaign page, who's the same Rocco flying around on flutiecats.com', as a visitor NPC in Universe B. Not the Universe A Rocco of the memory rooms; a multiverse visitor, docked at the station. `universe` names where an NPC is from; the speaker line shows it.",
+  "dialogue": [
+    {
+      "lines": [
+        "Rocco, in from the flying game, still catching his breath.",
+        "\"Up there it's one note and you go up. Down here you just walk?\"",
+        "\"My people are the same, though. Everywhere."
+      ]
+    }
+  ]
+}

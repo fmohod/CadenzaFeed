@@ -340,6 +340,44 @@ player relives one thread, two play Smokey and Rocco in the trailer years, three
 litter and Ghost, four add Randy's arrival — each Watcher as a different animal in a
 different year (his Chrono Cross party control), meeting at Find, which is the trailer.
 
+## Co-op branches the timeline; some things are canon (owner, logs 20260926-01 and the 19:20 log)
+
+Design, recorded for the party timelines: *"if they play it in co-op mode, it branches into
+a different timeline ... two independent operators moving around the same world, the events
+would unfold differently."* Branches differ by player count, one to four. A player may run
+solo for a while and then bring a second player into the party, or stay solo the whole run,
+and nobody is stopped from the major arc for lack of a partner. **Some events are canon and
+always happen**, whatever the party: his Lavos rule (*"if Lavos doesn't show up, there's no
+game"*) and his Spider-Verse rule. **The eternal struggle that crosses every story is a loss
+that happens no matter what the party does** — *"a life lesson: AI agents can always change
+themselves or write new code to make things different, but human people have to live with
+the one chance we get"* — and in this household that loss has names and dates (above). Saves,
+once they exist across visits (the resume code does that now), may open more branches.
+The party door already admits a player mid-run; the branch logic waits on the timelines.
+
+## The title screen (built 2026-09-26; owner, log 20260926-01)
+
+*"Just like Chrono Trigger had a title screen, a loading animation, the title select screen,
+load game ... so they have a starting point every time they come back."* `world/title.js` is
+up before anything loads — it is the loading screen — then becomes the menu: **Continue**
+(when a save exists), **New game**, **Enter a resume code**, and, once any arc has been
+finished in this browser, **New game +**, which starts over keeping the animals unlocked;
+the subtitle and note change too (*"maybe the title screen loads differently the second
+time through"*). Words come from `world.json` `title`. The title owns input while it is up,
+through the same seam CAIN uses, so nothing moves under it; `?notitle` skips it for tests.
+
+## Visitors from other universes (owner, the 19:20 log, 2026-09-26)
+
+*"The Rocco who's the actual flying Rocco on the campaign page ... and the Rocco from the
+universe that wears the motorcycle jacket, walking on two legs ... because we have a
+multiverse. I just want to have that mechanic in there."* An NPC definition may carry
+`universe` and `universe_label`; a visitor's speaker line shows where it is from. Two are
+docked at the station by the ship's ramp: `npc:rocco-flying` (from the flying game) and
+`npc:rocco-jacket` (the portrait universe's Rocco, jacket drawn over the shared body; the
+two-legged sprite is the asset route's; the universe's name is his to give). Neither is the
+Universe A Rocco of the memory rooms, who exists only in his years. He may appear himself
+under his real name; that is his to do, not a session's.
+
 ## The quest engine, and quest one (built 2026-09-26 on his go)
 
 **A quest is data**: `content/quests/<id>.json`, listed in `world.json` `quests[]`. Its

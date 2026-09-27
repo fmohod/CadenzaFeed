@@ -267,6 +267,15 @@ class Renderer {
         if (facing === 'left') ctx.scale(-1, 1);
         const r = ts * 0.36 * (ch.scale || 1) * (sprite.scale || 1);   // sprite.scale: a kitten is the mother, smaller
         lib.drawCritter(ctx, ch, r, false, fluteUp);
+        if (sprite.outfit === 'jacket') {
+            // Rocco's jacket from the portrait universe (CHARACTERS.md): black
+            // leather, and on the sleeves two cream stripes with maroon between.
+            // Drawn over the shared body; the two-legged sprite is the asset route's.
+            const v = r / 8;
+            ctx.fillStyle = '#15151a'; ctx.fillRect(-7 * v, -2 * v, 9 * v, 5.5 * v);
+            ctx.fillStyle = '#e8dcc0'; ctx.fillRect(-1.5 * v, -1.5 * v, 1.2 * v, 4.5 * v); ctx.fillRect(0.5 * v, -1.5 * v, 1.2 * v, 4.5 * v);
+            ctx.fillStyle = '#6e1f2e'; ctx.fillRect(-0.3 * v, -1.5 * v, 0.8 * v, 4.5 * v);
+        }
         if (sprite.outfit === 'suit') {
             // The business-suit version (owner, log 20260925-07), drawn over the
             // shared body until the production suit art arrives: jacket, collar, tie.

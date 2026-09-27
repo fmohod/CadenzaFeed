@@ -16,6 +16,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         input.bindTouch(touch);
     }
 
+    // The title is up before anything loads: it is the loading screen, then the menu.
+    const title = new Title(input);
+    title.show({ name: 'UNIVERSE B', loading: 'loading…' });
+
     const content = await ContentLoader.load('content/world.json');
 
     const host = new TerminalHost({ bus, input });
@@ -28,5 +32,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const world = new WorldEngine({ bus, input, content, host, canvas: document.getElementById('world-canvas') });
     window.CADENZA_WORLD = world; // debugging handle; nothing depends on it
+    world.title = title;
     world.start();
+    if (new URLSearchParams(location.search).has('notitle')) title.close();   // tests and deep links
+    else title.ready(world);
 });

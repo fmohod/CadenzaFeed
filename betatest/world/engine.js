@@ -112,6 +112,27 @@ class WorldEngine {
         document.addEventListener('visibilitychange', () => { if (!document.hidden) this._scheduleFrame(); });
     }
 
+    // From the title: start over. `plus` keeps the animals unlocked so far (owner,
+    // log 20260926-01: "like a new game plus") and nothing else.
+    newGame(plus) {
+        const keep = plus ? [...this.flags.unlocked].filter(id => id !== 'rocco') : [];
+        if (this.quest.active) this.quest.active = null;
+        this.save.reset();
+        for (const id of keep) this.save.record('ArcUnlocked', id);
+        this.save.record(plus ? 'NewGamePlus' : 'NewGame');
+        this.flags = this.save.replay();
+        this.state.era = 'present';
+        this.state.avatar = 'rocco'; this.player.avatar = 'rocco';
+        this.ship.pos = { lat: 29.7359, lon: -95.3651 };
+        this.ship.active = false;
+        const m = this.content.manifest;
+        this.enter(m.start.space, m.start.spawn, null, true);
+        this.dialogue.show('', plus
+            ? ['A new game, with everyone you have met.', 'Your progress saves in this browser only. Nothing about you is sent to a server.']
+            : ['This world is in beta.', 'Your progress saves in this browser only. Nothing about you is sent to a server.', 'A private window forgets everything when it closes.']);
+        this.persist();
+    }
+
     // Exactly one animation-frame chain, ever.
     _scheduleFrame() {
         if (this._frameQueued) return;
@@ -404,11 +425,15 @@ class WorldEngine {
             return;
         }
         if (t.kind === 'npc') {
+            // A visitor from another universe is named with where it is from
+            // (owner, 19:20 log 2026-09-26: the flying-game Rocco and the jacket
+            // Rocco can both be NPCs here, "because we have a multiverse").
+            const from = t.npc.def.universe && t.npc.def.universe !== 'universe-b' ? ` · ${t.npc.def.universe_label || t.npc.def.universe}` : '';
             const lines = DialogueBox.resolve(t.npc.def, this.flags);
             // Face the player while talking; restore afterwards.
             const was = t.npc.facing;
             t.npc.facing = { up: 'down', down: 'up', left: 'right', right: 'left' }[this.player.facing] || was;
-            this.dialogue.show(t.npc.def.name, lines, () => {
+            this.dialogue.show(t.npc.def.name + from, lines, () => {
                 t.npc.facing = was;
                 this.flags.talked.add(t.npc.id);
                 this.save.record('NPCTalked', t.npc.id);

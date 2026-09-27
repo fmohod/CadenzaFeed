@@ -1,0 +1,22 @@
+{
+  "schema": 1,
+  "id": "npc:rocco-jacket",
+  "name": "Rocco",
+  "canon": "fiction",
+  "universe": "jacket",
+  "universe_label": "from the universe with the jacket",
+  "sprite": {
+    "critter": "rocco",
+    "outfit": "jacket"
+  },
+  "_note": "The portrait-universe Rocco (owner, 19:20 log 2026-09-26): 'the Rocco from the universe that wears the motorcycle jacket, as an NPC that walks around on two legs within Universe B.' The jacket is a game-side overlay on the shared body until the two-legged sprite comes through the asset route; the universe's name is his to give -- 'jacket' is a placeholder id. Docked at the station with the other visitor.",
+  "dialogue": [
+    {
+      "lines": [
+        "A Rocco in a black jacket, cream and maroon down the sleeves.",
+        "\"Different universe. Same dog.\"",
+        "\"Where I'm from I ride. Here I'm told there's a ship."
+      ]
+    }
+  ]
+}
