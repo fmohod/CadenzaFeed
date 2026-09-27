@@ -1,5 +1,5 @@
 // critters.js -- the Cadenza Arthouse animal roster and its pixel painter.
-// GENERATED 2026-09-26 13:54 by CAMT jobs/flutie_publish.py from jobs/flute.py; edit THERE.
+// GENERATED 2026-09-26 19:58 by CAMT jobs/flutie_publish.py from jobs/flute.py; edit THERE.
 // One painter, every game (owner ruling 2026-09-07): Flutie Cats and the world
 // draw the same seven real animals from this file. Facts per animal are
 // accuracy constraints from life (Flutie Cats README), not style choices.
@@ -14,7 +14,7 @@
 // -> Star -> Ella.
 const CHARS = [
   // Rocco leads, by the owner's ruling. The real dog sang along when
-  // Frankie played flute and sat through hours of piano -- the first
+  // the owner played flute and sat through hours of piano -- the first
   // character everyone gets is the one who always answered the music.
   // NO TAIL (docked in life; never drawn), one big radar ear plus a
   // small flop, tricolor. In memoriam. He gets to keep running.
@@ -24,7 +24,7 @@ const CHARS = [
   {id:"star", name:"Star", sub:"the grinner", unlocked:true,
    scale:1, accent:"#6fa8dc", body:"#5f7180", patch:"#f2f0ea",
    ears:"flop", tailStyle:"curlUp", tongue:"#e8839b"},
-  // Black mouth cur, a year old, big, wrecks the house daily. Her dad's
+  // Black mouth cur, a year old, big, wrecks the house daily. Somebody
   // word is "untrained"; the owner's is "free spirit" -- the owner's
   // read is the character.
   {id:"ella", name:"Ella", sub:"the free spirit", unlocked:true,
