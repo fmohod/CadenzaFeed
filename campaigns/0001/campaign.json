@@ -17,9 +17,9 @@
     "count": 10
   },
   "progress": {
-    "raised_cents": 5000,
-    "successful_contributions": 1,
-    "as_of": "2026-09-18T19:20:58Z",
+    "raised_cents": 7500,
+    "successful_contributions": 2,
+    "as_of": "2026-10-01T21:30:55Z",
     "source": "square_ingest"
   },
   "funding": {
