@@ -260,7 +260,7 @@ the CAMT side: `TICKETING.md`, *Campaign payments*.
 
 **By hand, when needed** (the ledger is still the source):
 
-- `py -3.11 jobs	ickets.py campaign NNNN --dry` prints the ledger totals;
+- `py -3.11 jobs\tickets.py campaign NNNN --dry` prints the ledger totals;
   without `--dry` it rewrites `campaign.json` and pushes.
 - A refund: **nothing to do.** The same poll reads Square's refund list, reduces the gift by exactly the refunded amount (a full refund removes it), republishes the page, and sends a receipt-grade ping. Refund in Square wherever you like — dashboard, app, CAMT — the page follows within ten minutes. The command above forces it sooner.
 - `status: closed` (stop accepting) is a hand edit; CAMT only ever raises `active` → `funded`.
