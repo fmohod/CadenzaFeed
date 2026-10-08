@@ -1,0 +1,113 @@
+{
+  "epoch": "2026-09-04T00:00:00-05:00",
+  "guide_window_min": 30,
+  "guide_step_min": 5,
+  "channels": [
+    {
+      "number": 1,
+      "id": "live",
+      "name": "Live Shows",
+      "tagline": "Stage, gallery, room",
+      "playlist": "PLW4ezqtOjuCQ",
+      "art": "art/live.jpg",
+      "lineup": [
+        "1DV1oONyGUg",
+        "dKHmCtvAdwg"
+      ]
+    },
+    {
+      "number": 2,
+      "id": "houston",
+      "name": "Houston",
+      "tagline": "Events in Houston, TX",
+      "playlist": "PLjTXCzQp3LARWhOwbmOC6caMGXD5i-gyA",
+      "art": "art/houston.jpg",
+      "lineup": [
+        "xT066IORNCg",
+        "2jImNPn7kz0",
+        "U3L1A24pNik",
+        "EPwGecWVVEg"
+      ]
+    },
+    {
+      "number": 3,
+      "id": "atmosphere",
+      "name": "Atmosphere",
+      "tagline": "Something on in the background",
+      "playlist": "PLjTXCzQp3LATwrHFMrYCGnzfuZotPSaTv",
+      "lineup": [
+        "y1sQF2Embto"
+      ],
+      "extra": [
+        "WfCX3fBv-GU",
+        "LrUC4VIgMb8"
+      ]
+    }
+  ],
+  "videos": {
+    "1DV1oONyGUg": {
+      "title": "Psychotic Princess | Empyre Room, Houston, TX",
+      "duration": "5:01",
+      "location": "Empyre Room, Houston",
+      "year": "2026"
+    },
+    "dKHmCtvAdwg": {
+      "title": "Melanin Muse Art Show | Bisong Art Gallery, Houston, TX",
+      "duration": "3:15",
+      "location": "Bisong Art Gallery, Houston",
+      "year": "2026"
+    },
+    "xT066IORNCg": {
+      "title": "Culture Sessions in Houston, TX",
+      "duration": "0:50",
+      "location": "Houston",
+      "year": "2024"
+    },
+    "2jImNPn7kz0": {
+      "title": "Culture Sessions BTS",
+      "duration": "1:23",
+      "location": "Houston",
+      "year": "2024"
+    },
+    "U3L1A24pNik": {
+      "title": "Culture Sessions: Mwaikazi Lajas and Sharieka Hall Dance",
+      "duration": "1:02",
+      "location": "Houston",
+      "year": "2024"
+    },
+    "EPwGecWVVEg": {
+      "title": "Culture Sessions Vendors, Houston, TX",
+      "duration": "0:21",
+      "location": "Houston",
+      "year": "2024"
+    },
+    "y1sQF2Embto": {
+      "title": "Sunrise",
+      "duration": "0:10",
+      "location": "",
+      "year": "2022",
+      "desc": "A ten-second loop.",
+      "yt_title": "Cadenza Sunrise"
+    },
+    "WfCX3fBv-GU": {
+      "title": "Universe B | Teaser Trailer 3",
+      "duration": "2:25",
+      "location": "",
+      "year": "2026",
+      "yt_title": "Universe B - teaser trailer 3"
+    },
+    "LrUC4VIgMb8": {
+      "title": "Universe B | Temporal Duplicate",
+      "duration": "0:17",
+      "location": "",
+      "year": "2026",
+      "yt_title": "Universe B - Temporal Duplicate"
+    },
+    "YLw5dvS-08o": {
+      "title": "From Vigil to Canvass: Houston Volunteers Mobilize Following ICE Shooting of Lorenzo Salgado Araujo",
+      "duration": "5:14",
+      "location": "Houston",
+      "year": "2026"
+    }
+  }
+}

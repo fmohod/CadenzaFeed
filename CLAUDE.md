@@ -45,3 +45,11 @@ article without the GAME META BLOCK.
   session**, and vice versa. That pair has already drifted once: the spec defines a
   `body` block type of `image`, the builder omits `<img>` from its selector, and zero
   image blocks exist across twelve published articles.
+
+## The media page
+
+`/media/` is the Cadenza Arthouse media page (2026-10-08): a streaming-service wrapper over the owner's YouTube
+playlists, nothing loads before a click. It is a second deployment of an engine whose contract is
+`Modelauctions-site/MEDIA.md`; **`media/media.js` is mirrored line for line between the two sites** and `media/README.md`
+says what is shared and what is each site's own. Modeling content stays on Model Auctions; everything else is here.
+The masthead carries a Media link on every page, so a new page copies the nav from an existing one.

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Cadenza Arthouse Media: video from Houston stages, galleries, streets and the archive, laid out like a streaming service. Nothing plays until you press play.">
+  <link rel="icon" href="/assets/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="/assets/favicon-32x32.png" type="image/png" sizes="32x32">
+  <link rel="icon" href="/assets/favicon-192x192.png" type="image/png" sizes="192x192">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" sizes="180x180">
+  <title>Media | Cadenza Arthouse</title>
+  <link rel="canonical" href="https://cadenzaarthouse.com/media/">
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="media.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body class="media-body">
+
+  <!-- ═════════════════════════════════════════════════════════════
+       MEDIA — cadenzaarthouse.com/media/  (owner's ask, 2026-10-08)
+       The "live TV" wrapper built on Model Auctions (voice log
+       20260903-02) now lives here for everything that is NOT modeling
+       content; modeling content stays on modelauctions.net/media/.
+       Channels are the owner's YouTube playlists. Each is a loop of
+       published videos scheduled against a fixed epoch, so "what is on
+       now" is arithmetic every visitor agrees on. Three views: "Media"
+       opens Browse on a desktop and App on a phone; ?view=guide|browse|app
+       picks one. Nothing is fetched from YouTube until a click.
+       Contract: media/README.md (this site) and MEDIA.md in
+       Modelauctions-site (the engine and manifest, shared).
+       ═════════════════════════════════════════════════════════════ -->
+
+  <header class="masthead">
+    <div class="masthead-inner">
+
+      <div class="masthead-top-rule"></div>
+
+      <div class="masthead-flag">
+        <div class="masthead-flag-left">
+          <span class="masthead-est">Established 2017</span>
+          <span class="masthead-dot">·</span>
+          <span class="masthead-loc">Houston, Texas</span>
+        </div>
+        <div class="masthead-flag-center">
+          <a href="/" class="masthead-logo-link">
+            <img src="/assets/logo.png" alt="Cadenza Arthouse" class="masthead-logo">
+          </a>
+          <div class="masthead-wordmark">
+            <h1 class="masthead-title">Cadenza Arthouse</h1>
+            <p class="masthead-tagline">Independent Media&nbsp;&nbsp;·&nbsp;&nbsp;Photography&nbsp;&nbsp;·&nbsp;&nbsp;Cultural Archive</p>
+          </div>
+        </div>
+        <div class="masthead-flag-right">
+          <span id="live-date" class="masthead-date"></span>
+        </div>
+      </div>
+
+      <div class="masthead-rule-double">
+        <div class="rule-thick"></div>
+        <div class="rule-thin"></div>
+      </div>
+
+      <nav class="masthead-nav">
+        <a href="/">Home</a>
+        <a href="/news/">Press Archive</a>
+        <a href="/media/" id="nav-media" class="active">Media</a>
+        <a href="#" class="nav-dim">Galleries</a>
+        <a href="/about.html">About</a>
+        <a href="/support.html">Support</a>
+        <a href="/campaigns/">Campaigns</a>
+      </nav>
+
+      <div class="masthead-bottom-rule"></div>
+
+    </div>
+  </header>
+
+  <div class="media-band">
+  <main class="media-page">
+
+    <!-- ── Stage: poster until a click, then the player ─────────── -->
+    <section id="stage" class="stage">
+      <div class="stage-head">
+        <div>
+          <p class="article-kicker">Media&nbsp;&nbsp;·&nbsp;&nbsp;Cadenza Arthouse on <span data-channel-count>its channels</span></p>
+          <h2 class="stage-title">Now Showing</h2>
+        </div>
+        <div class="view-tabs" role="tablist" aria-label="View">
+          <button type="button" class="view-tab" data-view="guide">Streaming</button>
+          <button type="button" class="view-tab" data-view="browse">Browse</button>
+          <button type="button" class="view-tab" data-view="app">App</button>
+        </div>
+      </div>
+
+      <div class="stage-frame">
+        <button type="button" id="poster" class="poster" aria-label="Play what is on now">
+          <span class="poster-scrim"></span>
+          <span class="poster-live"><span class="live-dot"></span>On now</span>
+          <span class="poster-text">
+            <span id="poster-ch" class="poster-ch"></span>
+            <span id="poster-title" class="poster-title">Loading the guide…</span>
+            <span id="poster-sub" class="poster-sub"></span>
+          </span>
+          <span class="poster-play" aria-hidden="true">▶</span>
+        </button>
+        <div id="player-shell" class="player-shell" hidden>
+          <div id="player"></div>
+        </div>
+      </div>
+
+      <div id="now-bar" class="now-bar" hidden>
+        <div class="now-main">
+          <span id="now-ch" class="now-ch"></span>
+          <span id="now-title" class="now-title"></span>
+          <span id="now-meta" class="now-meta"></span>
+          <span id="now-next" class="now-next"></span>
+        </div>
+        <div class="now-actions">
+          <button type="button" id="now-live" class="now-btn">Join live</button>
+          <button type="button" id="now-restart" class="now-btn">From the top</button>
+          <a id="now-yt" class="now-btn now-btn-dim" href="#" target="_blank" rel="noopener">Open on YouTube</a>
+        </div>
+      </div>
+
+      <p id="media-status" class="form-status">Loading the guide…</p>
+    </section>
+
+    <!-- ── Guide view ──────────────────────────────────────────── -->
+    <p id="guide-window" class="guide-window"></p>
+    <section id="guide" class="guide" aria-label="Channel guide"></section>
+
+    <!-- ── Browse view ─────────────────────────────────────────── -->
+    <section id="browse" class="browse" aria-label="Browse" hidden></section>
+
+    <!-- ── App view: the phone streaming-app shape ─────────────── -->
+    <section id="app" class="app" aria-label="App" hidden>
+      <div class="app-bar">
+        <span class="app-logo" role="img" aria-label="Cadenza Arthouse"></span>
+        <span class="app-bar-title">Home</span>
+        <span class="app-bar-right"><span class="app-onair"><span class="live-dot"></span><span data-channel-count>channels</span></span></span>
+      </div>
+      <div id="app-chips" class="app-chips"></div>
+      <div id="app-body"></div>
+      <nav class="app-tabbar" aria-label="App navigation">
+        <button type="button" class="app-tab is-active" data-view="app"><span class="app-tab-ico">⌂</span>Home</button>
+        <button type="button" class="app-tab" data-view="guide"><span class="app-tab-ico">▤</span>Streaming</button>
+        <button type="button" class="app-tab" data-view="browse"><span class="app-tab-ico">▦</span>Browse</button>
+        <a class="app-tab" href="https://www.youtube.com/@cadenzaarthouse" target="_blank" rel="noopener"><span class="app-tab-ico">▶</span>YouTube</a>
+      </nav>
+    </section>
+
+    <p class="media-note">
+      Nothing here is a live stream. Each channel is a lineup of published videos that loops around
+      the clock, and the player joins the loop wherever the clock says it is. Video is hosted on
+      YouTube and loads only when you press play. Fashion and modeling video lives at
+      <a href="https://modelauctions.net/media/" rel="noopener">Model Auctions</a>.
+    </p>
+
+  </main>
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-rule"></div>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <img src="/assets/logo.png" alt="Cadenza Arthouse" class="footer-logo">
+        <span class="footer-wordmark">Cadenza Arthouse</span>
+      </div>
+      <p class="footer-mission">Independent media platform documenting culture, art, and community. Est. 2017, Houston, Texas.</p>
+      <p class="footer-legal">Self-hosted. No trackers; video loads from YouTube only when you press play.&nbsp;&nbsp;·&nbsp;&nbsp;© 2026 Cadenza Arthouse. All Rights Reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('live-date').textContent =
+      new Date().toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+  </script>
+  <script src="media.js"></script>
+
+</body>
+</html>
