@@ -39,6 +39,8 @@ the picker he wants in CAMT to manage it is not designed.
 
 ## Honesty
 
-The footer says no trackers, and this page keeps it true up to the moment a visitor presses play:
-until then the page is HTML, CSS, `channels.json`, this site's art and plain thumbnail images from
-`i.ytimg.com`; the first click loads YouTube's player from `youtube-nocookie.com`.
+This page's own code makes no request to YouTube until a visitor presses play: until then it is
+HTML, CSS, `channels.json`, this site's art and plain thumbnail images from `i.ytimg.com`; the first
+click loads YouTube's player from `youtube-nocookie.com`. That describes the page, not the host:
+Cloudflare injects its own scripts into the HTML it serves (observed at go-live, 2026-10-08), here
+and on every other page of both sites, so what a visitor's browser runs is more than this file.
