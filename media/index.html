@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="media-html">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0D0D0D">
   <meta name="description" content="Cadenza Arthouse Media: video from Houston stages, galleries, streets and the archive, laid out like a streaming service. Nothing plays until you press play.">
   <link rel="icon" href="/assets/favicon.ico" type="image/x-icon">
   <link rel="icon" href="/assets/favicon-32x32.png" type="image/png" sizes="32x32">
@@ -11,7 +12,7 @@
   <title>Media | Cadenza Arthouse</title>
   <link rel="canonical" href="https://cadenzaarthouse.com/media/">
   <link rel="stylesheet" href="/style.css">
-  <link rel="stylesheet" href="media.css">
+  <link rel="stylesheet" href="media.css?v=20261009">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 </head>
@@ -29,51 +30,57 @@
        picks one. Nothing is fetched from YouTube until a click.
        Contract: media/README.md (this site) and MEDIA.md in
        Modelauctions-site (the engine and manifest, shared).
+
+       2026-10-09 (owner's ask): this page no longer wears the news
+       masthead. The site's cream newspaper header sat directly above a
+       dark streaming screen and read as two different sites. The page
+       carries its own slim dark bar instead (a way back to the site, the
+       brand, and a Menu that holds the site's navigation) and its own
+       footer. The bar slides away when you scroll down and returns when
+       you scroll up (chrome.js). The engine (media.js) is untouched.
        ═════════════════════════════════════════════════════════════ -->
 
-  <header class="masthead">
-    <div class="masthead-inner">
+  <a class="mx-skip" href="#stage">Skip to the player</a>
 
-      <div class="masthead-top-rule"></div>
-
-      <div class="masthead-flag">
-        <div class="masthead-flag-left">
-          <span class="masthead-est">Established 2017</span>
-          <span class="masthead-dot">·</span>
-          <span class="masthead-loc">Houston, Texas</span>
-        </div>
-        <div class="masthead-flag-center">
-          <a href="/" class="masthead-logo-link">
-            <img src="/assets/logo.png" alt="Cadenza Arthouse" class="masthead-logo">
-          </a>
-          <div class="masthead-wordmark">
-            <h1 class="masthead-title">Cadenza Arthouse</h1>
-            <p class="masthead-tagline">Independent Media&nbsp;&nbsp;·&nbsp;&nbsp;Photography&nbsp;&nbsp;·&nbsp;&nbsp;Cultural Archive</p>
-          </div>
-        </div>
-        <div class="masthead-flag-right">
-          <span id="live-date" class="masthead-date"></span>
-        </div>
-      </div>
-
-      <div class="masthead-rule-double">
-        <div class="rule-thick"></div>
-        <div class="rule-thin"></div>
-      </div>
-
-      <nav class="masthead-nav">
-        <a href="/">Home</a>
-        <a href="/news/">Press Archive</a>
-        <a href="/media/" id="nav-media" class="active">Media</a>
-        <a href="/about.html">About</a>
-        <a href="/support.html">Support</a>
-        <a href="/campaigns/">Campaigns</a>
-      </nav>
-
-      <div class="masthead-bottom-rule"></div>
-
+  <header class="mx-bar" id="mx-bar">
+    <div class="mx-bar-inner">
+      <a class="mx-back" href="/">
+        <svg class="mx-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4 7 12l8 8" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span class="mx-back-long">Back to Cadenza Arthouse</span><span class="mx-back-short">Back</span>
+      </a>
+      <a class="mx-brand" href="/media/">
+        <span class="mx-brand-mark" aria-hidden="true"></span>
+        <span class="mx-brand-name"><span class="mx-brand-co">Cadenza Arthouse </span><span class="mx-brand-sec">Media</span></span>
+      </a>
+      <button type="button" class="mx-menu-btn" id="mx-menu-btn" aria-expanded="false" aria-controls="mx-drawer">
+        <span>Menu</span>
+        <svg class="mx-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+      </button>
     </div>
   </header>
+
+  <div class="mx-scrim" id="mx-scrim"></div>
+  <aside class="mx-drawer" id="mx-drawer" role="dialog" aria-modal="true" aria-label="Cadenza Arthouse site menu">
+    <div class="mx-drawer-head">
+      <span class="mx-drawer-title">Menu</span>
+      <button type="button" class="mx-close" id="mx-close">
+        <span>Close</span>
+        <svg class="mx-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5l14 14M19 5 5 19" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <nav class="mx-nav" aria-label="Site">
+      <a href="/">Home</a>
+      <a href="/news/">Press Archive</a>
+      <a href="/media/" aria-current="page">Media<small>You are here</small></a>
+      <a href="/about.html">About</a>
+      <a href="/support.html">Support</a>
+      <a href="/campaigns/">Campaigns</a>
+    </nav>
+    <div class="mx-aside">
+      <a href="https://www.youtube.com/@cadenzaarthouse" target="_blank" rel="noopener">Cadenza Arthouse on YouTube<span aria-hidden="true"> ↗</span></a>
+      <a href="https://modelauctions.net/media/" rel="noopener">Model Auctions media<span aria-hidden="true"> ↗</span></a>
+    </div>
+  </aside>
 
   <div class="media-band">
   <main class="media-page">
@@ -159,22 +166,25 @@
   </main>
   </div>
 
-  <footer class="site-footer">
-    <div class="footer-rule"></div>
-    <div class="footer-inner">
-      <div class="footer-brand">
-        <img src="/assets/logo.png" alt="Cadenza Arthouse" class="footer-logo">
-        <span class="footer-wordmark">Cadenza Arthouse</span>
+  <footer class="mx-footer">
+    <div class="mx-footer-inner">
+      <div class="mx-footer-brand">
+        <span class="mx-brand-mark mx-brand-mark-sm" aria-hidden="true"></span>
+        <span class="mx-footer-wordmark">Cadenza Arthouse Media</span>
       </div>
-      <p class="footer-mission">Independent media platform documenting culture, art, and community. Est. 2017, Houston, Texas.</p>
-      <p class="footer-legal">Self-hosted. No trackers; video loads from YouTube only when you press play.&nbsp;&nbsp;·&nbsp;&nbsp;© 2026 Cadenza Arthouse. All Rights Reserved.</p>
+      <nav class="mx-footer-links" aria-label="Site">
+        <a href="/">Back to Cadenza Arthouse</a>
+        <a href="/news/">Press Archive</a>
+        <a href="/about.html">About</a>
+        <a href="/support.html">Support</a>
+        <a href="/campaigns/">Campaigns</a>
+        <a href="https://www.youtube.com/@cadenzaarthouse" target="_blank" rel="noopener">YouTube</a>
+      </nav>
+      <p class="mx-footer-legal">Independent media from Houston, Texas, since 2017. Video is hosted on YouTube and loads only when you press play.&nbsp;&nbsp;·&nbsp;&nbsp;© 2026 Cadenza Arthouse. All Rights Reserved.</p>
     </div>
   </footer>
 
-  <script>
-    document.getElementById('live-date').textContent =
-      new Date().toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
-  </script>
+  <script src="chrome.js?v=20261009"></script>
   <script src="media.js"></script>
 
 </body>

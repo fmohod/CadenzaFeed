@@ -3,11 +3,18 @@
    Ported 2026-10-08 from Modelauctions-site/style.css (section MEDIA PAGE
    and MEDIA PAGE - APP VIEW). The engine is mirrored between the two sites:
    see media/README.md before changing either copy.
-   The main site is light; this page is a dark "screening room" band between
-   the masthead and the footer. Accent: the site's bronze, lightened for
-   near-black (#C9A26B on #0D0D0D is about 8:1). Everything below is the
-   ported stylesheet, colours otherwise unchanged.
+   The main site is light; this page is a dark "screening room" and, since
+   2026-10-09, it is a page of its own: it does not wear the news masthead or
+   footer (the section "THE PAGE'S OWN CHROME" at the end is its own slim bar,
+   menu and footer, and belongs to this site only). Accent: the site's bronze,
+   lightened for near-black (#C9A26B on #0D0D0D is about 8:1). Everything
+   between here and that section is the ported stylesheet, colors otherwise
+   unchanged.
    ============================================================ */
+
+/* the whole page is dark: nothing of the site's cream shows above, below or in the overscroll */
+html.media-html { background: #0D0D0D; color-scheme: dark; }
+body.media-body { background: #0D0D0D; color: #F0EDE6; }
 
 .media-band { background: #0D0D0D; color: #F0EDE6; }
 
@@ -906,3 +913,280 @@
    it (12.5% black top and bottom). On a portrait card, cover scales by
    height so the bars survive; oversize the image and crop them off. */
 .app-card img { top: -16.7%; height: 133.4%; }
+
+
+/* ── THE PAGE'S OWN CHROME (owner's ask, 2026-10-09) ─────────────────
+   This page does not wear the news masthead any more: the site's cream
+   newspaper header sat directly above a dark streaming screen and read as
+   two different sites. It has a slim dark bar of its own -- a way back to
+   the site, the brand, and a Menu that holds the site's navigation -- and
+   its own footer. The bar slides away when you scroll down and returns when
+   you scroll up (chrome.js). These rules belong to THIS site only: the
+   Model Auctions copy of the engine keeps its own masthead.
+   Controls carry words (Back, Menu, Close), not bare icons: a button that
+   cannot be found is not a button. */
+
+.mx-skip {
+  position: absolute;
+  left: 12px;
+  top: -56px;
+  z-index: 400;
+  background: #C9A26B;
+  color: #0D0D0D;
+  padding: 12px 16px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.mx-skip:focus { top: 10px; }
+
+.mx-ico { display: block; flex: 0 0 auto; width: 20px; height: 20px; }
+
+/* the bar */
+.mx-bar {
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  background: rgba(13,13,13,0.94);
+  -webkit-backdrop-filter: blur(12px);
+          backdrop-filter: blur(12px);
+  border-bottom: 1px solid #1F1F1F;
+  transition: transform 0.28s ease;
+}
+
+.mx-bar.is-away { transform: translateY(-100%); }
+
+.mx-bar-inner {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 0 24px;
+  min-height: 64px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 16px;
+}
+
+.mx-back, .mx-menu-btn, .mx-close {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 0 16px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.74rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #F0EDE6;
+  background: transparent;
+  border: 1px solid #3A3A3A;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.mx-back { justify-self: start; padding-left: 10px; }
+.mx-menu-btn { justify-self: end; }
+.mx-back-short { display: none; }
+
+.mx-back:hover, .mx-menu-btn:hover, .mx-close:hover { border-color: #C9A26B; color: #C9A26B; }
+
+.mx-back:focus-visible, .mx-menu-btn:focus-visible, .mx-close:focus-visible,
+.mx-brand:focus-visible, .mx-nav a:focus-visible, .mx-aside a:focus-visible,
+.mx-footer-links a:focus-visible { outline: 2px solid #C9A26B; outline-offset: 3px; }
+
+.mx-brand { display: inline-flex; align-items: center; gap: 12px; color: #F0EDE6; }
+
+/* the master logo, tinted bronze (a black mark on transparent: a mask over a bronze fill is the honest recolor) */
+.mx-brand-mark {
+  display: block;
+  flex: 0 0 auto;
+  width: 52px;
+  height: 26px;
+  background: #C9A26B;
+  -webkit-mask: url('../assets/logo.png') center / contain no-repeat;
+          mask: url('../assets/logo.png') center / contain no-repeat;
+}
+
+.mx-brand-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.75rem;
+  letter-spacing: 0.1em;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.mx-brand-sec { color: #C9A26B; }
+
+/* the menu: a panel from the right over a darkened page */
+.mx-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 250;
+  background: rgba(0,0,0,0.62);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s ease, visibility 0s linear 0.25s;
+}
+
+.mx-drawer {
+  position: fixed;
+  top: 0; right: 0; bottom: 0;
+  z-index: 260;
+  width: min(400px, 88vw);
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  padding: 18px 22px 28px;
+  background: #121212;
+  border-left: 1px solid #2A2A2A;
+  box-shadow: -18px 0 50px rgba(0,0,0,0.5);
+  overflow-y: auto;
+  transform: translateX(104%);
+  visibility: hidden;
+  transition: transform 0.3s ease, visibility 0s linear 0.3s;
+}
+
+html.mx-open { overflow: hidden; }
+html.mx-open .mx-scrim { opacity: 1; visibility: visible; transition: opacity 0.25s ease; }
+html.mx-open .mx-drawer { transform: none; visibility: visible; transition: transform 0.3s ease; }
+
+.mx-drawer-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #2A2A2A;
+}
+
+.mx-drawer-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.5rem;
+  letter-spacing: 0.1em;
+  color: #C9A26B;
+}
+
+.mx-nav { display: flex; flex-direction: column; }
+
+.mx-nav a {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2.3rem;
+  letter-spacing: 0.08em;
+  line-height: 1.15;
+  color: #F0EDE6;
+  border-bottom: 1px solid #1F1F1F;
+  transition: color 0.2s, padding-left 0.2s;
+}
+
+.mx-nav a:hover, .mx-nav a:focus-visible { color: #C9A26B; padding-left: 6px; }
+.mx-nav a[aria-current="page"] { color: #C9A26B; }
+
+.mx-nav small {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #C9A26B;
+}
+
+.mx-aside { display: flex; flex-direction: column; margin-top: auto; }
+
+.mx-aside a {
+  padding: 14px 0;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.76rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #C8C4BC;
+  border-top: 1px solid #1F1F1F;
+}
+
+.mx-aside a:hover, .mx-aside a:focus-visible { color: #C9A26B; }
+
+/* the page's own footer */
+.mx-footer { background: #0A0A0A; border-top: 1px solid #1F1F1F; color: #8a8a8a; }
+
+.mx-footer-inner {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 36px 24px 56px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.mx-footer-brand { display: flex; align-items: center; gap: 12px; }
+.mx-brand-mark-sm { width: 40px; height: 20px; }
+
+.mx-footer-wordmark {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.3rem;
+  letter-spacing: 0.1em;
+  color: #F0EDE6;
+}
+
+.mx-footer-links { display: flex; flex-wrap: wrap; gap: 4px 26px; }
+
+.mx-footer-links a {
+  padding: 8px 0;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #C8C4BC;
+}
+
+.mx-footer-links a:hover { color: #C9A26B; }
+
+.mx-footer-legal {
+  max-width: 760px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.66rem;
+  letter-spacing: 0.06em;
+  line-height: 1.8;
+  color: #8a8a8a;
+}
+
+/* the honesty note says plainly that nothing here is a live stream: it must be readable, not a whisper */
+.media-band .media-note { color: #9a9a9a; }
+
+/* so the bar never covers the heading a jump lands on, and the footer clears the phone tab bar */
+.stage { scroll-margin-top: 76px; }
+.media-app-mode .mx-footer-inner { padding-bottom: 130px; }
+/* in app mode the bar above already carries the brand mark */
+.media-app-mode .app-bar .app-logo { display: none; }
+
+@media (max-width: 760px) {
+  .mx-bar-inner { padding: 0 14px; gap: 8px; min-height: 58px; }
+  .mx-back-long { display: none; }
+  .mx-back-short { display: inline; }
+  .mx-back, .mx-menu-btn { padding: 0 14px; }
+  .mx-back { padding-left: 8px; }
+  .mx-brand-name { font-size: 1.5rem; }
+  .mx-nav a { font-size: 2.1rem; }
+}
+
+@media (max-width: 560px) {
+  .mx-brand-co { display: none; }
+  .mx-brand-mark { width: 44px; height: 22px; }
+
+  /* the poster is only ~210px tall on a phone: the play button used to sit on top of the title.
+     Lift it into the upper half and shrink the type a little so the two never overlap. */
+  .poster-play { top: 30%; width: 52px; height: 52px; font-size: 1.1rem; }
+  .poster-text { left: 16px; right: 16px; bottom: 16px; }
+  .poster-title { font-size: clamp(1.35rem, 6.4vw, 1.9rem); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mx-bar, .mx-scrim, .mx-drawer, .mx-nav a { transition: none; }
+}
