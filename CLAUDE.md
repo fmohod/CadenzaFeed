@@ -53,3 +53,7 @@ playlists, nothing loads before a click. It is a second deployment of an engine 
 `Modelauctions-site/MEDIA.md`; **`media/media.js` is mirrored line for line between the two sites** and `media/README.md`
 says what is shared and what is each site's own. Modeling content stays on Model Auctions; everything else is here.
 The masthead carries a Media link on every page, so a new page copies the nav from an existing one.
+**`/media/` itself has no masthead, on purpose** (owner's ask, 2026-10-09: the cream newspaper header above a dark streaming
+screen read as two different sites): it has its own slim dark bar (Back, brand, Menu) and its own footer, with the bar's
+slide-away and the Menu panel in `media/chrome.js`. Do not "restore" the masthead there. **The lineup file
+`media/channels.json` is written by CAMT's Channel Manager only** (CAMT `CHANNEL_MANAGER.md`): never hand-edit it or push a change to it.
