@@ -18,7 +18,7 @@ restate it.
 | File | Here | Model Auctions | Mirrored? |
 |---|---|---|---|
 | `media.js` | yes | `media/media.js` | **Yes — line for line** (line endings aside). Fix one, fix the other |
-| `media.css` | `media/media.css` (a dark band on this light site, accent bronze `#C9A26B`) | the "MEDIA PAGE" sections of `style.css` | Ported, colours differ on purpose; a layout fix goes to both |
+| `media.css` | `media/media.css` (a dark band on this light site, accent bronze `#C9A26B`) | the "MEDIA PAGE" sections of `style.css` | Ported, colors differ on purpose; a layout fix goes to both |
 | `channels.json` | Live Shows, Houston, Atmosphere (+ the Vigil/Canvass report, unlisted) | the Fashion Shows channel | **No — each site's own lineup** |
 | `index.html` | this masthead and footer | that masthead and footer | No — page chrome |
 
@@ -27,11 +27,15 @@ exists in only one repo is the drift this table is here to catch.
 
 ## The lineup
 
-Channels are the owner's YouTube playlists. `jobs\youtube_lineup.py fetch --site
-F:\Apps\CadenzaFeed` (CAMT, menu 36; channel #8, read-only, on demand) rewrites each channel's
-`lineup` from its playlist and takes exact durations from the API. Run it once per site. **No API key is stored yet**, so
-this manifest is kept by hand (see `MEDIA.md` §5 in Model Auctions); when the key goes in, check the `live` playlist id here: it is
-only 13 characters, shorter than a usual playlist id.
+**This folder's `channels.json` is written by CAMT's Channel Manager and by nothing else** (CAMT menu 40,
+`jobs\channels.py`; contract CAMT `CHANNEL_MANAGER.md`, `ADR/ADR-0020`, and `MEDIA.md` §5 in Model
+Auctions). Do not hand-edit it and do not push a change to it from this checkout: the manager publishes
+from its own clean clone, checks every video, and compares the **live** file with what it meant to
+publish; a hand edit is surfaced as drift and refused until the owner adopts it. The file's format is
+fixed (indent 2, LF, no trailing newline) because the manager writes it back byte for byte. A channel's
+`playlist` id is reference only; it no longer drives the lineup (the `live` id here is 13 characters,
+shorter than a usual playlist id, which is one more reason). A channel with no videos breaks the page,
+so the manager refuses to publish one.
 
 **Not here yet:** a channel of the videos already embedded in the articles (`0002`–`0005`, `0009`–`0012`
 embed nine), which he described as "our version of a playlist". It needs their durations, and
