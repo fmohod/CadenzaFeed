@@ -1182,9 +1182,16 @@ html.mx-open .mx-drawer { transform: none; visibility: visible; transition: tran
 
   /* the poster is only ~210px tall on a phone: the play button used to sit on top of the title.
      Lift it into the upper half and shrink the type a little so the two never overlap. */
-  .poster-play { top: 30%; width: 52px; height: 52px; font-size: 1.1rem; }
+  .poster-play { top: 28%; width: 52px; height: 52px; font-size: 1.1rem; }
   .poster-text { left: 16px; right: 16px; bottom: 16px; }
-  .poster-title { font-size: clamp(1.35rem, 6.4vw, 1.9rem); }
+  /* two lines at most, so a long title can never grow up into the play button */
+  .poster-title {
+    font-size: clamp(1.35rem, 6.4vw, 1.9rem);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

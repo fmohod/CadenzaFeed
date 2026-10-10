@@ -20,8 +20,9 @@ restate it.
 | `media.js` | yes | `media/media.js` | **Yes — line for line** (line endings aside). Fix one, fix the other |
 | `media.css` | `media/media.css` (a dark page of its own, accent bronze `#C9A26B`; the section "THE PAGE'S OWN CHROME" at its end is this site's alone) | the "MEDIA PAGE" sections of `style.css` | Ported, colors differ on purpose; a layout fix to the engine's rules goes to both |
 | `channels.json` | Live Shows, Houston, Atmosphere (+ the Vigil/Canvass report, unlisted); **written by CAMT's Channel Manager only** | the Fashion Shows channel | **No — each site's own lineup** |
-| `index.html` | **its own slim dark bar (a way back, the brand, a Menu), its own footer: no site masthead** (2026-10-09) | that site's masthead and footer | No — page chrome |
-| `chrome.js` | the bar's slide-away and the Menu panel; plain JavaScript, kept apart from `media.js` on purpose | none | No — this site's page chrome only |
+| `index.html` | **its own slim dark bar (a way back, the brand, a Menu), its own footer: no site masthead** (2026-10-09) | **the same treatment** (2026-10-09): its own bar, Menu and footer, no masthead, same `mx-*` class names; the Menu holds that site's navigation | No — each site's own markup, kept in the same shape on purpose |
+| `chrome.js` | the bar's slide-away and the Menu panel; plain JavaScript, kept apart from `media.js` on purpose | `media/chrome.js` | **Yes — identical** (the committed files are byte for byte the same). Fix one, fix the other |
+| the bar's rules | the section "THE PAGE'S OWN CHROME" at the end of `media.css` (bronze `#C9A26B`) | `media/chrome.css`, loaded by that page only (gold `#C49A3C`) | No — each site's own palette; a layout fix goes to both |
 
 There is no build step, so the engine cannot be shared by reference. A change to `media.js` that
 exists in only one repo is the drift this table is here to catch.
