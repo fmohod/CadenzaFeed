@@ -22,7 +22,7 @@
     "BBBBBBBSSSSBBBBBBBBSSSSGGGGGGG",
     "BBBBBBBSSSSBBBBBBBBSSSSGTGGGGG",
     "BBBDBBBSSSSBBBBDBBDSSSSGGGGGGG",
-    "SSSSSSSSSSSSSSSSSSSSSSSSGGGGGG",
+    "SSSSSSSSSSSSSSSSSSSSSSSSGGGGGS",
     "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGG",
     "GGTGGGGGGGGGGGGGGGGGGGGGGGTGGG",
     "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGG"
@@ -57,6 +57,12 @@
       "x": 18,
       "y": 14,
       "facing": "down"
+    },
+    {
+      "id": "spawn:from-garden",
+      "x": 28,
+      "y": 14,
+      "facing": "left"
     }
   ],
   "exits": [
@@ -89,6 +95,16 @@
         "space": "space:library",
         "spawn": "spawn:from-deck"
       }
+    },
+    {
+      "id": "exit:garden",
+      "x": 29,
+      "y": 14,
+      "label": "The garden deck",
+      "to": {
+        "space": "space:station-garden",
+        "spawn": "spawn:from-deck"
+      }
     }
   ],
   "interactables": [
@@ -115,6 +131,15 @@
       ]
     },
     {
+      "id": "travel:bus-stop",
+      "type": "travel",
+      "x": 22,
+      "y": 9,
+      "label": "The ship's ramp",
+      "spawn": "spawn:from-block",
+      "solid": true
+    },
+    {
       "id": "examine:viewport",
       "type": "examine",
       "x": 26,
@@ -123,17 +148,8 @@
       "marker": false,
       "text": [
         "Earth, turning below. Houston is under the cloud somewhere.",
-        "The ship is berthed at the ramp on the deck. It is the only way down, and the only thing here that moves through time."
+        "The garden deck is off the east edge of this one."
       ]
-    },
-    {
-      "id": "travel:bus-stop",
-      "type": "travel",
-      "x": 22,
-      "y": 9,
-      "label": "The ship's ramp",
-      "spawn": "spawn:from-block",
-      "solid": true
     }
   ],
   "npcs": [

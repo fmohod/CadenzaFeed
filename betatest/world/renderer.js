@@ -252,6 +252,7 @@ class Renderer {
     // painter (/platform/sprites/critters.js, published from CAMT jobs/flute.py),
     // or the plain figure when no critter is named or the module is absent.
     drawActor(ctx, sx, sy, ts, facing, sprite, moving, fluteUp = false) {
+        if (sprite && sprite.sheet) { this.drawSheetSprite(ctx, sx, sy, ts, facing, sprite, moving, fluteUp); return; }
         if (sprite && sprite.image) { this.drawImageSprite(ctx, sx, sy, ts, sprite); return; }
         const lib = window.CADENZA_CRITTERS;
         const ch = sprite && sprite.critter && lib && lib.CHARS.find(c => c.id === sprite.critter);
@@ -291,6 +292,33 @@ class Renderer {
             ctx.fillStyle = `rgba(246,242,235,${1 - k})`;
             ctx.font = `${Math.max(10, ts * 0.5)}px monospace`;
             ctx.fillText('♪', sx + ts * 0.7, sy - ts * 0.1 - k * ts * 0.5);
+        }
+    }
+
+    // A sprite SHEET: 4 rows (down, up, left, right) x 4 frames (idle, step A,
+    // step B, flute up), `fw` x `fh` each. Randy walks upright this way (owner,
+    // log 20261006-01); the production art replaces the PNG file for file.
+    drawSheetSprite(ctx, sx, sy, ts, facing, sprite, moving, fluteUp) {
+        this._images = this._images || new Map();
+        let img = this._images.get(sprite.sheet);
+        if (!img) { img = new Image(); img.src = sprite.sheet; this._images.set(sprite.sheet, img); }
+        const u = ts / 8;
+        ctx.fillStyle = 'rgba(0,0,0,0.35)';
+        ctx.beginPath(); ctx.ellipse(sx + ts / 2, sy + ts - u / 2, 2.6 * u, u, 0, 0, Math.PI * 2); ctx.fill();
+        if (!img.complete || !img.naturalWidth) return;
+        const fw = sprite.fw || 16, fh = sprite.fh || 24;
+        const row = { down: 0, up: 1, left: 2, right: 3 }[facing] || 0;
+        const col = fluteUp ? 3 : (moving ? 1 + (Math.floor(this.frame / 8) % 2) : 0);
+        const h = ts * (sprite.scale || 1.5), w = h * fw / fh;
+        const prev = ctx.imageSmoothingEnabled;
+        ctx.imageSmoothingEnabled = false;
+        ctx.drawImage(img, col * fw, row * fh, fw, fh, Math.round(sx + ts / 2 - w / 2), Math.round(sy + ts - h), w, h);
+        ctx.imageSmoothingEnabled = prev;
+        if (fluteUp) {
+            const k = (this.frame % 40) / 40;
+            ctx.fillStyle = `rgba(246,242,235,${1 - k})`;
+            ctx.font = `${Math.max(10, ts * 0.5)}px monospace`;
+            ctx.fillText('♪', sx + ts * 0.7, sy - ts * 0.3 - k * ts * 0.5);
         }
     }
 
