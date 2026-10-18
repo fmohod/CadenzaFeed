@@ -455,7 +455,10 @@ trip with Smokey keeping the books), Struggle (the actors and their fighting-gam
 Find (the funny scenario that actually sells it), Suffer (Ella arrives and breaks it), Return
 (home with what is left), Change (what the game is now). Play-as Randy; the party sizes map
 to who travels. The venue is a convention hall in the memory style, no real event named.
-Waits on his beats for the eight steps and on the fighter game existing in Flutie Cats.
+The fighter Randy demos is real: the flying game's **battle** mode (built 2026-10-14 in CAMT
+`jobs/flute.py`, "Tournament Sparring": a charge gauge, arpeggio power shots, losers exit on
+funny excuses), so the demo's lines and the actors' excuses can quote it. Waits on his beats
+for the eight steps.
 
 ## Randy Boy, the wandering NPC (owner, log 20260925-07; built 2026-09-26)
 
