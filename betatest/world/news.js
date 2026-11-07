@@ -33,10 +33,19 @@
 // and is never dropped; the clock for the next one starts when it is read.
 // `?news=now` brings the first one forward for testing; `?news=off` silences
 // the desk for that load.
+//
+// Everything on screen is driven from tick(now), never from timers of its own:
+// a background tab throttles setTimeout to once a second, which would turn a
+// twelve-second bulletin into a minute of stutter, while elapsed time read from
+// the clock is right whenever the next frame comes.
 class NewsDesk {
     static get PERIOD() { return 300; }
     static get FIRST_DELAY() { return 45; }
     static get TEASER_MAX() { return 220; }
+    static get HEAD_MS() { return 32; }     // per character, the headline, talking pace
+    static get TEASER_MS() { return 18; }   // per character, the teaser
+    static get PAUSE_MS() { return 250; }   // between the headline and the teaser
+    static get OFF_MS() { return 500; }     // the slide out
 
     constructor({ root, wireUrl, feedUrl, isFree, onBroadcast, portrait, anchorName, period, firstDelay }) {
         this.root = root;
@@ -50,10 +59,11 @@ class NewsDesk {
         this.seen = new Set();   // keys already read in this save (restored by the engine)
         this.count = 0;          // bulletins read in this save
         this.showing = null;     // the item on screen, or null
-        this.next = null;        // performance.now() at which the next bulletin is due
+        this.plan = null;        // the timing of the bulletin on screen
+        this.next = null;        // clock time at which the next bulletin is due
+        this.offAt = null;       // clock time at which a finished bulletin is hidden
         this.enabled = true;
         this.loadedAt = 0;
-        this._timers = [];
         this.el = {
             slug: root.querySelector('#news-slug-text'),
             face: root.querySelector('#news-face'),
@@ -133,7 +143,12 @@ class NewsDesk {
 
     // Called every frame by whoever owns the loop. `now` is performance.now().
     tick(now) {
-        if (!this.enabled || this.showing || this.next == null || now < this.next) return;
+        if (this.offAt != null && now >= this.offAt) {
+            this.offAt = null;
+            if (!this.showing) { this.root.hidden = true; this.root.classList.remove('is-off'); }
+        }
+        if (this.showing) { this._render(now); return; }
+        if (!this.enabled || this.next == null || now < this.next) return;
         if (now - this.loadedAt > this.period) { this.loadedAt = now; this.load(); }   // a new wire item is read within one period
         if (!this.pool.length || !this.isFree()) return;
         const item = this.pick();
@@ -141,10 +156,21 @@ class NewsDesk {
     }
 
     broadcast(item, now) {
+        now = now == null ? performance.now() : now;
         this.showing = item;
         this.seen.add(item.key);
         this.count++;
-        this.next = (now == null ? performance.now() : now) + this.period;
+        this.next = now + this.period;
+        this.offAt = null;
+        const teaser = (item.teaser || '').length > NewsDesk.TEASER_MAX
+            ? item.teaser.slice(0, NewsDesk.TEASER_MAX).replace(/\s+\S*$/, '') + '…'
+            : (item.teaser || '');
+        // The anchor reads: the headline at talking pace, a breath, the teaser,
+        // then holds long enough to be read back, then signs off.
+        const headMs = item.headline.length * NewsDesk.HEAD_MS + NewsDesk.PAUSE_MS;
+        const teaserMs = teaser.length * NewsDesk.TEASER_MS + (teaser ? NewsDesk.PAUSE_MS : 0);
+        const holdMs = 4500 + Math.min(4000, teaser.length * 12);
+        this.plan = { t0: now, headline: item.headline, teaser, headMs, teaserMs, endAt: now + headMs + teaserMs + holdMs };
         const root = this.root, el = this.el;
         root.classList.toggle('is-breaking', item.breaking);
         root.classList.toggle('is-archive', item.kind === 'archive');
@@ -152,46 +178,35 @@ class NewsDesk {
         el.date.textContent = item.date ? NewsDesk.prettyDate(item.date) : '';
         el.head.textContent = '';
         el.teaser.textContent = '';
+        root.classList.remove('is-off', 'is-on');
         root.hidden = false;
-        root.classList.remove('is-off');
-        requestAnimationFrame(() => root.classList.add('is-on'));
-        const teaser = (item.teaser || '').length > NewsDesk.TEASER_MAX
-            ? item.teaser.slice(0, NewsDesk.TEASER_MAX).replace(/\s+\S*$/, '') + '…'
-            : (item.teaser || '');
-        // The anchor reads: the headline at talking pace, then the teaser, then
-        // holds long enough to be read back, then signs off.
-        this._type(el.head, item.headline, 32, () => {
-            this._type(el.teaser, teaser, 18, () => { this._after(4500 + Math.min(4000, teaser.length * 12), () => this.end()); });
-        });
+        void root.offsetWidth;            // commit the off-screen start so the slide in is a transition, not a jump
+        root.classList.add('is-on');
         this.onBroadcast(item);
     }
 
-    dismiss() { if (this.showing) this.end(); }
+    // What is on the card at this instant, from elapsed time alone.
+    _render(now) {
+        const p = this.plan, el = this.el;
+        const e = now - p.t0;
+        const hChars = Math.min(p.headline.length, Math.floor(e / NewsDesk.HEAD_MS));
+        el.head.textContent = p.headline.slice(0, hChars);
+        const te = e - p.headMs;
+        const tChars = te <= 0 ? 0 : Math.min(p.teaser.length, Math.floor(te / NewsDesk.TEASER_MS));
+        el.teaser.textContent = p.teaser.slice(0, tChars);
+        if (now >= p.endAt) this.end(now);
+    }
 
-    end() {
+    dismiss() { if (this.showing) this.end(performance.now()); }
+
+    end(now) {
         if (!this.showing) return;
-        this._clear();
         this.showing = null;
-        const root = this.root;
-        root.classList.remove('is-on');
-        root.classList.add('is-off');
-        this._after(500, () => { if (!this.showing) { root.hidden = true; root.classList.remove('is-off'); } });
+        this.plan = null;
+        this.root.classList.remove('is-on');
+        this.root.classList.add('is-off');
+        this.offAt = (now == null ? performance.now() : now) + NewsDesk.OFF_MS;
     }
-
-    _type(el, text, ms, done) {
-        let i = 0;
-        el.textContent = '';
-        if (!text) { done(); return; }
-        const step = () => {
-            i = Math.min(text.length, i + 1);
-            el.textContent = text.slice(0, i);
-            if (i < text.length) this._after(ms, step); else this._after(250, done);
-        };
-        step();
-    }
-
-    _after(ms, fn) { this._timers.push(setTimeout(fn, ms)); }
-    _clear() { for (const t of this._timers) clearTimeout(t); this._timers.length = 0; }
 
     static prettyDate(iso) {
         const d = new Date(iso.length === 10 ? iso + 'T12:00:00' : iso);
