@@ -16,7 +16,7 @@
          stylesheet last so the world wins for everything outside the overlay. -->
     <link rel="stylesheet" href="css/terminal.css?v=5">
     <link id="cain-interface-pack-css" rel="stylesheet" href="">
-    <link rel="stylesheet" href="world/world.css?v=7">
+    <link rel="stylesheet" href="world/world.css?v=8">
 </head>
 <body class="world-shell">
 
@@ -45,6 +45,17 @@
         <div id="dialogue-speaker"></div>
         <div id="dialogue-text"></div>
         <div id="dialogue-more">▼</div>
+    </div>
+
+    <!-- THE NEWS DESK (owner, log 20261007-01): a bulletin every five minutes over
+         whatever is on screen, read from the studio's own wire and press feed. -->
+    <div id="news" hidden aria-live="polite">
+        <div id="news-slug"><span id="news-slug-text">News</span><span id="news-live">● LIVE</span></div>
+        <div id="news-body">
+            <div id="news-anchor"><img id="news-face" src="" alt=""><div id="news-anchor-name"></div></div>
+            <div id="news-copy"><div id="news-head"></div><div id="news-teaser"></div></div>
+        </div>
+        <div id="news-foot"><span id="news-date"></span><span id="news-source">cadenzaarthouse.com/news</span></div>
     </div>
 
     <!-- Touch controls. Same six actions the keyboard produces; the engine never
@@ -101,8 +112,8 @@
     <script src="world/content.js?v=6"></script>
     <script src="world/space.js?v=3"></script>
     <script src="world/renderer.js?v=17"></script>
-    <script src="world/dialogue.js?v=3"></script>
-    <script src="world/save.js?v=5"></script>
+    <script src="world/dialogue.js?v=4"></script>
+    <script src="world/save.js?v=6"></script>
     <script src="world/weather.js?v=3"></script>
     <script src="world/daylight.js?v=2"></script>
     <script src="world/terminal-host.js?v=2"></script>
@@ -111,7 +122,8 @@
     <script src="world/party.js?v=1"></script>
     <script src="world/quest.js?v=2"></script>
     <script src="world/title.js?v=2"></script>
-    <script src="world/engine.js?v=21"></script>
+    <script src="world/news.js?v=1"></script>
+    <script src="world/engine.js?v=22"></script>
     <script src="world/boot.js?v=3"></script>
 </body>
 </html>

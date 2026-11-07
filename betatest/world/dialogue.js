@@ -10,7 +10,8 @@
 //   ]
 // Entries are tried in order; the first whose every condition holds wins.
 // Known predicates today: talked_to (npc id), visited (space id),
-// terminal_opened (bool). Unknown predicates never match, so a future field
+// terminal_opened (bool), news_seen (bool: any bulletin read in this save),
+// news_count (number: at least this many). Unknown predicates never match, so a future field
 // added to content before the engine learns it simply falls through.
 class DialogueBox {
     constructor(root) {
@@ -131,6 +132,12 @@ class DialogueBox {
                     break;
                 case 'terminal_opened':
                     if (Boolean(flags.terminalOpened) !== Boolean(value)) return false;
+                    break;
+                case 'news_seen':
+                    if (Boolean(flags.news && flags.news.count > 0) !== Boolean(value)) return false;
+                    break;
+                case 'news_count':
+                    if (!flags.news || flags.news.count < (value | 0)) return false;
                     break;
                 default:
                     return false; // unknown predicate: never matches

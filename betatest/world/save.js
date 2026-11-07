@@ -56,7 +56,8 @@ class SaveLog {
     replay() {
         // `unlocked` starts with Rocco (the first character everyone gets, his
         // ruling); an arc's completion adds its animal. `quests` is id -> {step, done}.
-        const flags = { visited: new Set(), talked: new Set(), terminalOpened: false, quests: {}, unlocked: new Set(['rocco']) };
+        // `news` is what the desk has read in this save (owner, log 20261007-01: everyone saw it).
+        const flags = { visited: new Set(), talked: new Set(), terminalOpened: false, quests: {}, unlocked: new Set(['rocco']), news: { seen: new Set(), count: 0 } };
         for (const ev of this.data.events) {
             if (ev.type === 'SpaceEntered' && ev.id) flags.visited.add(ev.id);
             else if (ev.type === 'NPCTalked' && ev.id) flags.talked.add(ev.id);
@@ -65,6 +66,7 @@ class SaveLog {
             else if (ev.type === 'QuestStep' && ev.id) { const q = flags.quests[ev.id] || (flags.quests[ev.id] = { step: 0, done: false }); q.step = ev.step | 0; }
             else if (ev.type === 'QuestDone' && ev.id) { const q = flags.quests[ev.id] || (flags.quests[ev.id] = { step: 0, done: false }); q.done = true; }
             else if (ev.type === 'ArcUnlocked' && ev.id) flags.unlocked.add(ev.id);
+            else if (ev.type === 'NewsSeen' && ev.id) { flags.news.seen.add(ev.id); flags.news.count++; }
         }
         return flags;
     }

@@ -442,6 +442,33 @@ trousers, the tail ring). The renderer's `sprite.sheet` path draws it with the w
 the rising note; the suit overlay is no longer used for him. The production art from the
 Flutie Cats asset route replaces the PNG file for file, same frame grid.
 
+## The news desk (owner, log 20261007-01; built 2026-11-07)
+
+Every five minutes of real time a bulletin comes over the game: a picture-in-picture frame at
+the top right, the CAMT coin as the anchor, a headline typed out and read, a teaser under it,
+then it signs off, and the world underneath never stopped. The sources are the studio's own,
+read on the same origin and never invented: the **wire** (`/news/ticker.json`, CAMT's compiled
+ticker; an item marked `breaking` gets the red slug) first, and when the wire is empty the
+**press feed** (`/feed.xml`, every published story with its description, the tile teaser he
+named). The first bulletin comes 45 s into a session, then one every 300 s on the wall clock;
+one that falls due while the title, the terminal, a dialogue or a hidden tab owns the screen
+waits and is never dropped. BACK or a tap ends it early. `?news=now` brings the first one
+forward; `?news=off` silences the desk for that load. `world/news.js` is the desk.
+
+**Everyone saw it.** A bulletin is a save event (`NewsSeen`, replayed into `flags.news` =
+`{seen, count}`) and a bus event (`NewsBroadcast`), and NPC lines can ask for it: predicates
+`news_seen` (any) and `news_count` (at least n). The coin on the Station has a line that only
+plays after one. That is the plot seam his log asked for: the default is that every NPC got the
+all-hands; a character who "didn't have their phone" is a line that ignores it. The resume code
+does not carry it (it is not progress), so a resumed game starts its count again.
+
+**The Control Room.** The desk is the first mechanism of the layer he described in the same log,
+a feed that can take over any Cadenza Arthouse screen. It depends on a root element, two URLs, a
+clock and two callbacks, nothing of the game, so it lifts out. Not built: the Control Room
+building on the Station, the full-screen takeover mode, and the newsroom as a place. The anchor
+is the CAMT coin because the ticker is the tools' own wire; a drawn newscaster is a character
+decision he has not made.
+
 ## Quest two, "The Demo" (owner, log 20261018-01) — design, not built
 
 *"Randy's gonna go to this software demo where he's trying to demo his video game, and the

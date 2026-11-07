@@ -25,7 +25,20 @@ class WorldEngine {
         this.party = new Party(this);                        // four Watchers on one Wi-Fi (owner, log 20260923-03); dormant on the public site
         this.quest = new QuestRunner(this);                  // storylines as data, tracked in the save (owner, 2026-09-26)
         // Rocco first, by the owner's ruling (Flutie Cats README): the first character everyone gets.
-        this.flags = { visited: new Set(), talked: new Set(), terminalOpened: false };
+        this.flags = { visited: new Set(), talked: new Set(), terminalOpened: false, news: { seen: new Set(), count: 0 } };
+        // The news desk (owner, log 20261007-01): the Control Room's first layer. It
+        // reads the studio's real wire and press feed over the game; the engine only
+        // says when the screen is free and what a bulletin does to the save.
+        const newsParam = new URLSearchParams(location.search).get('news');
+        this.news = new NewsDesk({
+            root: document.getElementById('news'),
+            wireUrl: '/news/ticker.json', feedUrl: '/feed.xml',
+            portrait: 'content/sprites/camt-coin.png?v=2', anchorName: 'Cadenza Arthouse Media Tools',
+            firstDelay: newsParam === 'now' ? 0 : undefined,
+            isFree: () => !this.paused && !this.dialogue.open && !(this.title && this.title.open) && !document.hidden,
+            onBroadcast: (item) => this.onNews(item),
+        });
+        if (newsParam === 'off') this.news.enabled = false;
         this.tween = null;      // { fromX, fromY, toX, toY, t }
         this.tapQueue = [];     // directions tapped but not yet walked
         this.weather = new WeatherService({ override: new URLSearchParams(location.search).get('weather') });
@@ -57,6 +70,7 @@ class WorldEngine {
         }
         const saved = this.save.load();
         this.flags = this.save.replay();
+        this.news.restore(this.flags.news);
         for (const def of this.content.npcs.values()) if (def.wander) this.roamers.push(new Roamer(this, def));
         if (saved && saved.player && saved.player.era) this.state.era = saved.player.era;
         if (saved && saved.player && saved.player.avatar) this.state.avatar = saved.player.avatar;
@@ -105,6 +119,7 @@ class WorldEngine {
         const pm = this.content.placesMeta;
         this.renderer.devNote = pm ? `places: ${pm.count} public from the registry (${pm.generated || 'undated'})` : 'places: none (no places.json)';
 
+        this.news.start(performance.now());
         this._running = true;
         this._frameQueued = false;
         this._scheduleFrame();
@@ -124,6 +139,7 @@ class WorldEngine {
         for (const id of keep) this.save.record('ArcUnlocked', id);
         this.save.record(plus ? 'NewGamePlus' : 'NewGame');
         this.flags = this.save.replay();
+        this.news.restore(this.flags.news);
         this.state.era = 'present';
         this.state.avatar = 'rocco'; this.player.avatar = 'rocco';
         this.ship.pos = { lat: 29.7359, lon: -95.3651 };
@@ -346,6 +362,7 @@ class WorldEngine {
         body.classList.toggle('dlg-open', !this.paused && this.dialogue.open);
         body.classList.toggle('dlg-menu', !this.paused && this.dialogue.open && this.dialogue.mode === 'choose');
         body.classList.toggle('controls-idle', performance.now() - (this.input.lastActivity || 0) > 4000);
+        this.news.tick(performance.now());   // a bulletin that is due goes out when the screen is free
         if (this.paused) { this.hudHint.textContent = ''; return; }
         const pressed = this.input.drainPressed();
 
@@ -359,6 +376,9 @@ class WorldEngine {
             this.hudHint.textContent = '';
             return;
         }
+
+        // BACK ends a bulletin early; the desk still counts it as read.
+        if (this.news.showing) { const i = pressed.indexOf('BACK'); if (i >= 0) { pressed.splice(i, 1); this.news.dismiss(); } }
 
         if (this.ship.active) { this.ship.update(dt, pressed); return; }
         for (const r of this.roamers) r.update(dt);
@@ -579,6 +599,16 @@ class WorldEngine {
             return;
         }
         this.dialogue.show('', [t.item && t.item.text ? t.item.text : `${t.label}: nothing happens.`]);
+    }
+
+    // A bulletin went out: everyone in Universe B saw it (owner, log 20261007-01),
+    // so it is a save event and a bus event, and NPC lines can ask for it.
+    onNews(item) {
+        this.flags.news.seen.add(item.key);
+        this.flags.news.count++;
+        this.save.record('NewsSeen', item.key, { kind: item.kind, breaking: item.breaking });
+        this.bus.emit('NewsBroadcast', { key: item.key, kind: item.kind, breaking: item.breaking, headline: item.headline });
+        this.persist();
     }
 
     persist() {
