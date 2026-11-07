@@ -20,6 +20,7 @@ class ShipMode {
     constructor(engine) {
         this.engine = engine;
         this.pos = { ...SHIP_HOME };
+        this.at = null;               // the space the ship is parked in; null = docked at the Station
         this.heading = 0;             // radians, for the picture only
         this.spin = 0;                // the ring turns on itself (owner: "it can rotate around itself")
         this.map = null;              // { img, k, w, h } once earth.png is in
@@ -45,6 +46,7 @@ class ShipMode {
         // Boarding from a place puts the ship over that place; from the station,
         // over wherever it last was.
         if (at && typeof at.lat === 'number' && typeof at.lon === 'number') this.pos = { lat: at.lat, lon: at.lon };
+        this.at = null;               // aloft: parked nowhere until it lands again
         this.active = true;
         const e = this.engine;
         e.space = null;
@@ -146,13 +148,25 @@ class ShipMode {
 
     touchdown(n) {
         this.pos = { lat: n.lat, lon: n.lon };
+        this.at = n.space;            // parked here: drawn at this place's ramp until it lifts off
         this.engine.save.record('ShipLanded', n.space);
         this.disembark(n.space, 'spawn:from-block');
     }
 
     disembark(spaceId, spawnId) {
-        this.active = false;
+        this.active = false;          // at the Station, `at` stays null: the ship is docked there
         this.engine.enter(spaceId, spawnId);
+    }
+
+    // Is the ship parked in this space? At the Station it is docked whenever it
+    // is not flying; on Earth it is exactly where it last touched down, so a bus
+    // ride to another park leaves it behind (owner, log 20260914-01: one ship,
+    // and it lands only where it could really stand).
+    landedIn(spaceId) {
+        if (this.active || !spaceId) return false;
+        const hub = this.engine.content.manifest.hub;
+        if (hub && spaceId === hub.space) return this.at === null;
+        return this.at === spaceId;
     }
 
     // ── picture ──
@@ -212,6 +226,36 @@ class ShipMode {
         const barPx = 10 * k * z;
         ctx.fillStyle = 'rgba(246,242,235,0.8)'; ctx.fillRect(16, H - 22, barPx, 2);
         ctx.font = '11px monospace'; ctx.fillText('10°', 16, H - 26);
+    }
+
+    // The ship parked at a ramp, seen from the street (owner, log 20260914-01:
+    // "a big motherfucking spaceship", circular, three tour buses side by side).
+    // (sx, sy) is the ramp tile's top-left on screen, ts the tile size. The ring
+    // hovers over the road north of the sign, its shadow on the ground, and the
+    // ramp comes down to the sign tile, which is where you board.
+    drawLanded(ctx, sx, sy, ts, frame) {
+        const r = ts * 1.35;
+        const cx = sx + ts / 2, cy = sy - ts * 1.55;   // ring bottom clears the sign tile so the ramp shows
+        ctx.save();
+        // shadow on the road, a little south-east like the sun's
+        ctx.fillStyle = 'rgba(0,0,0,0.38)';
+        ctx.beginPath(); ctx.ellipse(cx + r * 0.12, cy + r * 0.55, r * 1.05, r * 0.42, 0, 0, Math.PI * 2); ctx.fill();
+        // the ramp: a dark plate from the ring's underside down to the sign
+        ctx.fillStyle = '#4a4036';
+        ctx.beginPath();
+        ctx.moveTo(cx - ts * 0.32, cy + r * 0.45);
+        ctx.lineTo(cx + ts * 0.32, cy + r * 0.45);
+        ctx.lineTo(cx + ts * 0.42, sy + ts * 0.55);
+        ctx.lineTo(cx - ts * 0.42, sy + ts * 0.55);
+        ctx.closePath(); ctx.fill();
+        ctx.fillStyle = '#d6ac60';
+        ctx.fillRect(cx - ts * 0.04, cy + r * 0.5, ts * 0.08, (sy + ts * 0.5) - (cy + r * 0.5));
+        // running lights along the ramp's edge, slow blink
+        ctx.fillStyle = (Math.floor(frame / 20) % 2) ? '#7fd3ff' : '#3aa0c9';
+        ctx.fillRect(cx - ts * 0.40, sy + ts * 0.42, ts * 0.12, ts * 0.12);
+        ctx.fillRect(cx + ts * 0.28, sy + ts * 0.42, ts * 0.12, ts * 0.12);
+        ctx.restore();
+        this.drawShip(ctx, cx, cy, r, frame);
     }
 
     // The ship from above: a big ring (fat at the bottom, pointy on top reads as

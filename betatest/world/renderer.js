@@ -71,6 +71,15 @@ class Renderer {
         // Things on the map, in y order so nearer things draw over farther ones.
         const figures = [];
         for (const i of space.interactables) figures.push({ y: i.y, draw: () => this.drawInteractable(ctx, i, i.x * ts - cam.x, i.y * ts - cam.y, ts) });
+        // The one ship, parked at this place's ramp (owner, log 20260914-01). It
+        // hovers over the road north of the sign, so it sorts just ahead of the
+        // sign: the sign and anyone south of it draw over the ramp's foot.
+        if (scene.ship) {
+            for (const i of space.interactables) {
+                if (i.type !== 'travel') continue;
+                figures.push({ y: i.y - 0.5, draw: () => scene.ship.drawLanded(ctx, i.x * ts - cam.x, i.y * ts - cam.y, ts, this.frame) });
+            }
+        }
         for (const n of space.npcs) {
             const nx = (typeof n.px === 'number' ? n.px : n.x), ny = (typeof n.py === 'number' ? n.py : n.y);
             figures.push({ y: ny, draw: () => this.drawActor(ctx, nx * ts - cam.x, ny * ts - cam.y, ts, n.facing, n.def.sprite || {}, !!n.moving, !!n.fluteUp) });

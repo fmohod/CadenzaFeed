@@ -61,7 +61,10 @@ class WorldEngine {
         if (saved && saved.player && saved.player.era) this.state.era = saved.player.era;
         if (saved && saved.player && saved.player.avatar) this.state.avatar = saved.player.avatar;
         this.player.avatar = this.state.avatar;
-        if (saved && saved.player && saved.player.ship && typeof saved.player.ship.lat === 'number') this.ship.pos = { lat: saved.player.ship.lat, lon: saved.player.ship.lon };
+        if (saved && saved.player && saved.player.ship && typeof saved.player.ship.lat === 'number') {
+            this.ship.pos = { lat: saved.player.ship.lat, lon: saved.player.ship.lon };
+            this.ship.at = (typeof saved.player.ship.at === 'string' && this.content.spaces.has(saved.player.ship.at)) ? saved.player.ship.at : null;
+        }
 
         let placed = false;
         if (saved && saved.player && saved.player.space === 'ship') {
@@ -124,6 +127,7 @@ class WorldEngine {
         this.state.era = 'present';
         this.state.avatar = 'rocco'; this.player.avatar = 'rocco';
         this.ship.pos = { lat: 29.7359, lon: -95.3651 };
+        this.ship.at = null;
         this.ship.active = false;
         const m = this.content.manifest;
         this.enter(m.start.space, m.start.spawn, null, true);
@@ -323,6 +327,7 @@ class WorldEngine {
             daylight: this.daylightNow,
             eraStyle: this.space && this.space.eraStyle,
             others: this.space ? this.party.inRoom(this.space.id, this.state.era) : [],
+            ship: this.space && this.ship.landedIn(this.space.id) ? this.ship : null,   // parked here: drawn at the ramp
             target: this.dialogue.open || this.paused ? null : this.facingTarget(),
         });
         if (!document.hidden) this._scheduleFrame();
@@ -577,7 +582,7 @@ class WorldEngine {
     }
 
     persist() {
-        const ship = { lat: +this.ship.pos.lat.toFixed(4), lon: +this.ship.pos.lon.toFixed(4) };
+        const ship = { lat: +this.ship.pos.lat.toFixed(4), lon: +this.ship.pos.lon.toFixed(4), at: this.ship.at };
         if (this.ship.active) this.save.checkpoint({ space: 'ship', x: 0, y: 0, facing: 'down', era: this.state.era, avatar: this.state.avatar, ship });
         else this.save.checkpoint({ ...this.player, era: this.state.era, avatar: this.state.avatar, ship });
         this.save.flush();

@@ -667,13 +667,23 @@ actions steer it, and everything else is untouched.
 - **The ramp.** Every `travel` stop is now the ship's ramp: *Board the ship* first (it
   lifts off over that place), then the direct list of places as the teleporters he named,
   then *Fly to the Station*. The station's stop is the ship's berth.
-- **Save:** `player.space === "ship"` means aloft; `player.ship = {lat, lon}` is where the
-  one ship is, always, so it waits where it was left. Events `ShipBoarded` and
-  `ShipLanded` go in the log. Reload while aloft comes back aloft on the same spot.
+- **Save:** `player.space === "ship"` means aloft; `player.ship = {lat, lon, at}` is where
+  the one ship is, always, so it waits where it was left: `at` is the space it is parked
+  in, `null` meaning docked at the Station. Events `ShipBoarded` and `ShipLanded` go in
+  the log. Reload while aloft comes back aloft on the same spot.
+- **The ship on the ground (built 2026-11-06, his pick from the backlog).** Wherever the
+  ship is parked it is drawn at that place's ramp: the gold ring from the world map, now
+  big (nearly three tiles across, his "three tour buses side by side"), hovering over the
+  road north of the stop sign with its shadow on the ground and a ramp coming down to the
+  sign tile, running lights blinking. At the Station it is always at the berth when not
+  flying; on Earth it is only in the space it last touched down in, so a bus ride to
+  another park leaves it behind and *Board the ship (lifts off from here)* at that other
+  park is the ship coming to fetch you. `ShipMode.landedIn(spaceId)` is the one rule;
+  `ShipMode.drawLanded` the one picture; the renderer only asks. Saves from before this
+  build have no `at`, so the ship shows at the Station until the next landing.
 - The HUD aboard shows a UTC clock and the ship's position; no weather, no sky.
 - *Not yet:* the ship's time controller (time travel stays with the gate on the ground
-  until he wants it in the cockpit), the ship drawn on the ground at the ramp, and the
-  AR landing seen from the park.
+  until he wants it in the cockpit), and the AR landing seen from the park.
 
 **The layers (09-13, his Spider-Verse framing: one world, many expressions, the archive
 as the operational layer).** Recorded as structure, each a renderer over the same content:
