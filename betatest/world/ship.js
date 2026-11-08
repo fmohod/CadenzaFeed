@@ -11,7 +11,17 @@
 // PX_PER_DEG pixels per degree, equirectangular: x = (lon+180)*k, y = (90-lat)*k.
 // The ship is a position in degrees and nothing else; where it can land comes
 // from the same bindings the bus stop used, so binding a place puts it under
-// the ship too. Time travel stays with the gate for now (README: next).
+// the ship too.
+//
+// The time controller (built 2026-11-08 on his word): the ship is the one
+// time machine, so its menu sets the player's time from the cockpit. The times
+// on offer are exactly the distinct eras the bindings know (plus Now), never a
+// free dial: a time nobody has reconstructed has nowhere to land. Setting the
+// clocks changes `state.era` the same way the gate does and records the same
+// `EraChanged` event, with `at: "ship"`; the landing markers follow at once,
+// because nearby() reads the player's time every frame. The Station is a
+// present-day place (owner, 2026-09-03), so returning to it from another time
+// brings the clocks back to Now first.
 const SHIP_DEG_PER_SEC = 6;          // 360° in 60 s at any latitude: to scale, still fun
 const SHIP_LAND_KM = 60;             // how close you must be to see a place below
 const SHIP_HOME = { lat: 29.7359, lon: -95.3651 };   // over Houston (Emancipation Park) until the ship has been anywhere
@@ -27,6 +37,7 @@ class ShipMode {
         this.meta = null;
         this.active = false;
         this.zoom = 3;                // screen pixels per map pixel
+        this.jumpAt = -1e9;           // clock time of the last time jump, for the flash and the spin
         this._load();
     }
 
@@ -74,6 +85,8 @@ class ShipMode {
             if (a === 'INTERACT') { this.land(); return; }
             if (a === 'BACK') { this.landingList(true); return; }
         }
+        const sinceJump = (performance.now() - this.jumpAt) / 1000;
+        if (sinceJump < 1.2) this.spin += dt * 18 * (1 - sinceJump / 1.2);   // the ring winds up and settles after a jump
         if (dx || dy) {
             const n = Math.hypot(dx, dy);
             this.pos.lon += (dx / n) * SHIP_DEG_PER_SEC * dt;
@@ -90,9 +103,64 @@ class ShipMode {
         const first = near[0];
         e.hudHint.textContent = first
             ? `[E] Land: ${first.label} (${first.km < 1 ? 'below' : Math.round(first.km) + ' km'})${near.length > 1 ? ` +${near.length - 1}` : ''}`
-            : '[E] Nowhere below the ship could stand · [B] Return to the Station';
+            : '[E] Nowhere below the ship could stand · [B] The ship: set the time, return to the Station';
         const t = new Date().toISOString().slice(11, 16);
-        e.hudWeather.textContent = `Aboard The Ship: ${t} UTC · ${ShipMode.fmt(this.pos)}`;
+        const era = e.state.era || 'present';
+        const when = era === 'present' ? '' : ` · ${this.timeLabel(era)}`;
+        e.hudWeather.textContent = `Aboard The Ship${when}: ${t} UTC · ${ShipMode.fmt(this.pos)}`;
+    }
+
+    // ── the time controller ──
+    // Every time on record: Now, and each distinct dated era any binding knows,
+    // labelled the way its space names it ("March 1982"). Chronological, Now
+    // last, the order the gate uses.
+    times() {
+        const e = this.engine;
+        const seen = new Map();
+        for (const b of e.content.bindingList) {
+            const era = b.era || 'present';
+            if (seen.has(era) || !e.content.spaces.has(b.space)) continue;
+            seen.set(era, { era, label: era === 'present' ? 'Now' : (e.content.spaces.get(b.space).era_label || era) });
+        }
+        if (!seen.has('present')) seen.set('present', { era: 'present', label: 'Now' });
+        return [...seen.values()].sort((a, b) => (a.era === 'present' ? '9999' : a.era).localeCompare(b.era === 'present' ? '9999' : b.era));
+    }
+
+    timeLabel(era) {
+        const t = this.times().find(t => t.era === (era || 'present'));
+        return t ? t.label : era;
+    }
+
+    // The controller itself: pick a time; the clocks turn and the map below
+    // shows what stands in that time.
+    timeMenu() {
+        const e = this.engine;
+        const cur = e.state.era || 'present';
+        const options = this.times().map(t => ({ label: t.era === cur ? `${t.label} · the clocks read this now` : t.label, value: t.era }));
+        options.push({ label: 'Leave the clocks', value: null });
+        e.dialogue.choose("The ship's time", options, (era) => {
+            if (!era || era === cur) return;
+            this.setTime(era, 'ship');
+            const below = this.nearby(true).length;
+            e.dialogue.show("The ship's time", [
+                `The clocks read ${this.timeLabel(era)}.`,
+                below ? `${below === 1 ? 'One place' : below + ' places'} on record in this time ${below === 1 ? 'is' : 'are'} marked below.` : 'Nothing on record stands in this time yet. The Station still keeps the present.',
+            ]);
+        });
+    }
+
+    // Set the player's time from the cockpit. Same state and the same save
+    // event as the gate; `at` says which did it. Returns false when nothing changed.
+    setTime(era, at = 'ship') {
+        const e = this.engine;
+        era = era || 'present';
+        if ((e.state.era || 'present') === era) return false;
+        e.state.era = era;
+        e.save.record('EraChanged', era, { at });
+        this.jumpAt = performance.now();
+        e.bus.emit('EraChanged', { era, at });
+        e.persist();
+        return true;
     }
 
     // Every real place bound in the player's time, with its distance from the ship.
@@ -129,18 +197,22 @@ class ShipMode {
         });
     }
 
-    // Nothing below, or BACK: the ship's home, and the whole landing list by distance.
+    // Nothing below, or BACK: the ship's menu. The Station, the time
+    // controller, and the whole landing list for this time by distance.
     landingList(withHome) {
         const e = this.engine;
         const all = this.nearby(true);
         const options = [];
         const hub = e.content.manifest.hub;
-        if (hub && e.content.spaces.has(hub.space)) options.push({ label: 'Return to the Station', value: '__station__' });
+        const era = e.state.era || 'present';
+        if (hub && e.content.spaces.has(hub.space)) options.push({ label: era === 'present' ? 'Return to the Station' : 'Return to the Station (the clocks go back to Now)', value: '__station__' });
+        options.push({ label: `Set the ship's time · ${this.timeLabel(era)}`, value: '__time__' });
         for (const n of all.slice(0, 8)) options.push({ label: `Fly to ${n.label} · ${Math.round(n.km)} km`, value: n.space });
         options.push({ label: 'Stay aloft', value: null });
         e.dialogue.choose(withHome ? 'The Ship' : 'Nowhere below the ship could stand', options, (v) => {
             if (!v) return;
-            if (v === '__station__') { this.disembark(hub.space, hub.spawn); return; }
+            if (v === '__time__') { this.timeMenu(); return; }
+            if (v === '__station__') { this.setTime('present', 'ship'); this.disembark(hub.space, hub.spawn); return; }
             const pick = all.find(n => n.space === v);
             if (pick) { this.pos = { lat: pick.lat, lon: pick.lon }; }
         });
@@ -221,7 +293,13 @@ class ShipMode {
                 ctx.fillText(c.n > 1 ? `${c.first.label} +${c.n - 1}` : c.first.label, x + ts * 0.8, y + 4);
             }
         }
+        // another time: the map below takes the era tint the renderer gives a
+        // dated space, so the clocks are visible without reading the HUD
+        if ((this.engine.state.era || 'present') !== 'present') { ctx.fillStyle = 'rgba(214,172,96,0.13)'; ctx.fillRect(0, 0, W, H); }
         this.drawShip(ctx, W / 2, H / 2, 22 * (z / 3), frame);
+        // the jump: a white flash that fades over most of a second, clock-driven
+        const since = (performance.now() - this.jumpAt) / 1000;
+        if (since < 0.8) { ctx.fillStyle = `rgba(246,242,235,${(0.9 * (1 - since / 0.8)).toFixed(3)})`; ctx.fillRect(0, 0, W, H); }
         // the scale, so "to scale" is visible: 10° at this zoom
         const barPx = 10 * k * z;
         ctx.fillStyle = 'rgba(246,242,235,0.8)'; ctx.fillRect(16, H - 22, barPx, 2);

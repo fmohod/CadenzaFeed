@@ -11,7 +11,9 @@
 // Entries are tried in order; the first whose every condition holds wins.
 // Known predicates today: talked_to (npc id), visited (space id),
 // terminal_opened (bool), news_seen (bool: any bulletin read in this save),
-// news_count (number: at least this many). Unknown predicates never match, so a future field
+// news_count (number: at least this many), era ("present" or the ISO date the player
+// is standing in), ship_time_set (bool: the clocks were ever set from the ship's
+// cockpit in this save). Unknown predicates never match, so a future field
 // added to content before the engine learns it simply falls through.
 class DialogueBox {
     constructor(root) {
@@ -138,6 +140,12 @@ class DialogueBox {
                     break;
                 case 'news_count':
                     if (!flags.news || flags.news.count < (value | 0)) return false;
+                    break;
+                case 'era':
+                    if ((flags.era || 'present') !== String(value)) return false;
+                    break;
+                case 'ship_time_set':
+                    if (Boolean(flags.shipTime > 0) !== Boolean(value)) return false;
                     break;
                 default:
                     return false; // unknown predicate: never matches

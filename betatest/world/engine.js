@@ -25,7 +25,7 @@ class WorldEngine {
         this.party = new Party(this);                        // four Watchers on one Wi-Fi (owner, log 20260923-03); dormant on the public site
         this.quest = new QuestRunner(this);                  // storylines as data, tracked in the save (owner, 2026-09-26)
         // Rocco first, by the owner's ruling (Flutie Cats README): the first character everyone gets.
-        this.flags = { visited: new Set(), talked: new Set(), terminalOpened: false, news: { seen: new Set(), count: 0 } };
+        this.flags = { visited: new Set(), talked: new Set(), terminalOpened: false, news: { seen: new Set(), count: 0 }, shipTime: 0 };
         // The news desk (owner, log 20261007-01): the Control Room's first layer. It
         // reads the studio's real wire and press feed over the game; the engine only
         // says when the screen is free and what a bulletin does to the save.
@@ -454,7 +454,9 @@ class WorldEngine {
             // (owner, 19:20 log 2026-09-26: the flying-game Rocco and the jacket
             // Rocco can both be NPCs here, "because we have a multiverse").
             const from = t.npc.def.universe && t.npc.def.universe !== 'universe-b' ? ` · ${t.npc.def.universe_label || t.npc.def.universe}` : '';
-            const lines = DialogueBox.resolve(t.npc.def, this.flags);
+            // The player's time rides along for the `era` predicate: it is player
+            // state (the gate, the ship's clocks, a quest set it), not a replayed flag.
+            const lines = DialogueBox.resolve(t.npc.def, { ...this.flags, era: this.state.era || 'present' });
             // Face the player while talking; restore afterwards.
             const was = t.npc.facing;
             t.npc.facing = { up: 'down', down: 'up', left: 'right', right: 'left' }[this.player.facing] || was;
@@ -536,7 +538,9 @@ class WorldEngine {
         if (t.kind === 'exit') { this.useExit(t.exit); return; }
         if (t.kind === 'timegate') {
             // Chrono Trigger's gate: the same place in another era. Eras come
-            // from the bindings of THIS place; you arrive on the same tile.
+            // from the bindings of THIS place; you arrive on the same tile. The
+            // ship's time controller (ShipMode.setTime) is the other thing that
+            // changes the era; both record EraChanged with where it happened.
             const here = this.content.bindings.get(this.space.id);
             const opts = [];
             for (const b of this.content.bindingList) {

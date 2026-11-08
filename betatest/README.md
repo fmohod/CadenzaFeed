@@ -103,8 +103,9 @@ a game needs (tile size, simplification, no interiors). Neighborhood `downtown` 
 hand-authored until a region node exists in the registry.
 - An **NPC** (`content/npcs/<id>.json`, `id: "npc:<slug>"`) has a name, a sprite colour
   and an ordered `dialogue[]` list; the first entry whose `if` conditions all hold wins.
-  Predicates today: `talked_to`, `visited`, `terminal_opened`. Unknown predicates never
-  match, so content may run ahead of the engine safely.
+  Predicates today: `talked_to`, `visited`, `terminal_opened`, `news_seen`, `news_count`,
+  `era`, `ship_time_set`. Unknown predicates never match, so content may run ahead of the
+  engine safely.
 
 Content the loader cannot validate is skipped with a console warning; the world keeps
 running with a hole in it. It never crashes on content.
@@ -592,8 +593,9 @@ certain time you can possibly travel between them."* The model:
 - A binding is a point or span on the timeline: `era` is `present` (unset) or an ISO
   date, and `valid: {from, to}` is the span the space stands for. One place binds several
   spaces, one per time. `bindings[].era` is no longer reserved; it is live.
-- The player's time is player state (`state.era`, saved) and **only the gate changes
-  it**. Owner, 2026-09-03, after playing: *"buses only move you around the current time
+- The player's time is player state (`state.era`, saved) and **only the gate and the
+  ship's time controller change it** (the gate alone until 2026-11-08; the ship is the one
+  time machine, log 20260914-01, see *The ship*). Owner, 2026-09-03, after playing: *"buses only move you around the current time
   you're in; portals move you through time only; buses through space only."* So the
   **bus stop** lists only places whose binding covers the date you are standing in (the
   station is a present-day place and is offered only in the present), and in a
@@ -708,9 +710,22 @@ actions steer it, and everything else is untouched.
   park is the ship coming to fetch you. `ShipMode.landedIn(spaceId)` is the one rule;
   `ShipMode.drawLanded` the one picture; the renderer only asks. Saves from before this
   build have no `at`, so the ship shows at the Station until the next landing.
-- The HUD aboard shows a UTC clock and the ship's position; no weather, no sky.
-- *Not yet:* the ship's time controller (time travel stays with the gate on the ground
-  until he wants it in the cockpit), and the AR landing seen from the park.
+- The HUD aboard shows a UTC clock and the ship's position; no weather, no sky. In another
+  time it names that time too.
+- **The time controller (built 2026-11-08, his pick from the backlog).** The ship is the one
+  time machine (*"there's only going to be one ship that can do time travel, and I already
+  have that ship"*), so its menu (BACK while aloft) carries *Set the ship's time*. The times
+  on offer are exactly the distinct eras the bindings know, plus Now, each named the way
+  its space names it (today: *March 1982* and *Now*); never a free dial, because a time
+  nobody has reconstructed has nowhere to land. Picking one sets `state.era` exactly as the
+  gate does and records the same `EraChanged` event with `at: "ship"`; the map flashes, the
+  ring winds up, the map below takes the era tint, and the landing markers are at once the
+  places bound in that time (in 1982, one). The gate on the ground is unchanged. The
+  Station is a present-day place, so *Return to the Station* from another time sets the
+  clocks back to Now first and says so in its label. `flags.shipTime` counts cockpit jumps
+  (replayed from the log); predicates `era` and `ship_time_set` let lines depend on the
+  player's time and on whether the clocks were ever set from the ship. The coin has one.
+- *Not yet:* the AR landing seen from the park.
 
 **The layers (09-13, his Spider-Verse framing: one world, many expressions, the archive
 as the operational layer).** Recorded as structure, each a renderer over the same content:
