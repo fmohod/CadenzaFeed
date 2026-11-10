@@ -1,0 +1,89 @@
+{
+  "schema": 1,
+  "id": "space:station-hub",
+  "name": "The Station — Transit Hall",
+  "kind": "interior",
+  "theme": "station",
+  "canon": "fiction",
+  "neighborhood": "orbit",
+  "_note": "Owner, log 20261006-01: 'the space station can be like a transportation hub ... walk off screen to a next screen'. The hall is attached to the deck's west edge the way the garden deck is attached to its east edge. Its boards are screens of type 'screen' with a feed (see world/boards.js): outside data drawn in-world (log 20261007-01), never a web page in the game. Built 2026-11-10.",
+  "map": [
+    "WWWWWWWWWWWWWWW",
+    "WWWWWWWWWWWWWWW",
+    "W.............W",
+    "W.............W",
+    "W.............W",
+    "W.............W",
+    "W.............W",
+    "W.............W",
+    "W.............D",
+    "WWWWWWWWWWWWWWW"
+  ],
+  "interactables": [
+    {
+      "id": "screen:departures",
+      "type": "screen",
+      "feed": "departures",
+      "x": 3,
+      "y": 2,
+      "label": "Departures board",
+      "solid": true
+    },
+    {
+      "id": "screen:wire",
+      "type": "screen",
+      "feed": "wire",
+      "x": 7,
+      "y": 2,
+      "label": "The wire",
+      "solid": true
+    },
+    {
+      "id": "screen:ship",
+      "type": "screen",
+      "feed": "ship",
+      "x": 11,
+      "y": 2,
+      "label": "Ship and clocks",
+      "solid": true
+    },
+    {
+      "id": "examine:bench",
+      "type": "examine",
+      "x": 7,
+      "y": 6,
+      "label": "A bench",
+      "marker": false,
+      "text": [
+        "A bench facing the boards, bolted to the deck.",
+        "Everyone leaving the Station waits here, and the boards tell them what the weather is where they are going."
+      ]
+    }
+  ],
+  "exits": [
+    {
+      "id": "exit:to-deck",
+      "x": 14,
+      "y": 8,
+      "label": "Back to the deck",
+      "to": {
+        "space": "space:community-block",
+        "spawn": "spawn:from-hub"
+      }
+    }
+  ],
+  "spawns": [
+    {
+      "id": "spawn:default",
+      "x": 13,
+      "y": 8,
+      "facing": "left"
+    },
+    {
+      "id": "spawn:from-deck",
+      "x": 13,
+      "y": 8,
+      "facing": "left"
+    }
+  ]
+}

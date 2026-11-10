@@ -18,7 +18,8 @@
         "space:corner-store",
         "space:library",
         "space:library-multipurpose-room",
-        "space:station-garden"
+        "space:station-garden",
+        "space:station-hub"
       ],
       "timezone": "UTC"
     },
@@ -155,7 +156,8 @@
     "macroplaza-mall-1982",
     "memory-trailer",
     "memory-lot",
-    "station-garden"
+    "station-garden",
+    "station-hub"
   ],
   "npcs": [
     "test-001",

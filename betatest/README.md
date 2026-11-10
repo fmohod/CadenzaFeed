@@ -443,6 +443,28 @@ trousers, the tail ring). The renderer's `sprite.sheet` path draws it with the w
 the rising note; the suit overlay is no longer used for him. The production art from the
 Flutie Cats asset route replaces the PNG file for file, same frame grid.
 
+## The transit hall (owner, log 20261006-01; built 2026-11-10)
+
+*"The space station can be like a transportation hub ... walk off screen to a next screen."*
+The garden was the first screen attached to the deck (its east edge); the **transit hall**
+(`space:station-hub`) is the second, off the deck's **west edge**, and it is where the Station
+is a hub. Three boards stand against its north wall, each an interactable of `type: "screen"`
+with a `feed`, drawn by the renderer as a wide panel with one line of live data crawling
+across it and read in full with INTERACT. This is item 26 of the backlog, outside data drawn
+in-world, as graphics and never as a web page in the game. `world/boards.js` is what they say;
+nothing on them is invented, and a feed with nothing to say says so:
+
+- **Departures**: every real place bound in the player's time (the ship's own landing list), with
+  its local clock, the sun's phase there (`Daylight`), the weather now (Open-Meteo through the
+  engine's cached service, fetched once when you enter the hall; a place whose reading did not
+  come shows its clock alone) and its distance from the ship. In 1982 the board shows one place.
+- **The wire**: the studio's wire and press feed, the news desk's own pool.
+- **Ship and clocks**: where the one ship is (docked, parked at a place, or aloft over a
+  position), station time in UTC, Houston's clock, and the time the player stands in.
+
+Reading a board records nothing; it is not progress. The hall is an interior in the station
+theme and has no sky.
+
 ## The news desk (owner, log 20261007-01; built 2026-11-07)
 
 Every five minutes of real time a bulletin comes over the game: a picture-in-picture frame at

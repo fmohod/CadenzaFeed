@@ -39,6 +39,7 @@ class WorldEngine {
             onBroadcast: (item) => this.onNews(item),
         });
         if (newsParam === 'off') this.news.enabled = false;
+        this.boards = new Boards(this);   // the transit hall's screens (owner, logs 20261006-01, 20261007-01)
         this.tween = null;      // { fromX, fromY, toX, toY, t }
         this.tapQueue = [];     // directions tapped but not yet walked
         this.weather = new WeatherService({ override: new URLSearchParams(location.search).get('weather') });
@@ -184,6 +185,7 @@ class WorldEngine {
         this.tapQueue = [];
         Object.assign(this.player, { space: spaceId, x, y, facing, px: x, py: y, moving: false });
         for (const r of this.roamers) r.onEnter(space);
+        if (this.boards) this.boards.onEnter(space);   // a hall with screens asks for its departures' weather
         if (this.quest) this.quest.refreshNpcs();
         // The player's time is player state and only the gate changes it. A bus
         // moves through space within the current time; a space never rewrites the
@@ -344,6 +346,7 @@ class WorldEngine {
             eraStyle: this.space && this.space.eraStyle,
             others: this.space ? this.party.inRoom(this.space.id, this.state.era) : [],
             ship: this.space && this.ship.landedIn(this.space.id) ? this.ship : null,   // parked here: drawn at the ramp
+            boards: this.boards,
             target: this.dialogue.open || this.paused ? null : this.facingTarget(),
         });
         if (!document.hidden) this._scheduleFrame();
@@ -536,6 +539,11 @@ class WorldEngine {
             return;
         }
         if (t.kind === 'exit') { this.useExit(t.exit); return; }
+        if (t.kind === 'screen') {
+            // A transit-hall board: read the whole thing (world/boards.js).
+            this.dialogue.show(t.item.label || 'Board', this.boards.lines(t.item.feed));
+            return;
+        }
         if (t.kind === 'timegate') {
             // Chrono Trigger's gate: the same place in another era. Eras come
             // from the bindings of THIS place; you arrive on the same tile. The

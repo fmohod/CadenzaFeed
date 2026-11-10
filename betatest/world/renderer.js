@@ -40,6 +40,7 @@ class Renderer {
         const { space, player, dev, target } = scene;
         const ctx = this.ctx;
         this.frame++;
+        this.boards = scene.boards || null;   // what the transit hall's screens say this frame
         // A rotation or a viewport change that never fired `resize` (it happens
         // under emulation and in some in-app browsers) would otherwise leave the
         // canvas stretched. Cheap to check every frame; resize only when needed.
@@ -254,7 +255,46 @@ class Renderer {
             ctx.fillRect(sx + 3 * u, sy + 2 * u, 2 * u, 2.5 * u);
             ctx.fillStyle = '#4a3320';
             ctx.fillRect(sx + 3.7 * u, sy + 4.5 * u, 0.6 * u, 2.5 * u);
+            return;
         }
+        if (item.type === 'screen') this.drawScreen(ctx, item, sx, sy, ts);
+    }
+
+    // A transit-hall board (world/boards.js): a wide panel on the wall above
+    // its console tile, the board's title in the corner and one line of live
+    // data scrolling across it. The text is the engine's; this only draws it.
+    drawScreen(ctx, item, sx, sy, ts) {
+        const u = ts / 8;
+        // the console you stand at
+        ctx.fillStyle = '#2b303a'; ctx.fillRect(sx + 1.5 * u, sy + 2 * u, 5 * u, 5 * u);
+        ctx.fillStyle = '#3aa0c9'; ctx.fillRect(sx + 2 * u, sy + 2.5 * u, 4 * u, u);
+        // the panel over the wall tiles, three tiles wide
+        const px = sx - ts + u, py = sy - ts + u * 0.6, pw = 3 * ts - 2 * u, ph = ts - u;
+        ctx.fillStyle = '#070a0e'; ctx.fillRect(px, py, pw, ph);
+        ctx.strokeStyle = '#3aa0c9'; ctx.lineWidth = Math.max(1, u / 3); ctx.strokeRect(px, py, pw, ph);
+        ctx.save();
+        ctx.beginPath(); ctx.rect(px + u / 2, py, pw - u, ph); ctx.clip();
+        ctx.font = `${Math.max(8, 1.7 * u)}px monospace`;
+        ctx.fillStyle = '#7fd3ff';
+        ctx.fillText((item.label || item.feed || '').toUpperCase(), px + u, py + 2.2 * u);
+        // one line crawls right to left at a steady 100 px/s (at the base tile
+        // size), read from the clock so a starved tab does not stall it; when it
+        // has crossed, the next line starts
+        const crawl = this._crawl || (this._crawl = new Map());
+        const now = performance.now();
+        const c = crawl.get(item.id) || { index: 0, start: now };
+        const text = this.boards ? this.boards.marquee(item.feed, c.index) : '';
+        ctx.font = `${Math.max(10, 2.6 * u)}px monospace`;
+        const tw = ctx.measureText(text).width;
+        let off = (now - c.start) / 1000 * 100 * (ts / 48);
+        if (off > tw + pw) { c.index++; c.start = now; off = 0; }
+        crawl.set(item.id, c);
+        ctx.fillStyle = '#e0b84a';
+        ctx.fillText(text, px + pw - off, py + 5.6 * u);
+        ctx.restore();
+        // a blink in the frame's corner: the board is live
+        ctx.fillStyle = (Math.floor(this.frame / 30) % 2) ? '#20C20E' : '#0b3a0a';
+        ctx.fillRect(px + pw - 2 * u, py + u, u * 0.8, u * 0.8);
     }
 
     // Who stands on a tile: one of the studio's real animals through the shared

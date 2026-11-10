@@ -63,6 +63,12 @@
       "x": 28,
       "y": 14,
       "facing": "left"
+    },
+    {
+      "id": "spawn:from-hub",
+      "x": 1,
+      "y": 14,
+      "facing": "right"
     }
   ],
   "exits": [
@@ -103,6 +109,16 @@
       "label": "The garden deck",
       "to": {
         "space": "space:station-garden",
+        "spawn": "spawn:from-deck"
+      }
+    },
+    {
+      "id": "exit:hub",
+      "x": 0,
+      "y": 14,
+      "label": "The transit hall",
+      "to": {
+        "space": "space:station-hub",
         "spawn": "spawn:from-deck"
       }
     }
@@ -148,7 +164,7 @@
       "marker": false,
       "text": [
         "Earth, turning below. Houston is under the cloud somewhere.",
-        "The garden deck is off the east edge of this one."
+        "The garden deck is off the east edge of this one; the transit hall is off the west."
       ]
     }
   ],
